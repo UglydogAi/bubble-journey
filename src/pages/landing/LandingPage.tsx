@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, PhoneOff } from "lucide-react";
+import { Mic, MicOff, PhoneOff, Avatar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
@@ -21,9 +21,9 @@ export default function LandingPage() {
         className="flex flex-col items-center justify-center relative z-10"
       >
         {/* UGLYDOG Profile Section */}
-        <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
+        <div className="w-32 h-32 rounded-full bg-[#1E3A8A] overflow-hidden mb-4 border-4 border-[#D946EF]/30 shadow-[0_0_20px_rgba(217,70,239,0.3)]">
           <img 
-            src="/lovable-uploads/d1f55023-5f21-43ab-b2a5-3348ee1b07ab.png"
+            src="/lovable-uploads/cd462cf6-6131-437f-8ddf-f745f6cda73d.png"
             alt="UGLYDOG Mascot"
             className="w-full h-full object-cover"
           />
@@ -46,6 +46,10 @@ export default function LandingPage() {
         >
           UGLYDOG
         </motion.h2>
+
+        <h3 className="text-xl text-[#D946EF] font-semibold mb-8">
+          character.ai
+        </h3>
 
         <p className="text-lg text-gray-300 mb-12">
           Start speaking
