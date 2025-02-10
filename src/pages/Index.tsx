@@ -1,8 +1,8 @@
 
-import Auth from "./auth/Auth";
+import LandingPage from "./landing/LandingPage";
 
 const Index = () => {
-  return <Auth />;
+  return <LandingPage />;
 };
 
 export default Index;

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Brain, Calendar, Dumbbell, Heart, Lightbulb, Lock, Mail } from "lucide-react";
@@ -8,11 +7,11 @@ import { Bubble } from "@/components/auth/Bubble";
 import { toast } from "sonner";
 
 const bubbleConfigs = [
-  { icon: Lightbulb, position: { x: "20%", y: "20%" }, message: "Unlock your potential" },
-  { icon: Brain, position: { x: "70%", y: "15%" }, message: "Train your mindset" },
-  { icon: Dumbbell, position: { x: "80%", y: "60%" }, message: "Push your limits" },
-  { icon: Calendar, position: { x: "15%", y: "70%" }, message: "Plan for success" },
-  { icon: Heart, position: { x: "60%", y: "80%" }, message: "Transform your life" },
+  { icon: Lightbulb, position: { x: 20, y: 20 }, message: "Unlock your potential" },
+  { icon: Brain, position: { x: 70, y: 15 }, message: "Train your mindset" },
+  { icon: Dumbbell, position: { x: 80, y: 60 }, message: "Push your limits" },
+  { icon: Calendar, position: { x: 15, y: 70 }, message: "Plan for success" },
+  { icon: Heart, position: { x: 60, y: 80 }, message: "Transform your life" },
 ];
 
 const Auth = () => {
