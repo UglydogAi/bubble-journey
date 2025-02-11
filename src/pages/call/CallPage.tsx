@@ -22,7 +22,7 @@ export default function CallPage() {
         {/* UGLYDOG Profile Section */}
         <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
           <img 
-            src="/lovable-uploads/88cfe439-b706-4a59-8efc-05bb2d83a2fb.png"
+            src="/lovable-uploads/ce8e10ec-31c6-4d22-8be9-25e4d50d8206.png"
             alt="UGLYDOG Mascot"
             className="w-full h-full object-cover"
           />
