@@ -79,12 +79,6 @@ export default function CallPage() {
             </Button>
           </motion.div>
         )}
-
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-          <p className="text-sm text-gray-400">
-            {muted ? "Muted" : "Unmuted"} • {showControls ? "In Call" : "Call Ended"}
-          </p>
-        </div>
       </motion.div>
     </div>
   );
