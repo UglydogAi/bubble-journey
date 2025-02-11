@@ -3,10 +3,19 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Mic, MicOff, PhoneOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const navigate = useNavigate();
+
+  const handleEndCall = () => {
+    setShowControls(false);
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 1000);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#1A1F2C] to-[#0c1015] text-white px-4 relative overflow-hidden">
@@ -73,7 +82,7 @@ export default function CallPage() {
               variant="outline"
               size="lg"
               className="rounded-full w-16 h-16 bg-red-500/10 border-red-500 hover:bg-red-500/20"
-              onClick={() => setShowControls(false)}
+              onClick={handleEndCall}
             >
               <PhoneOff className="w-6 h-6 text-red-500" />
             </Button>
