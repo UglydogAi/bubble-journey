@@ -2,138 +2,216 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { 
-  Trophy, Star, MessageSquare, PhoneCall, UserRound, 
-  TrendingUp, Coins, ListCheck, Calendar, CheckSquare 
+  Trophy, MessageSquare, UserRound, Settings, 
+  TrendingUp, Coins, Calendar, CheckSquare,
+  CreditCard, Users, Bell, ChevronRight,
+  Check, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface Goal {
+interface Task {
   id: string;
   title: string;
-  category: string;
-  progress: number;
-  steps: string[];
+  completed: boolean;
+}
+
+interface DayGoal {
+  date: string;
+  tasks: Task[];
 }
 
 export default function DashboardPage() {
   const [dailyProgress] = useState(65);
   const [ogPoints] = useState(1250);
-  const [goals] = useState<Goal[]>([
+  const [selectedTab, setSelectedTab] = useState("today");
+  const [notificationPreference, setNotificationPreference] = useState("whatsapp");
+  
+  const weeklyGoals: DayGoal[] = [
     {
-      id: "1",
-      title: "Morning Workout Routine",
-      category: "Fitness",
-      progress: 75,
-      steps: ["20 min cardio", "15 min strength", "5 min stretching"]
+      date: "Monday",
+      tasks: [
+        { id: "1", title: "30-minute workout", completed: false },
+        { id: "2", title: "10-minute meditation", completed: true },
+        { id: "3", title: "Read 5 pages", completed: false }
+      ]
     },
-    {
-      id: "2",
-      title: "Mindfulness Practice",
-      category: "Mental Health",
-      progress: 50,
-      steps: ["10 min meditation", "Gratitude journal", "Evening reflection"]
-    },
-    {
-      id: "3",
-      title: "Relationship Building",
-      category: "Personal Growth",
-      progress: 30,
-      steps: ["Call a friend", "Family dinner", "Active listening practice"]
-    }
-  ]);
+    // ... Additional days would go here
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1A1F2C] to-[#0c1015] text-white p-6">
-      {/* User Overview Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
-        <div className="flex items-center gap-6 mb-6">
-          <div className="w-16 h-16 rounded-full overflow-hidden">
-            <img 
-              src="/lovable-uploads/ce8e10ec-31c6-4d22-8be9-25e4d50d8206.png"
-              alt="UGLYDOG"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold mb-1">Welcome back, Legend!</h1>
-            <p className="text-gray-400">Let's unlock the superhuman in you.</p>
+    <div className="min-h-screen bg-gradient-to-b from-[#1A1F2C] to-[#0c1015] text-white">
+      {/* Top Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900/50 backdrop-blur-sm border-b border-gray-800">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 max-w-2xl">
+              <Progress 
+                value={dailyProgress} 
+                className="h-2 bg-gray-700"
+                style={{
+                  background: "linear-gradient(90deg, #D946EF 0%, #8B5CF6 100%)",
+                  boxShadow: "0 0 10px rgba(217, 70, 239, 0.5)"
+                }}
+              />
+              <p className="text-sm mt-1 text-gray-400">
+                {dailyProgress}% Complete – Keep Going, Legend!
+              </p>
+            </div>
+            <div className="flex items-center gap-4 ml-4">
+              <div className="flex items-center gap-2">
+                <Coins className="w-5 h-5 text-[#D946EF]" />
+                <span className="font-bold">{ogPoints}</span>
+              </div>
+            </div>
           </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-400">Daily Progress</span>
-                <TrendingUp className="text-[#D946EF]" />
-              </div>
-              <Progress value={dailyProgress} className="h-2 mb-2" />
-              <span className="text-sm text-gray-400">{dailyProgress}% Complete</span>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">OG Points</span>
-                <Coins className="text-[#D946EF]" />
-              </div>
-              <p className="text-2xl font-bold mt-2">{ogPoints}</p>
-            </CardContent>
-          </Card>
-        </div>
-      </motion.div>
+      </div>
 
-      {/* Goal Setting Board */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="mb-8"
-      >
-        <h2 className="text-xl font-bold mb-4">This Week's Goals</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {goals.map((goal) => (
-            <Card key={goal.id} className="bg-gray-800/50 border-gray-700">
-              <CardContent className="p-4">
-                <h3 className="font-semibold mb-2">{goal.title}</h3>
-                <p className="text-sm text-gray-400 mb-3">{goal.category}</p>
-                <Progress value={goal.progress} className="h-1.5 mb-3" />
-                <div className="space-y-2">
-                  {goal.steps.map((step, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm">
-                      <CheckSquare className="w-4 h-4 text-gray-400" />
-                      <span>{step}</span>
-                    </div>
+      {/* Main Layout */}
+      <div className="pt-16 flex">
+        {/* Left Sidebar */}
+        <div className="w-64 fixed left-0 top-16 bottom-0 bg-gray-900/50 backdrop-blur-sm border-r border-gray-800 p-4">
+          <div className="flex items-center gap-3 mb-8 p-3 rounded-lg bg-gray-800/50">
+            <div className="w-10 h-10 rounded-full overflow-hidden">
+              <img 
+                src="/lovable-uploads/ce8e10ec-31c6-4d22-8be9-25e4d50d8206.png"
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <p className="font-semibold">Legend</p>
+              <p className="text-sm text-gray-400">Premium Member</p>
+            </div>
+          </div>
+
+          <nav className="space-y-2">
+            <Button variant="ghost" className="w-full justify-start gap-3">
+              <UserRound className="w-5 h-5" /> Profile
+            </Button>
+            <Button variant="ghost" className="w-full justify-start gap-3">
+              <Settings className="w-5 h-5" /> Settings
+            </Button>
+            <Button variant="ghost" className="w-full justify-start gap-3">
+              <CreditCard className="w-5 h-5" /> Purchase
+            </Button>
+            <Button variant="ghost" className="w-full justify-start gap-3">
+              <Users className="w-5 h-5" /> Community
+            </Button>
+          </nav>
+        </div>
+
+        {/* Main Content */}
+        <div className="ml-64 flex-1 p-6">
+          {/* Action Plan Summary */}
+          <Card className="bg-gray-800/50 border-gray-700 mb-6">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h2 className="text-xl font-bold mb-2">This Week's Focus</h2>
+                  <p className="text-gray-400">Stay consistent with your daily goals</p>
+                </div>
+                <Button variant="outline" size="sm">
+                  Edit Goals
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-700/30">
+                  <div className="w-10 h-10 rounded-full bg-[#D946EF]/20 flex items-center justify-center">
+                    <Trophy className="w-5 h-5 text-[#D946EF]" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Exercise 4x</p>
+                    <p className="text-sm text-gray-400">This week</p>
+                  </div>
+                </div>
+                {/* ... Similar goal cards */}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Smart Calendar */}
+          <Card className="bg-gray-800/50 border-gray-700 mb-6">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold">Today's Tasks</h3>
+                <div className="flex gap-2">
+                  {weeklyGoals[0].tasks.map((task) => (
+                    <Button
+                      key={task.id}
+                      variant={task.completed ? "default" : "outline"}
+                      size="sm"
+                      className={task.completed ? "bg-[#D946EF]" : ""}
+                    >
+                      <Check className="w-4 h-4 mr-2" />
+                      {task.title}
+                    </Button>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </motion.div>
+              </div>
+              
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-4 mb-6">
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`p-4 rounded-lg ${
+                      i === 0 ? "bg-[#D946EF]/20 border-2 border-[#D946EF]" : "bg-gray-700/30"
+                    }`}
+                  >
+                    <p className="text-sm font-medium mb-1">
+                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i]}
+                    </p>
+                    <div className="space-y-2">
+                      {/* Task indicators */}
+                      <div className="w-full h-1 rounded bg-[#D946EF]/40" />
+                      <div className="w-2/3 h-1 rounded bg-[#D946EF]/40" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Action Buttons */}
-      <div className="flex gap-4 mb-8">
-        <Button 
-          className="bg-[#D946EF] hover:bg-[#D946EF]/80"
-          size="lg"
-        >
-          Start Today's Task
-        </Button>
-        <Button 
-          variant="outline"
-          size="lg"
-          className="border-[#D946EF] text-[#D946EF] hover:bg-[#D946EF]/10"
-        >
-          Check In with UGLYDOG
-        </Button>
+          {/* Notification Setup */}
+          <Card className="bg-gray-800/50 border-gray-700">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Notification Preferences</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gray-700/30">
+                  <div className="flex items-center gap-3">
+                    <Bell className="w-5 h-5 text-[#D946EF]" />
+                    <div>
+                      <p className="font-medium">Daily Reminders</p>
+                      <p className="text-sm text-gray-400">Get notified about your tasks</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={notificationPreference === "whatsapp" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setNotificationPreference("whatsapp")}
+                      className={notificationPreference === "whatsapp" ? "bg-[#D946EF]" : ""}
+                    >
+                      WhatsApp
+                    </Button>
+                    <Button
+                      variant={notificationPreference === "telegram" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setNotificationPreference("telegram")}
+                      className={notificationPreference === "telegram" ? "bg-[#D946EF]" : ""}
+                    >
+                      Telegram
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Floating Action Button */}
