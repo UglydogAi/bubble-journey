@@ -1,21 +1,62 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Mic, MicOff, PhoneOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const navigate = useNavigate();
 
   const handleEndCall = () => {
     setShowControls(false);
+    if (currentAudio) {
+      currentAudio.pause();
+    }
     setTimeout(() => {
       navigate('/dashboard');
     }, 1000);
   };
+
+  const playResponse = async (text: string) => {
+    try {
+      setIsProcessing(true);
+      
+      const { data, error } = await supabase.functions.invoke('text-to-speech', {
+        body: { text }
+      });
+
+      if (error) throw error;
+
+      if (data.audioUrl) {
+        if (currentAudio) {
+          currentAudio.pause();
+        }
+        
+        const audio = new Audio(data.audioUrl);
+        setCurrentAudio(audio);
+        
+        audio.onended = () => {
+          setIsProcessing(false);
+        };
+        
+        await audio.play();
+      }
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      setIsProcessing(false);
+    }
+  };
+
+  // Example response - this would be replaced with actual AI responses
+  useEffect(() => {
+    playResponse("Hello! I'm UGLYDOG, your AI assistant. How can I help you today?");
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#1A1F2C] to-[#0c1015] text-white px-4 relative overflow-hidden">
@@ -29,12 +70,24 @@ export default function CallPage() {
         className="flex flex-col items-center justify-center relative z-10"
       >
         {/* UGLYDOG Profile Section */}
-        <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
+        <div className="w-32 h-32 rounded-full overflow-hidden mb-4 relative">
           <img 
             src="/lovable-uploads/ce8e10ec-31c6-4d22-8be9-25e4d50d8206.png"
             alt="UGLYDOG Mascot"
             className="w-full h-full object-cover"
           />
+          {isProcessing && (
+            <motion.div 
+              className="absolute inset-0 bg-purple-500/20"
+              animate={{ 
+                opacity: [0.2, 0.5, 0.2],
+              }}
+              transition={{ 
+                duration: 1.5, 
+                repeat: Infinity 
+              }}
+            />
+          )}
         </div>
 
         <motion.h2 
@@ -56,7 +109,7 @@ export default function CallPage() {
         </motion.h2>
 
         <p className="text-lg text-gray-300 mb-12">
-          Start speaking
+          {isProcessing ? "Speaking..." : "Listening..."}
         </p>
 
         {showControls && (
