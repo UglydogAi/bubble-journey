@@ -28,7 +28,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         text,
-        voice: 'larry',
+        voice: '27dc00307e408422454f681a8f0a3c774757ed34672d48a99a5b0a96c527fbd0',
         quality: 'medium',
         output_format: 'mp3',
         speed: 1,
