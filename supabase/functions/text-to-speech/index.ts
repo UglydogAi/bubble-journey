@@ -38,6 +38,7 @@ serve(async (req) => {
 
     if (!conversionResponse.ok) {
       const error = await conversionResponse.json()
+      console.error('Play.ht conversion error:', error)
       throw new Error(error.error?.message || 'Failed to start conversion')
     }
 
