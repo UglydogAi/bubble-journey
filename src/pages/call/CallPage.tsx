@@ -5,6 +5,7 @@ import { Mic, MicOff, PhoneOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
@@ -31,7 +32,11 @@ export default function CallPage() {
         body: { text }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error from edge function:', error);
+        toast.error('Failed to generate speech. Please try again.');
+        throw error;
+      }
 
       if (data.audioUrl) {
         if (currentAudio) {
@@ -44,18 +49,25 @@ export default function CallPage() {
         audio.onended = () => {
           setIsProcessing(false);
         };
+
+        audio.onerror = (e) => {
+          console.error('Audio playback error:', e);
+          toast.error('Failed to play audio. Please try again.');
+          setIsProcessing(false);
+        };
         
         await audio.play();
       }
     } catch (error) {
       console.error('Error playing audio:', error);
       setIsProcessing(false);
+      toast.error('Something went wrong. Please try again.');
     }
   };
 
-  // Example response - this would be replaced with actual AI responses
+  // Test message
   useEffect(() => {
-    playResponse("Hello! I'm UGLYDOG, your AI assistant. How can I help you today?");
+    playResponse("Hello! I'm your AI assistant. I'm now using Play.ht to speak. Can you hear me clearly?");
   }, []);
 
   return (
