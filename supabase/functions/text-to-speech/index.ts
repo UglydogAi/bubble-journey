@@ -18,8 +18,8 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
-    // First, convert text to speech using Play.ht API
-    const response = await fetch('https://play.ht/api/v2/tts', {
+    // First, create the conversion request
+    const conversionResponse = await fetch('https://play.ht/api/v2/tts/convert', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('PLAY_HT_API_KEY')}`,
@@ -28,7 +28,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         text,
-        voice: 'larry', // Using a default voice, can be made configurable
+        voice: 'larry',
         quality: 'medium',
         output_format: 'mp3',
         speed: 1,
@@ -36,37 +36,54 @@ serve(async (req) => {
       }),
     })
 
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.error?.message || 'Failed to generate speech')
+    if (!conversionResponse.ok) {
+      const error = await conversionResponse.json()
+      throw new Error(error.error?.message || 'Failed to start conversion')
     }
 
-    const result = await response.json()
+    const { transcriptionId } = await conversionResponse.json()
 
-    // Get the generated audio URL
-    const audioUrlResponse = await fetch(`https://play.ht/api/v2/tts/${result.transcriptionId}`, {
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('PLAY_HT_API_KEY')}`,
-        'X-User-ID': Deno.env.get('PLAY_HT_USER_ID')!,
-      },
-    })
+    // Then poll for the status until it's ready
+    let attempts = 0
+    const maxAttempts = 10
+    let audioUrl = null
 
-    if (!audioUrlResponse.ok) {
-      throw new Error('Failed to get audio URL')
+    while (attempts < maxAttempts) {
+      const statusResponse = await fetch(`https://play.ht/api/v2/tts/${transcriptionId}`, {
+        headers: {
+          'Authorization': `Bearer ${Deno.env.get('PLAY_HT_API_KEY')}`,
+          'X-User-ID': Deno.env.get('PLAY_HT_USER_ID')!,
+        },
+      })
+
+      if (!statusResponse.ok) {
+        throw new Error('Failed to check conversion status')
+      }
+
+      const status = await statusResponse.json()
+      
+      if (status.converted) {
+        audioUrl = status.audioUrl
+        break
+      }
+
+      // Wait for 1 second before next attempt
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      attempts++
     }
 
-    const audioUrlResult = await audioUrlResponse.json()
+    if (!audioUrl) {
+      throw new Error('Conversion timed out')
+    }
 
     return new Response(
-      JSON.stringify({ 
-        audioUrl: audioUrlResult.audioUrl,
-        status: audioUrlResult.status
-      }),
+      JSON.stringify({ audioUrl }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     )
   } catch (error) {
+    console.error('Error in text-to-speech function:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       {
