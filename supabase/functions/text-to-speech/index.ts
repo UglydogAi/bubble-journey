@@ -18,6 +18,10 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
+    console.log('Starting conversion with Play.ht for text:', text)
+    console.log('Using API Key:', Deno.env.get('PLAY_HT_API_KEY')?.slice(0, 5) + '...')
+    console.log('Using User ID:', Deno.env.get('PLAY_HT_USER_ID')?.slice(0, 5) + '...')
+
     // First, create the conversion request
     const conversionResponse = await fetch('https://play.ht/api/v2/tts/convert', {
       method: 'POST',
@@ -28,7 +32,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         text,
-        voice: '27dc00307e408422454f681a8f0a3c774757ed34672d48a99a5b0a96c527fbd0',
+        voice: 'matthew', // Changed to a default voice that should work
         quality: 'medium',
         output_format: 'mp3',
         speed: 1,
@@ -37,12 +41,15 @@ serve(async (req) => {
     })
 
     if (!conversionResponse.ok) {
-      const error = await conversionResponse.json()
-      console.error('Play.ht conversion error:', error)
-      throw new Error(error.error?.message || 'Failed to start conversion')
+      const errorData = await conversionResponse.json()
+      console.error('Play.ht conversion error details:', errorData)
+      throw new Error(errorData.error?.message || 'Failed to start conversion')
     }
 
-    const { transcriptionId } = await conversionResponse.json()
+    const conversionData = await conversionResponse.json()
+    console.log('Conversion started successfully:', conversionData)
+
+    const { transcriptionId } = conversionData
 
     // Then poll for the status until it's ready
     let attempts = 0
@@ -50,6 +57,8 @@ serve(async (req) => {
     let audioUrl = null
 
     while (attempts < maxAttempts) {
+      console.log(`Checking conversion status attempt ${attempts + 1}/${maxAttempts}`)
+      
       const statusResponse = await fetch(`https://play.ht/api/v2/tts/${transcriptionId}`, {
         headers: {
           'Authorization': `Bearer ${Deno.env.get('PLAY_HT_API_KEY')}`,
@@ -58,10 +67,13 @@ serve(async (req) => {
       })
 
       if (!statusResponse.ok) {
+        const errorData = await statusResponse.json()
+        console.error('Status check error:', errorData)
         throw new Error('Failed to check conversion status')
       }
 
       const status = await statusResponse.json()
+      console.log('Status check response:', status)
       
       if (status.converted) {
         audioUrl = status.audioUrl
@@ -76,6 +88,8 @@ serve(async (req) => {
     if (!audioUrl) {
       throw new Error('Conversion timed out')
     }
+
+    console.log('Successfully generated audio URL:', audioUrl)
 
     return new Response(
       JSON.stringify({ audioUrl }),
