@@ -23,7 +23,7 @@ serve(async (req) => {
     console.log('Using User ID:', Deno.env.get('PLAY_HT_USER_ID')?.slice(0, 5) + '...')
 
     // First, create the conversion request
-    const conversionResponse = await fetch('https://play.ht/api/v2/tts/convert', {
+    const conversionResponse = await fetch('https://api.play.ht/api/v2/tts', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('PLAY_HT_API_KEY')}`,
@@ -32,7 +32,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         text,
-        voice: 'matthew', // Changed to a default voice that should work
+        voice: 'matthew',
         quality: 'medium',
         output_format: 'mp3',
         speed: 1,
@@ -59,7 +59,7 @@ serve(async (req) => {
     while (attempts < maxAttempts) {
       console.log(`Checking conversion status attempt ${attempts + 1}/${maxAttempts}`)
       
-      const statusResponse = await fetch(`https://play.ht/api/v2/tts/${transcriptionId}`, {
+      const statusResponse = await fetch(`https://api.play.ht/api/v2/tts/${transcriptionId}`, {
         headers: {
           'Authorization': `Bearer ${Deno.env.get('PLAY_HT_API_KEY')}`,
           'X-User-ID': Deno.env.get('PLAY_HT_USER_ID')!,
