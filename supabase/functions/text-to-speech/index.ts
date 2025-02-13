@@ -32,8 +32,8 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         text,
-        voice: 'matthew',
-        quality: 'medium',
+        voice: '27dc00307e408422454f681a8f0a3c774757ed34672d48a99a5b0a96c527fbd0', // Your cloned voice ID
+        quality: 'high',
         output_format: 'mp3',
         speed: 1,
         sample_rate: 24000
