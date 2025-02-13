@@ -37,7 +37,7 @@ serve(async (req) => {
     const conversionResponse = await fetch('https://api.play.ht/api/v2/tts', {
       method: 'POST',
       headers: {
-        'Authorization': apiKey,  // Removed 'Bearer ' prefix
+        'Authorization': `Bearer ${apiKey}`,  // Added back 'Bearer ' prefix
         'X-User-ID': userId,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -82,7 +82,7 @@ serve(async (req) => {
       
       const statusResponse = await fetch(`https://api.play.ht/api/v2/tts/${transcriptionId}`, {
         headers: {
-          'Authorization': apiKey,  // Removed 'Bearer ' prefix
+          'Authorization': `Bearer ${apiKey}`,  // Added back 'Bearer ' prefix
           'X-User-ID': userId,
           'Accept': 'application/json',
         },
