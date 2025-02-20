@@ -41,25 +41,21 @@ export default function DashboardPage() {
         { id: "3", title: "Read 5 pages", completed: false }
       ]
     },
-    // ... Additional days would go here
   ];
 
   return (
-    <div className="min-h-screen bg-[#0D0F18] text-[#EDEDED]">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Top Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-[#0D0F18]/80 backdrop-blur-xl border-b border-[#A442F1]/20">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             <div className="flex-1 max-w-2xl">
               <Progress 
                 value={dailyProgress} 
-                className="h-2 bg-[#1A1F2C]"
-                style={{
-                  background: "linear-gradient(90deg, #A442F1 0%, #D94FFF 100%)",
-                  boxShadow: "0 0 20px rgba(164, 66, 241, 0.3)"
-                }}
+                className="h-2"
+                indicatorClassName="bg-primary transition-all duration-300"
               />
-              <p className="text-sm mt-1 text-[#B8B8B8]">
+              <p className="text-sm mt-1 text-muted-foreground">
                 {dailyProgress}% Complete – Keep Going, Legend!
               </p>
             </div>
@@ -67,17 +63,17 @@ export default function DashboardPage() {
               <Toggle
                 pressed={theme === "dark"}
                 onPressedChange={(pressed) => setTheme(pressed ? "dark" : "light")}
-                className="p-2 rounded-full bg-[#1A1F2C] hover:bg-[#A442F1]/20 transition-colors duration-300"
+                className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors duration-300"
               >
                 {theme === "dark" ? (
-                  <Sun className="w-5 h-5 text-[#D94FFF]" />
+                  <Sun className="w-5 h-5 text-primary" />
                 ) : (
-                  <Moon className="w-5 h-5 text-[#A442F1]" />
+                  <Moon className="w-5 h-5 text-primary" />
                 )}
               </Toggle>
               <div className="flex items-center gap-2">
-                <Coins className="w-5 h-5 text-[#D94FFF]" />
-                <span className="font-bold text-[#EDEDED]">{ogPoints}</span>
+                <Coins className="w-5 h-5 text-primary" />
+                <span className="font-bold">{ogPoints}</span>
               </div>
             </div>
           </div>
@@ -87,9 +83,9 @@ export default function DashboardPage() {
       {/* Main Layout */}
       <div className="pt-16 flex">
         {/* Left Sidebar */}
-        <div className="w-64 fixed left-0 top-16 bottom-0 bg-[#1A1F2C]/50 backdrop-blur-xl border-r border-[#A442F1]/20">
-          <div className="flex items-center gap-3 m-4 p-3 rounded-lg bg-[#1A1F2C]/80 border border-[#A442F1]/20 shadow-[0_0_15px_rgba(164,66,241,0.1)]">
-            <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#A442F1]/30">
+        <div className="w-64 fixed left-0 top-16 bottom-0 bg-sidebar-background/50 backdrop-blur-xl border-r border-sidebar-border">
+          <div className="flex items-center gap-3 m-4 p-3 rounded-lg bg-sidebar-accent border border-sidebar-border">
+            <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-sidebar-ring/30">
               <img 
                 src="/lovable-uploads/ce8e10ec-31c6-4d22-8be9-25e4d50d8206.png"
                 alt="Profile"
@@ -97,8 +93,8 @@ export default function DashboardPage() {
               />
             </div>
             <div>
-              <p className="font-semibold text-[#EDEDED]">Legend</p>
-              <p className="text-sm text-[#B8B8B8]">Premium Member</p>
+              <p className="font-semibold text-sidebar-foreground">Legend</p>
+              <p className="text-sm text-sidebar-foreground/70">Premium Member</p>
             </div>
           </div>
 
@@ -107,7 +103,7 @@ export default function DashboardPage() {
               <Button
                 key={item}
                 variant="ghost"
-                className="w-full justify-start gap-3 text-[#B8B8B8] hover:text-[#EDEDED] hover:bg-[#A442F1]/10 transition-colors duration-300"
+                className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors duration-300"
               >
                 {[<UserRound />, <Settings />, <CreditCard />, <Users />][index]}
                 {item}
@@ -119,29 +115,29 @@ export default function DashboardPage() {
         {/* Main Content */}
         <div className="ml-64 flex-1 p-6">
           {/* Action Plan Summary */}
-          <Card className="bg-[#1A1F2C]/50 border-[#A442F1]/20 mb-6 shadow-[0_0_30px_rgba(164,66,241,0.1)]">
+          <Card className="bg-card border-border mb-6">
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h2 className="text-xl font-bold mb-2 text-[#EDEDED]">This Week's Focus</h2>
-                  <p className="text-[#B8B8B8]">Stay consistent with your daily goals</p>
+                  <h2 className="text-xl font-bold mb-2">This Week's Focus</h2>
+                  <p className="text-muted-foreground">Stay consistent with your daily goals</p>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-[#A442F1] text-[#A442F1] hover:bg-[#A442F1]/10 transition-colors duration-300"
+                  className="border-primary text-primary hover:bg-primary/10 transition-colors duration-300"
                 >
                   Edit Goals
                 </Button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-[#1A1F2C]/80 border border-[#A442F1]/20">
-                  <div className="w-10 h-10 rounded-full bg-[#A442F1]/20 flex items-center justify-center">
-                    <Trophy className="w-5 h-5 text-[#D94FFF]" />
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-accent border border-border">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Trophy className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium text-[#EDEDED]">Exercise 4x</p>
-                    <p className="text-sm text-[#B8B8B8]">This week</p>
+                    <p className="font-medium">Exercise 4x</p>
+                    <p className="text-sm text-muted-foreground">This week</p>
                   </div>
                 </div>
               </div>
@@ -149,10 +145,10 @@ export default function DashboardPage() {
           </Card>
 
           {/* Smart Calendar */}
-          <Card className="bg-[#1A1F2C]/50 border-[#A442F1]/20 mb-6 shadow-[0_0_30px_rgba(164,66,241,0.1)]">
+          <Card className="bg-card border-border mb-6">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-[#EDEDED]">Today's Tasks</h3>
+                <h3 className="text-lg font-semibold">Today's Tasks</h3>
                 <div className="flex gap-2">
                   {weeklyGoals[0].tasks.map((task) => (
                     <Button
@@ -161,8 +157,8 @@ export default function DashboardPage() {
                       size="sm"
                       className={`
                         ${task.completed 
-                          ? "bg-[#A442F1] hover:bg-[#A442F1]/90" 
-                          : "border-[#A442F1] text-[#A442F1] hover:bg-[#A442F1]/10"
+                          ? "bg-primary hover:bg-primary/90" 
+                          : "border-primary text-primary hover:bg-primary/10"
                         }
                         transition-colors duration-300
                       `}
@@ -181,17 +177,17 @@ export default function DashboardPage() {
                     className={`
                       p-4 rounded-lg border transition-colors duration-300
                       ${i === 0 
-                        ? "bg-[#A442F1]/10 border-[#A442F1]" 
-                        : "bg-[#1A1F2C]/80 border-[#A442F1]/20"
+                        ? "bg-primary/10 border-primary" 
+                        : "bg-accent border-border"
                       }
                     `}
                   >
-                    <p className="text-sm font-medium mb-1 text-[#EDEDED]">
+                    <p className="text-sm font-medium mb-1">
                       {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i]}
                     </p>
                     <div className="space-y-2">
-                      <div className="w-full h-1 rounded bg-[#A442F1]/40" />
-                      <div className="w-2/3 h-1 rounded bg-[#A442F1]/40" />
+                      <div className="w-full h-1 rounded bg-primary/40" />
+                      <div className="w-2/3 h-1 rounded bg-primary/40" />
                     </div>
                   </div>
                 ))}
@@ -200,16 +196,16 @@ export default function DashboardPage() {
           </Card>
 
           {/* Notification Setup */}
-          <Card className="bg-[#1A1F2C]/50 border-[#A442F1]/20 shadow-[0_0_30px_rgba(164,66,241,0.1)]">
+          <Card className="bg-card border-border">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 text-[#EDEDED]">Notification Preferences</h3>
+              <h3 className="text-lg font-semibold mb-4">Notification Preferences</h3>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-[#1A1F2C]/80 border border-[#A442F1]/20">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-accent border border-border">
                   <div className="flex items-center gap-3">
-                    <Bell className="w-5 h-5 text-[#D94FFF]" />
+                    <Bell className="w-5 h-5 text-primary" />
                     <div>
-                      <p className="font-medium text-[#EDEDED]">Daily Reminders</p>
-                      <p className="text-sm text-[#B8B8B8]">Get notified about your tasks</p>
+                      <p className="font-medium">Daily Reminders</p>
+                      <p className="text-sm text-muted-foreground">Get notified about your tasks</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -221,8 +217,8 @@ export default function DashboardPage() {
                         onClick={() => setNotificationPreference(platform.toLowerCase())}
                         className={`
                           ${notificationPreference === platform.toLowerCase()
-                            ? "bg-[#D94FFF] hover:bg-[#D94FFF]/90"
-                            : "border-[#D94FFF] text-[#D94FFF] hover:bg-[#D94FFF]/10"
+                            ? "bg-primary hover:bg-primary/90"
+                            : "border-primary text-primary hover:bg-primary/10"
                           }
                           transition-colors duration-300
                         `}
@@ -246,7 +242,7 @@ export default function DashboardPage() {
       >
         <Button 
           size="lg"
-          className="w-12 h-12 rounded-full bg-[#D94FFF] hover:bg-[#D94FFF]/90 shadow-[0_0_20px_rgba(217,79,255,0.3)] transition-colors duration-300"
+          className="w-12 h-12 rounded-full bg-primary hover:bg-primary/90 shadow-lg transition-colors duration-300"
         >
           <MessageSquare className="w-5 h-5" />
         </Button>
