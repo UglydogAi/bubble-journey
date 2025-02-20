@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { 
@@ -53,7 +52,6 @@ export default function DashboardPage() {
               <Progress 
                 value={dailyProgress} 
                 className="h-2"
-                indicatorClassName="bg-primary transition-all duration-300"
               />
               <p className="text-sm mt-1 text-muted-foreground">
                 {dailyProgress}% Complete – Keep Going, Legend!
