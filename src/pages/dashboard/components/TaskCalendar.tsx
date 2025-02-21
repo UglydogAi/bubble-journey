@@ -16,10 +16,10 @@ interface TaskCalendarProps {
 
 export function TaskCalendar({ tasks }: TaskCalendarProps) {
   return (
-    <Card className="bg-card border-border mb-6">
+    <Card className="bg-card/50 backdrop-blur-xl border-border/50 mb-6 shadow-lg">
       <CardContent className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold">Today's Tasks</h3>
+          <h3 className="text-lg font-semibold text-foreground">Today's Tasks</h3>
           <div className="flex gap-2">
             {tasks.map((task) => (
               <Button
@@ -49,11 +49,11 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
                 p-4 rounded-lg border transition-colors duration-300
                 ${i === 0 
                   ? "bg-primary/10 border-primary" 
-                  : "bg-accent border-border"
+                  : "bg-accent/50 backdrop-blur-sm border-border/50"
                 }
               `}
             >
-              <p className="text-sm font-medium mb-1">
+              <p className="text-sm font-medium mb-1 text-foreground">
                 {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i]}
               </p>
               <div className="space-y-2">

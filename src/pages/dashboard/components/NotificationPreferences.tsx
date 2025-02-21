@@ -14,15 +14,15 @@ export function NotificationPreferences({
   onPreferenceChange 
 }: NotificationPreferencesProps) {
   return (
-    <Card className="bg-card border-border">
+    <Card className="bg-card/50 backdrop-blur-xl border-border/50 shadow-lg">
       <CardContent className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Notification Preferences</h3>
+        <h3 className="text-lg font-semibold mb-4 text-foreground">Notification Preferences</h3>
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-3 rounded-lg bg-accent border border-border">
+          <div className="flex items-center justify-between p-3 rounded-lg bg-accent/50 backdrop-blur-sm border border-border/50">
             <div className="flex items-center gap-3">
               <Bell className="w-5 h-5 text-primary" />
               <div>
-                <p className="font-medium">Daily Reminders</p>
+                <p className="font-medium text-foreground">Daily Reminders</p>
                 <p className="text-sm text-muted-foreground">Get notified about your tasks</p>
               </div>
             </div>
