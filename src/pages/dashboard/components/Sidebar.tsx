@@ -18,16 +18,16 @@ export function Sidebar({ isMobile = false }: SidebarProps) {
 
   if (isMobile) {
     return (
-      <div className="flex justify-around items-center p-2">
+      <div className="flex justify-around items-center p-2 backdrop-blur-xl">
         {navigationItems.map((item) => (
           <Button
             key={item.label}
             variant="ghost"
             size="lg"
-            className="flex-col gap-1 h-16 px-2"
+            className="flex-col gap-1 h-16 px-2 transition-colors duration-300"
           >
             {item.icon}
-            <span className="text-xs">{item.label}</span>
+            <span className="text-xs font-medium">{item.label}</span>
           </Button>
         ))}
       </div>
