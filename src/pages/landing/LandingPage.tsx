@@ -1,5 +1,5 @@
+
 import React, { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Skull, Zap, Brain, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -59,7 +59,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="flex flex-col items-center justify-center mb-10 relative z-10"
+            className="flex flex-col items-center justify-center mb-10 relative z-10 w-full max-w-lg px-4 sm:px-0"
           >
             <motion.div
               animate={{ 
@@ -72,11 +72,11 @@ export default function LandingPage() {
                 repeatType: "reverse" 
               }}
             >
-              <Phone size={100} className="text-[#D946EF] animate-pulse filter drop-shadow-[0_0_10px_#D946EF]" />
+              <Phone size={80} className="text-[#D946EF] animate-pulse filter drop-shadow-[0_0_10px_#D946EF]" />
             </motion.div>
             
             <motion.h2 
-              className="text-4xl font-bold mt-8 mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#D946EF] to-[#8B5CF6]"
+              className="text-2xl sm:text-4xl font-bold mt-8 mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-[#D946EF] to-[#8B5CF6]"
               animate={{ 
                 opacity: [0.5, 1, 0.5],
                 textShadow: [
@@ -93,21 +93,21 @@ export default function LandingPage() {
               INCOMING CALL: UGLYDOG
             </motion.h2>
             
-            <p className="text-xl text-gray-300 text-center max-w-2xl mt-4 leading-relaxed">
+            <p className="text-base sm:text-xl text-gray-300 text-center max-w-2xl mt-4 leading-relaxed px-4">
               "Most people ignore the call. They settle. They hesitate. But you're here for a reason. 
               If you answer, there is no going back. Are you ready to unlock the superhuman in you?"
             </p>
 
-            <div className="flex gap-6 mt-12">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-8 sm:mt-12 w-full sm:w-auto">
               <Button 
                 variant="ghost"
-                className="text-gray-400 hover:text-gray-200 transition-all"
+                className="text-gray-400 hover:text-gray-200 transition-all order-2 sm:order-1"
                 onClick={() => setDeclining(true)}
               >
                 Decline Call
               </Button>
               <Button 
-                className="px-8 py-6 bg-gradient-to-r from-[#D946EF] to-[#8B5CF6] hover:from-[#8B5CF6] hover:to-[#D946EF] text-white text-lg font-bold rounded-lg shadow-lg transition-all border-none"
+                className="px-6 py-4 sm:px-8 sm:py-6 bg-gradient-to-r from-[#D946EF] to-[#8B5CF6] hover:from-[#8B5CF6] hover:to-[#D946EF] text-white text-lg font-bold rounded-lg shadow-lg transition-all border-none order-1 sm:order-2"
                 onClick={handleAnswerCall}
               >
                 Answer The Call
@@ -119,7 +119,7 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-2xl text-gray-400 text-center"
+            className="text-xl sm:text-2xl text-gray-400 text-center px-4"
           >
             "Go back to mediocrity."
           </motion.div>
@@ -128,7 +128,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-2xl text-[#D946EF] text-center"
+            className="text-xl sm:text-2xl text-[#D946EF] text-center px-4"
           >
             Entering UGLYDOG's world...
           </motion.div>

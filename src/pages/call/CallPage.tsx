@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mic, MicOff, PhoneOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -65,7 +64,6 @@ export default function CallPage() {
     }
   };
 
-  // Test message
   useEffect(() => {
     playResponse("Hello! I'm your AI assistant. I'm now using Play.ht to speak. Can you hear me clearly?");
   }, []);
@@ -79,10 +77,10 @@ export default function CallPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col items-center justify-center relative z-10"
+        className="flex flex-col items-center justify-center relative z-10 w-full max-w-md px-4"
       >
         {/* UGLYDOG Profile Section */}
-        <div className="w-32 h-32 rounded-full overflow-hidden mb-4 relative">
+        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden mb-4 relative">
           <img 
             src="/lovable-uploads/ce8e10ec-31c6-4d22-8be9-25e4d50d8206.png"
             alt="UGLYDOG Mascot"
@@ -103,7 +101,7 @@ export default function CallPage() {
         </div>
 
         <motion.h2 
-          className="text-3xl font-bold mt-4 mb-2"
+          className="text-2xl sm:text-3xl font-bold mt-4 mb-2"
           animate={{ 
             opacity: [0.5, 1, 0.5],
             textShadow: [
@@ -120,7 +118,7 @@ export default function CallPage() {
           UGLYDOG
         </motion.h2>
 
-        <p className="text-lg text-gray-300 mb-12">
+        <p className="text-base sm:text-lg text-gray-300 mb-8 sm:mb-12">
           {isProcessing ? "Speaking..." : "Listening..."}
         </p>
 
@@ -128,28 +126,28 @@ export default function CallPage() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex gap-8"
+            className="flex gap-6 sm:gap-8"
           >
             <Button
               variant="outline"
               size="lg"
-              className="rounded-full w-16 h-16 bg-gray-800/50 border-gray-600 hover:bg-gray-700/50"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-800/50 border-gray-600 hover:bg-gray-700/50"
               onClick={() => setMuted(!muted)}
             >
               {muted ? (
-                <MicOff className="w-6 h-6 text-gray-300" />
+                <MicOff className="w-5 h-5 sm:w-6 sm:h-6 text-gray-300" />
               ) : (
-                <Mic className="w-6 h-6 text-gray-300" />
+                <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-gray-300" />
               )}
             </Button>
 
             <Button
               variant="outline"
               size="lg"
-              className="rounded-full w-16 h-16 bg-red-500/10 border-red-500 hover:bg-red-500/20"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-500/10 border-red-500 hover:bg-red-500/20"
               onClick={handleEndCall}
             >
-              <PhoneOff className="w-6 h-6 text-red-500" />
+              <PhoneOff className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
             </Button>
           </motion.div>
         )}

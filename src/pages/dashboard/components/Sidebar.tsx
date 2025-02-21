@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export function Sidebar() {
   return (
-    <div className="w-64 fixed left-0 top-16 bottom-0 bg-sidebar-background/50 backdrop-blur-xl border-r border-sidebar-border">
+    <div className="w-64 fixed left-0 top-16 bottom-0 bg-sidebar-background/50 backdrop-blur-xl border-r border-sidebar-border z-50">
       <div className="flex items-center gap-3 m-4 p-3 rounded-lg bg-sidebar-accent border border-sidebar-border">
         <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-sidebar-ring/30">
           <img 
