@@ -5,92 +5,97 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* Midnight black background */
+    --background: 240 35% 8%;
+    --foreground: 0 0% 91%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    /* Dark card backgrounds with slight transparency */
+    --card: 240 35% 8%;
+    --card-foreground: 0 0% 91%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    /* Popover styling */
+    --popover: 240 35% 8%;
+    --popover-foreground: 0 0% 91%;
 
     /* Neon purple primary color */
-    --primary: 267 100% 61%;
+    --primary: 277 74% 53%;
     --primary-foreground: 0 0% 100%;
 
-    /* Dark purple secondary */
-    --secondary: 267 32% 17%;
-    --secondary-foreground: 0 0% 98%;
+    /* Dark indigo secondary */
+    --secondary: 240 41% 17%;
+    --secondary-foreground: 0 0% 91%;
 
     /* Muted colors with purple tint */
-    --muted: 267 32% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 240 41% 17%;
+    --muted-foreground: 215 20% 75%;
 
-    /* Accent colors with purple glow */
-    --accent: 267 32% 17%;
-    --accent-foreground: 0 0% 98%;
+    /* Accent colors with neon glow */
+    --accent: 277 74% 53%;
+    --accent-foreground: 0 0% 91%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
+    /* Hot lava red for destructive actions */
+    --destructive: 3 91% 63%;
+    --destructive-foreground: 0 0% 91%;
 
     /* Borders and inputs with neon effect */
-    --border: 267 32% 17%;
-    --input: 267 32% 17%;
-    --ring: 267 76% 48%;
+    --border: 240 41% 17%;
+    --input: 240 41% 17%;
+    --ring: 277 74% 53%;
 
     --radius: 0.5rem;
 
     /* Sidebar specific colors */
-    --sidebar-background: 240 10% 3.9%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 267 100% 61%;
+    --sidebar-background: 240 35% 8%;
+    --sidebar-foreground: 0 0% 91%;
+    --sidebar-primary: 277 74% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 267 32% 17%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 267 32% 17%;
-    --sidebar-ring: 267 100% 61%;
+    --sidebar-accent: 240 41% 17%;
+    --sidebar-accent-foreground: 0 0% 91%;
+    --sidebar-border: 240 41% 17%;
+    --sidebar-ring: 277 74% 53%;
   }
 
   .light {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* Light theme maintains cyberpunk feel with lighter base */
+    --background: 0 0% 98%;
+    --foreground: 240 35% 8%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card: 0 0% 98%;
+    --card-foreground: 240 35% 8%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover: 0 0% 98%;
+    --popover-foreground: 240 35% 8%;
 
-    /* Light mode purple primary */
-    --primary: 267 85% 61%;
+    /* Vibrant purple in light mode */
+    --primary: 277 74% 53%;
     --primary-foreground: 0 0% 100%;
 
-    /* Light secondary */
-    --secondary: 267 10% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    /* Light secondary with purple tint */
+    --secondary: 277 30% 95%;
+    --secondary-foreground: 240 35% 8%;
 
     /* Muted colors */
-    --muted: 267 10% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 277 30% 95%;
+    --muted-foreground: 240 25% 46%;
 
-    /* Accent colors */
-    --accent: 267 10% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    /* Light accent colors */
+    --accent: 277 30% 95%;
+    --accent-foreground: 240 35% 8%;
 
-    /* Light mode specific colors */
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 267 85% 61%;
+    /* Light mode borders and inputs */
+    --border: 240 25% 90%;
+    --input: 240 25% 90%;
+    --ring: 277 74% 53%;
 
     /* Sidebar light mode colors */
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 10% 3.9%;
-    --sidebar-primary: 267 85% 61%;
+    --sidebar-foreground: 240 35% 8%;
+    --sidebar-primary: 277 74% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 267 10% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 240 5.9% 90%;
-    --sidebar-ring: 267 85% 61%;
+    --sidebar-accent: 277 30% 95%;
+    --sidebar-accent-foreground: 240 35% 8%;
+    --sidebar-border: 240 25% 90%;
+    --sidebar-ring: 277 74% 53%;
   }
 }
 
