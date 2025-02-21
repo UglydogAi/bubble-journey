@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { MessageSquare, Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TopProgressBar } from "./components/TopProgressBar";
 import { Sidebar } from "./components/Sidebar";
@@ -21,6 +21,7 @@ export default function DashboardPage() {
   const [ogPoints] = useState(1250);
   const [notificationPreference, setNotificationPreference] = useState("whatsapp");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Close sidebar by default on mobile
   useEffect(() => {
@@ -46,44 +47,42 @@ export default function DashboardPage() {
         ogPoints={ogPoints} 
       />
 
-      <div className="pt-16 flex relative min-h-[calc(100vh-4rem)]">
-        {/* Mobile menu button - improved positioning and visibility */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="fixed top-20 left-4 z-50 md:hidden hover:bg-accent/50 transition-colors duration-300"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        >
-          <Menu className="h-6 w-6 text-foreground" />
-        </Button>
+      <div className="pt-16 flex relative min-h-[calc(100vh-4rem)] overflow-hidden">
+        {/* Full-screen mobile menu overlay */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 20 }}
+                className="w-4/5 h-full absolute right-0 bg-background border-l border-border"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="p-4 space-y-4">
+                  <h2 className="text-lg font-semibold mb-4">Menu</h2>
+                  <Sidebar />
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Improved overlay for mobile */}
-        <div 
-          className={`
-            fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-all duration-300 md:hidden
-            ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-          `} 
-          onClick={() => setIsSidebarOpen(false)} 
-        />
-
-        {/* Improved sidebar transition */}
-        <div 
-          className={`
-            fixed md:static h-[calc(100vh-4rem)] z-50 transition-transform duration-300 ease-in-out
-            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-            md:transform-none
-          `}
-        >
+        {/* Desktop Sidebar */}
+        <div className="hidden md:block">
           <Sidebar />
         </div>
 
-        {/* Main content with improved spacing and transitions */}
-        <div 
-          className={`
-            flex-1 p-4 sm:p-6 transition-all duration-300 overflow-x-hidden
-            ${isSidebarOpen ? 'md:ml-64' : 'ml-0'}
-          `}
-        >
+        {/* Main content */}
+        <div className="flex-1 px-4 pb-20 md:pb-6 overflow-y-auto space-y-6">
           <div className="max-w-5xl mx-auto space-y-6">
             <WeeklyFocus />
             <TaskCalendar tasks={tasks} />
@@ -93,10 +92,21 @@ export default function DashboardPage() {
             />
           </div>
         </div>
+
+        {/* Mobile Bottom Navigation */}
+        <motion.nav 
+          className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border md:hidden z-40"
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          transition={{ type: "spring", damping: 20 }}
+        >
+          <Sidebar isMobile={true} />
+        </motion.nav>
       </div>
 
+      {/* Floating action button */}
       <motion.div 
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-20 right-6 z-50 md:bottom-6"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
