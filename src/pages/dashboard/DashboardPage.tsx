@@ -24,9 +24,13 @@ export default function DashboardPage() {
 
   // Close sidebar by default on mobile
   useEffect(() => {
-    if (window.innerWidth < 768) {
-      setIsSidebarOpen(false);
-    }
+    const handleResize = () => {
+      setIsSidebarOpen(window.innerWidth >= 768);
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const tasks = [
@@ -42,44 +46,57 @@ export default function DashboardPage() {
         ogPoints={ogPoints} 
       />
 
-      <div className="pt-16 flex relative">
-        {/* Mobile menu button */}
+      <div className="pt-16 flex relative min-h-[calc(100vh-4rem)]">
+        {/* Mobile menu button - improved positioning and visibility */}
         <Button
           variant="ghost"
           size="icon"
-          className="fixed top-[4.5rem] left-4 z-50 md:hidden"
+          className="fixed top-20 left-4 z-50 md:hidden hover:bg-accent/50 transition-colors duration-300"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-6 w-6 text-foreground" />
         </Button>
 
-        <div className={`
-          fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 md:hidden
-          ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-        `} onClick={() => setIsSidebarOpen(false)} />
+        {/* Improved overlay for mobile */}
+        <div 
+          className={`
+            fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-all duration-300 md:hidden
+            ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+          `} 
+          onClick={() => setIsSidebarOpen(false)} 
+        />
 
-        <div className={`
-          transform transition-transform duration-300 md:transform-none
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}>
+        {/* Improved sidebar transition */}
+        <div 
+          className={`
+            fixed md:static h-[calc(100vh-4rem)] z-50 transition-transform duration-300 ease-in-out
+            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            md:transform-none
+          `}
+        >
           <Sidebar />
         </div>
 
-        <div className={`
-          flex-1 p-4 sm:p-6 transition-all duration-300
-          ${isSidebarOpen ? 'md:ml-64' : 'ml-0'}
-        `}>
-          <WeeklyFocus />
-          <TaskCalendar tasks={tasks} />
-          <NotificationPreferences
-            preference={notificationPreference}
-            onPreferenceChange={setNotificationPreference}
-          />
+        {/* Main content with improved spacing and transitions */}
+        <div 
+          className={`
+            flex-1 p-4 sm:p-6 transition-all duration-300 overflow-x-hidden
+            ${isSidebarOpen ? 'md:ml-64' : 'ml-0'}
+          `}
+        >
+          <div className="max-w-5xl mx-auto space-y-6">
+            <WeeklyFocus />
+            <TaskCalendar tasks={tasks} />
+            <NotificationPreferences
+              preference={notificationPreference}
+              onPreferenceChange={setNotificationPreference}
+            />
+          </div>
         </div>
       </div>
 
       <motion.div 
-        className="fixed bottom-6 right-6"
+        className="fixed bottom-6 right-6 z-50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
