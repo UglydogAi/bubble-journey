@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { Sun, Moon, Coins } from "lucide-react";
+import { Sun, Moon, Coins, Dog } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Toggle } from "@/components/ui/toggle";
 import { useTheme } from "next-themes";
@@ -14,52 +14,62 @@ interface TopProgressBarProps {
 export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps) {
   const { theme, setTheme } = useTheme();
   const [showMessage, setShowMessage] = useState(false);
+  const [prevProgress, setPrevProgress] = useState(dailyProgress);
 
-  // Milestone messages from UGLYDOG
+  // Milestone messages from UGLYDOG with emojis
   const getMilestoneMessage = (progress: number) => {
-    if (progress === 100) return "WOOF! You're Amazing! 🎉";
-    if (progress >= 75) return "Almost There, Champ! 🐾";
-    if (progress >= 50) return "Halfway, Keep Going! 🦴";
-    if (progress >= 25) return "Great Start, Legend! 🐕";
-    return "Let's Get Started! 🐾";
+    if (progress === 100) return "YOU'RE ABSOLUTELY PAWSOME! 🌟";
+    if (progress >= 75) return "ALMOST THERE, KEEP FETCHING! 🦴";
+    if (progress >= 50) return "HALFWAY TO GREATNESS! 🐾";
+    if (progress >= 25) return "GREAT START, LEGEND! 🐕";
+    return "LET'S BEGIN OUR JOURNEY! 🐾";
   };
 
-  // Trigger confetti at 100%
+  // Trigger confetti and show message when hitting milestones
   useEffect(() => {
-    if (dailyProgress === 100) {
-      const colors = ['#8B5CF6', '#FF7043'];
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        colors,
-        origin: { y: 0.3 }
-      });
-    }
-  }, [dailyProgress]);
+    if (dailyProgress !== prevProgress) {
+      // Check for milestone achievements
+      const milestones = [25, 50, 75, 100];
+      const hitMilestone = milestones.some(
+        milestone => 
+          dailyProgress >= milestone && 
+          prevProgress < milestone
+      );
 
-  // Show message with animation
-  useEffect(() => {
-    setShowMessage(true);
-    const timer = setTimeout(() => setShowMessage(false), 3000);
-    return () => clearTimeout(timer);
-  }, [dailyProgress]);
+      if (hitMilestone) {
+        setShowMessage(true);
+        // Trigger confetti for milestones
+        confetti({
+          particleCount: dailyProgress === 100 ? 150 : 50,
+          spread: 70,
+          colors: ['#8B5CF6', '#FF7043'],
+          origin: { y: 0.3 }
+        });
+
+        // Hide message after animation
+        setTimeout(() => setShowMessage(false), 3000);
+      }
+
+      setPrevProgress(dailyProgress);
+    }
+  }, [dailyProgress, prevProgress]);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
-      <div className="container mx-auto px-4 py-2">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
-          <div className="w-full sm:flex-1 sm:max-w-2xl relative">
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="w-full sm:flex-1 relative">
             {/* Progress Bar Container */}
-            <div className="relative">
+            <div 
+              className="relative h-6 sm:h-8 rounded-full overflow-visible
+                shadow-[0_0_20px_rgba(138,43,226,0.2)]"
+            >
               <Progress 
                 value={dailyProgress} 
-                className="h-3 sm:h-4 relative overflow-visible
-                  before:absolute before:inset-0 before:bg-gradient-to-r 
-                  before:from-primary/20 before:to-orange-500/20 
-                  before:animate-pulse before:rounded-full"
+                className="h-full relative overflow-visible"
               />
               
-              {/* UGLYDOG Character - Moves with progress */}
+              {/* UGLYDOG Character */}
               <div 
                 className="absolute top-1/2 -translate-y-1/2"
                 style={{ 
@@ -70,46 +80,64 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                 <div className="relative">
                   {/* Speech Bubble */}
                   {showMessage && (
-                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-primary/90 text-white text-xs px-2 py-1 rounded-lg whitespace-nowrap animate-fade-in">
+                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
+                      bg-primary/90 text-white text-xs px-3 py-1.5 rounded-lg 
+                      whitespace-nowrap animate-fade-in shadow-lg
+                      before:absolute before:top-full before:left-1/2 
+                      before:-translate-x-1/2 before:border-8 
+                      before:border-transparent before:border-t-primary/90">
                       Woof! 🐾
                     </div>
                   )}
-                  {/* Dog Icon */}
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded-full shadow-glow flex items-center justify-center
-                    animate-bounce transition-transform duration-300">
-                    🐕
+                  {/* Dog Icon Container */}
+                  <div className={cn(
+                    "w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full",
+                    "shadow-[0_0_15px_rgba(138,43,226,0.6)]",
+                    "flex items-center justify-center",
+                    "transition-all duration-300",
+                    "animate-bounce"
+                  )}>
+                    <Dog 
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-white 
+                        transform -scale-x-100" 
+                      strokeWidth={2.5}
+                    />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Progress Text and Message */}
-            <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm">
-              <p className="font-semibold text-center sm:text-left">
+            <div className="mt-3 flex flex-col sm:flex-row sm:items-center 
+              sm:justify-between text-sm gap-2">
+              <p className="font-bold text-center sm:text-left text-lg">
                 {dailyProgress}% Complete
               </p>
-              <p className="text-orange-400 animate-fade-in text-center sm:text-left">
+              <p className="text-orange-400 font-semibold animate-fade-in 
+                text-center sm:text-left">
                 {getMilestoneMessage(dailyProgress)}
               </p>
             </div>
           </div>
 
           {/* Theme Toggle and Points */}
-          <div className="flex items-center gap-4 mt-2 sm:mt-0">
+          <div className="flex items-center gap-4">
             <Toggle
               pressed={theme === "dark"}
               onPressedChange={(pressed) => setTheme(pressed ? "dark" : "light")}
-              className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors duration-300"
+              className="p-2 rounded-full bg-muted hover:bg-muted/80 
+                transition-colors duration-300"
             >
               {theme === "dark" ? (
-                <Sun className="w-5 h-5 text-primary" />
-              ) : (
                 <Moon className="w-5 h-5 text-primary" />
+              ) : (
+                <Sun className="w-5 h-5 text-primary" />
               )}
             </Toggle>
-            <div className="flex items-center gap-2 bg-muted/30 px-3 py-1.5 rounded-full">
+            <div className="flex items-center gap-2 bg-primary/10 px-4 
+              py-2 rounded-full shadow-lg">
               <Coins className="w-5 h-5 text-primary animate-pulse" />
-              <span className="font-bold">{ogPoints}</span>
+              <span className="font-bold text-lg">{ogPoints}</span>
             </div>
           </div>
         </div>

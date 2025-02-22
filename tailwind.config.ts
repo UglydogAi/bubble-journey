@@ -70,16 +70,23 @@ export default {
         shimmer: {
           "100%": { transform: "translateX(100%)" },
         },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(-10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        },
+        "bounce": {
+          "0%, 100%": { transform: "translateY(-5%)" },
+          "50%": { transform: "translateY(0)" }
+        }
       },
       animation: {
         float: "float 6s ease-in-out infinite",
         "float-reverse": "float-reverse 7s ease-in-out infinite",
         "rotate-slow": "rotate-slow 8s linear infinite",
         shimmer: "shimmer 2s linear infinite",
-      },
-      backgroundImage: {
-        "auth-gradient": "linear-gradient(to bottom right, #1a1a1a, #2d1f3f)",
-      },
+        "fade-in": "fade-in 0.3s ease-out",
+        bounce: "bounce 2s ease-in-out infinite"
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
