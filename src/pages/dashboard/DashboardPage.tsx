@@ -7,7 +7,7 @@ import { TopProgressBar } from "./components/TopProgressBar";
 import { Sidebar } from "./components/Sidebar";
 import { WeeklyFocus } from "./components/WeeklyFocus";
 import { TaskCalendar } from "./components/TaskCalendar";
-import { NotificationPreferences } from "./components/NotificationPreferences";
+import { SettingsView } from "./components/SettingsView";
 import { useEffect } from "react";
 
 interface Task {
@@ -22,6 +22,7 @@ export default function DashboardPage() {
   const [notificationPreference, setNotificationPreference] = useState("whatsapp");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeView, setActiveView] = useState("profile");
 
   // Close sidebar by default on mobile
   useEffect(() => {
@@ -39,6 +40,26 @@ export default function DashboardPage() {
     { id: "2", title: "10-minute meditation", completed: true },
     { id: "3", title: "Read 5 pages", completed: false }
   ];
+
+  const renderActiveView = () => {
+    switch (activeView) {
+      case "settings":
+        return (
+          <SettingsView 
+            notificationPreference={notificationPreference}
+            onPreferenceChange={setNotificationPreference}
+          />
+        );
+      case "profile":
+      default:
+        return (
+          <div className="max-w-5xl mx-auto space-y-6">
+            <WeeklyFocus />
+            <TaskCalendar tasks={tasks} />
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -69,7 +90,10 @@ export default function DashboardPage() {
               >
                 <div className="p-4 space-y-4">
                   <h2 className="text-lg font-semibold mb-4">Menu</h2>
-                  <Sidebar />
+                  <Sidebar 
+                    activeView={activeView}
+                    onNavigate={setActiveView}
+                  />
                 </div>
               </motion.div>
             </motion.div>
@@ -78,19 +102,15 @@ export default function DashboardPage() {
 
         {/* Desktop Sidebar */}
         <div className="hidden md:block">
-          <Sidebar />
+          <Sidebar 
+            activeView={activeView}
+            onNavigate={setActiveView}
+          />
         </div>
 
         {/* Main content */}
         <div className="flex-1 px-4 pb-20 md:pb-6 overflow-y-auto space-y-6">
-          <div className="max-w-5xl mx-auto space-y-6">
-            <WeeklyFocus />
-            <TaskCalendar tasks={tasks} />
-            <NotificationPreferences
-              preference={notificationPreference}
-              onPreferenceChange={setNotificationPreference}
-            />
-          </div>
+          {renderActiveView()}
         </div>
 
         {/* Mobile Bottom Navigation */}
@@ -100,7 +120,11 @@ export default function DashboardPage() {
           animate={{ y: 0 }}
           transition={{ type: "spring", damping: 20 }}
         >
-          <Sidebar isMobile={true} />
+          <Sidebar 
+            isMobile={true}
+            activeView={activeView}
+            onNavigate={setActiveView}
+          />
         </motion.nav>
       </div>
 
