@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Sun, Moon, Coins, Dog } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -58,9 +57,9 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
       <div className="container mx-auto px-4 py-3">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="w-full sm:flex-1 relative">
-            {/* Progress Bar Container */}
+        <div className="flex items-center justify-between gap-4">
+          {/* Progress Bar Container */}
+          <div className="flex-1 max-w-2xl">
             <div 
               className="relative h-4 sm:h-5 rounded-full overflow-visible
                 shadow-[0_0_20px_rgba(138,43,226,0.2)]"
@@ -109,13 +108,11 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
             </div>
 
             {/* Progress Text and Message */}
-            <div className="mt-3 flex flex-col sm:flex-row sm:items-center 
-              sm:justify-between text-sm gap-2">
-              <p className="font-bold text-center sm:text-left text-lg">
+            <div className="mt-2 flex items-center justify-between text-sm">
+              <p className="font-bold text-base">
                 {dailyProgress}% Complete
               </p>
-              <p className="text-orange-400 font-semibold animate-fade-in 
-                text-center sm:text-left">
+              <p className="text-orange-400 font-semibold animate-fade-in">
                 {getMilestoneMessage(dailyProgress)}
               </p>
             </div>
