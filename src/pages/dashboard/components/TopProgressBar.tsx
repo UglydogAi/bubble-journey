@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Toggle } from "@/components/ui/toggle";
 import { useTheme } from "next-themes";
 import confetti from "canvas-confetti";
+import { cn } from "@/lib/utils";
 
 interface TopProgressBarProps {
   dailyProgress: number;
