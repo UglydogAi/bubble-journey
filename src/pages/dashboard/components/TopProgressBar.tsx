@@ -62,7 +62,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           <div className="w-full sm:flex-1 relative">
             {/* Progress Bar Container */}
             <div 
-              className="relative h-6 sm:h-8 rounded-full overflow-visible
+              className="relative h-4 sm:h-5 rounded-full overflow-visible
                 shadow-[0_0_20px_rgba(138,43,226,0.2)]"
             >
               <Progress 
@@ -92,14 +92,14 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                   )}
                   {/* Dog Icon Container */}
                   <div className={cn(
-                    "w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full",
+                    "w-7 h-7 sm:w-8 sm:h-8 bg-primary rounded-full",
                     "shadow-[0_0_15px_rgba(138,43,226,0.6)]",
                     "flex items-center justify-center",
                     "transition-all duration-300",
                     "animate-bounce"
                   )}>
                     <Dog 
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-white 
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-white 
                         transform -scale-x-100" 
                       strokeWidth={2.5}
                     />
