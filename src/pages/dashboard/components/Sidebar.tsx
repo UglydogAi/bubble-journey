@@ -28,7 +28,7 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
             size="lg"
             className={cn(
               "flex-col gap-1 h-16 px-2 transition-colors duration-300",
-              activeView === item.view && "bg-accent text-accent-foreground"
+              activeView === item.view && "bg-[#8A2BE2] text-white"
             )}
             onClick={() => onNavigate(item.view)}
           >
@@ -43,16 +43,16 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
   return (
     <div className="h-full bg-sidebar-background/50 backdrop-blur-xl 
       border-r border-sidebar-border">
-      <nav className="space-y-2 p-4">
+      <nav className="space-y-1.5 p-2.5">
         {navigationItems.map((item) => (
           <Button
             key={item.label}
             variant="ghost"
             className={cn(
-              "w-full justify-start gap-3 text-sidebar-foreground/70 h-12",
-              "hover:text-sidebar-foreground hover:bg-sidebar-accent",
-              "transition-colors duration-300",
-              activeView === item.view && "bg-accent text-accent-foreground"
+              "w-full justify-start gap-3 text-sidebar-foreground/70",
+              "hover:text-white hover:bg-[#8A2BE2]/90",
+              "transition-colors duration-300 px-2.5 py-2.5",
+              activeView === item.view && "bg-[#8A2BE2] text-white"
             )}
             onClick={() => onNavigate(item.view)}
           >
@@ -64,3 +64,4 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
     </div>
   );
 }
+

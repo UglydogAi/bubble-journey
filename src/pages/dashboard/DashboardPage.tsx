@@ -65,7 +65,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <div className="flex min-h-screen">
         {/* Left Sidebar - Navigation Only */}
-        <div className="hidden md:block w-64 min-h-screen">
+        <div className="hidden md:block w-[15%] min-h-screen">
           <Sidebar 
             activeView={activeView}
             onNavigate={setActiveView}
@@ -73,7 +73,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Right Panel with Header and Content */}
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 w-[85%] flex flex-col min-h-screen">
           {/* Top Header with Profile and Progress */}
           <div className="sticky top-0 z-50">
             <TopProgressBar 
@@ -150,3 +150,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
