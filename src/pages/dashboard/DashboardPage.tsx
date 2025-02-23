@@ -63,13 +63,32 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <TopProgressBar 
-        dailyProgress={dailyProgress} 
-        ogPoints={ogPoints} 
-      />
+      <div className="flex min-h-screen">
+        {/* Left Sidebar - Navigation Only */}
+        <div className="hidden md:block w-64 min-h-screen">
+          <Sidebar 
+            activeView={activeView}
+            onNavigate={setActiveView}
+          />
+        </div>
 
-      <div className="pt-16 flex relative min-h-[calc(100vh-4rem)] overflow-hidden">
-        {/* Full-screen mobile menu overlay */}
+        {/* Right Panel with Header and Content */}
+        <div className="flex-1 flex flex-col min-h-screen">
+          {/* Top Header with Profile and Progress */}
+          <div className="sticky top-0 z-50">
+            <TopProgressBar 
+              dailyProgress={dailyProgress} 
+              ogPoints={ogPoints} 
+            />
+          </div>
+
+          {/* Main Content Area */}
+          <div className="flex-1 px-4 py-6 overflow-y-auto">
+            {renderActiveView()}
+          </div>
+        </div>
+
+        {/* Mobile Menu Overlay */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
@@ -100,19 +119,6 @@ export default function DashboardPage() {
           )}
         </AnimatePresence>
 
-        {/* Desktop Sidebar */}
-        <div className="hidden md:block">
-          <Sidebar 
-            activeView={activeView}
-            onNavigate={setActiveView}
-          />
-        </div>
-
-        {/* Main content */}
-        <div className="flex-1 px-4 pb-20 md:pb-6 overflow-y-auto space-y-6">
-          {renderActiveView()}
-        </div>
-
         {/* Mobile Bottom Navigation */}
         <motion.nav 
           className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border md:hidden z-40"
@@ -126,21 +132,21 @@ export default function DashboardPage() {
             onNavigate={setActiveView}
           />
         </motion.nav>
-      </div>
 
-      {/* Floating action button */}
-      <motion.div 
-        className="fixed bottom-20 right-6 z-50 md:bottom-6"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        <Button 
-          size="lg"
-          className="w-12 h-12 rounded-full bg-primary hover:bg-primary/90 shadow-lg transition-colors duration-300"
+        {/* Floating Action Button */}
+        <motion.div 
+          className="fixed bottom-20 right-6 z-50 md:bottom-6"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
-          <MessageSquare className="w-5 h-5" />
-        </Button>
-      </motion.div>
+          <Button 
+            size="lg"
+            className="w-12 h-12 rounded-full bg-primary hover:bg-primary/90 shadow-lg transition-colors duration-300"
+          >
+            <MessageSquare className="w-5 h-5" />
+          </Button>
+        </motion.div>
+      </div>
     </div>
   );
 }

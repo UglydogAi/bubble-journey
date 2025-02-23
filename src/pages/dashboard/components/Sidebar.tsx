@@ -41,8 +41,8 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
   }
 
   return (
-    <div className="w-64 md:w-72 h-full bg-sidebar-background/50 backdrop-blur-xl 
-      border-r border-sidebar-border overflow-y-auto">
+    <div className="h-full bg-sidebar-background/50 backdrop-blur-xl 
+      border-r border-sidebar-border">
       <nav className="space-y-2 p-4">
         {navigationItems.map((item) => (
           <Button
