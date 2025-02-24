@@ -51,12 +51,14 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   }, [dailyProgress, prevProgress]);
 
   return (
-    <div className="fixed top-0 right-0 w-[85%] z-50">
+    <div className="fixed top-0 right-0 w-full md:w-[82%] z-50">
       <div className="container mx-auto">
-        <div className="h-16 flex items-center justify-between px-6 py-3 bg-background/80 backdrop-blur-xl border-b border-border">
+        <div className="h-[4.5rem] flex items-center justify-between px-4 md:px-8 py-4 
+          bg-background/95 backdrop-blur-xl border-b border-border/30">
           {/* Left Section: Profile Picture */}
           <div className="shrink-0">
-            <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/20">
+            <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-primary/20
+              hover:ring-primary/40 transition-all duration-300">
               <img 
                 src="/lovable-uploads/ce8e10ec-31c6-4d22-8be9-25e4d50d8206.png"
                 alt="Profile"
@@ -67,13 +69,13 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           </div>
 
           {/* Center Section: Progress Bar */}
-          <div className="flex-1 max-w-xl ml-20 mr-6">
-            <div className="space-y-0.5">
-              <div className="flex items-center justify-between text-xs">
-                <p className="font-medium text-foreground/80">
+          <div className="flex-1 max-w-xl mx-8">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-sm">
+                <p className="font-medium text-foreground/90">
                   {dailyProgress}% Complete
                 </p>
-                <p className="text-orange-400/90 font-medium animate-fade-in hidden md:block">
+                <p className="text-orange-400 font-medium animate-fade-in hidden md:block">
                   {getMilestoneMessage(dailyProgress)}
                 </p>
               </div>
@@ -95,23 +97,23 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                   <div className="relative">
                     {showMessage && (
                       <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
-                        bg-primary/80 text-white text-xs px-2 py-1 rounded
+                        bg-primary/90 text-white text-xs px-3 py-1.5 rounded-full
                         whitespace-nowrap animate-fade-in
                         before:absolute before:top-full before:left-1/2 
                         before:-translate-x-1/2 before:border-4 
-                        before:border-transparent before:border-t-primary/80">
+                        before:border-transparent before:border-t-primary/90">
                         Woof! 🐾
                       </div>
                     )}
                     <div className={cn(
-                      "w-5 h-5 bg-primary rounded-full",
-                      "shadow-[0_0_10px_rgba(138,43,226,0.4)]",
+                      "w-6 h-6 bg-primary rounded-full",
+                      "shadow-[0_0_15px_rgba(138,43,226,0.5)]",
                       "flex items-center justify-center",
                       "transition-all duration-300",
                       "animate-bounce"
                     )}>
                       <Dog 
-                        className="w-3 h-3 text-white transform -scale-x-100" 
+                        className="w-3.5 h-3.5 text-white transform -scale-x-100" 
                         strokeWidth={2.5}
                       />
                     </div>
@@ -124,8 +126,9 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           {/* Right Section: Points and Theme Toggle */}
           <div className="flex items-center gap-4 shrink-0">
             {/* Points Display */}
-            <div className="flex items-center gap-1.5 bg-primary/5 px-3 
-              py-1.5 rounded-full border border-primary/10">
+            <div className="flex items-center gap-2 bg-primary/10 px-4 
+              py-2 rounded-full border border-primary/20
+              shadow-sm shadow-primary/10">
               <Coins className="w-4 h-4 text-primary animate-pulse" />
               <span className="font-medium text-sm">{ogPoints}</span>
             </div>
@@ -134,13 +137,13 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
             <Toggle
               pressed={theme === "dark"}
               onPressedChange={(pressed) => setTheme(pressed ? "dark" : "light")}
-              className="w-8 h-8 rounded-full bg-muted/50 hover:bg-muted/80 
+              className="w-10 h-10 rounded-full bg-muted/50 hover:bg-muted/80 
                 transition-colors duration-300"
             >
               {theme === "dark" ? (
-                <Moon className="w-4 h-4 text-primary" />
+                <Moon className="w-5 h-5 text-primary" />
               ) : (
-                <Sun className="w-4 h-4 text-primary" />
+                <Sun className="w-5 h-5 text-primary" />
               )}
             </Toggle>
           </div>

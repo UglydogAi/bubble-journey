@@ -53,7 +53,7 @@ export default function DashboardPage() {
       case "profile":
       default:
         return (
-          <div className="max-w-5xl mx-auto space-y-6 pt-20">
+          <div className="max-w-5xl mx-auto space-y-8 pt-20">
             <WeeklyFocus />
             <TaskCalendar tasks={tasks} />
           </div>
@@ -65,7 +65,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <div className="flex min-h-screen">
         {/* Left Sidebar - Navigation Only */}
-        <div className="hidden md:block w-[15%] min-h-screen border-r border-border">
+        <div className="hidden md:block w-[18%] min-h-screen border-r border-border/30">
           <Sidebar 
             activeView={activeView}
             onNavigate={setActiveView}
@@ -73,7 +73,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Right Panel with Header and Content */}
-        <div className="w-[85%] ml-auto flex flex-col min-h-screen">
+        <div className="w-full md:w-[82%] flex flex-col min-h-screen">
           {/* Top Header with Profile and Progress */}
           <TopProgressBar 
             dailyProgress={dailyProgress} 
@@ -81,7 +81,7 @@ export default function DashboardPage() {
           />
 
           {/* Main Content Area */}
-          <div className="flex-1 px-6 py-6 overflow-y-auto">
+          <div className="flex-1 px-4 md:px-8 py-6 overflow-y-auto">
             {renderActiveView()}
           </div>
         </div>
@@ -94,7 +94,7 @@ export default function DashboardPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 md:hidden"
               onClick={() => setMobileMenuOpen(false)}
             >
               <motion.div
@@ -102,11 +102,11 @@ export default function DashboardPage() {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 20 }}
-                className="w-4/5 h-full absolute right-0 bg-background border-l border-border"
+                className="w-4/5 h-full absolute right-0 bg-background/95 border-l border-border/30"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="p-4 space-y-4">
-                  <h2 className="text-lg font-semibold mb-4">Menu</h2>
+                <div className="p-6 space-y-4">
+                  <h2 className="text-lg font-semibold mb-6">Menu</h2>
                   <Sidebar 
                     activeView={activeView}
                     onNavigate={setActiveView}
@@ -119,7 +119,7 @@ export default function DashboardPage() {
 
         {/* Mobile Bottom Navigation */}
         <motion.nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border md:hidden z-40"
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border/30 md:hidden z-40"
           initial={{ y: "100%" }}
           animate={{ y: 0 }}
           transition={{ type: "spring", damping: 20 }}
@@ -133,15 +133,17 @@ export default function DashboardPage() {
 
         {/* Floating Action Button */}
         <motion.div 
-          className="fixed bottom-20 right-6 z-50 md:bottom-6"
+          className="fixed bottom-24 right-6 z-50 md:bottom-8"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
           <Button 
             size="lg"
-            className="w-12 h-12 rounded-full bg-primary hover:bg-primary/90 shadow-lg transition-colors duration-300"
+            className="w-14 h-14 rounded-full bg-primary hover:bg-primary/90 
+              shadow-lg transition-colors duration-300
+              shadow-primary/20"
           >
-            <MessageSquare className="w-5 h-5" />
+            <MessageSquare className="w-6 h-6" />
           </Button>
         </motion.div>
       </div>
