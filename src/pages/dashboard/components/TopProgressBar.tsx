@@ -53,8 +53,8 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   return (
     <div className="fixed top-0 right-0 w-[85%] z-50">
       <div className="container mx-auto">
-        <div className="h-16 flex items-center gap-6 px-6 py-3 bg-background/80 backdrop-blur-xl border-b border-border">
-          {/* Profile Picture */}
+        <div className="h-16 flex items-center justify-between px-6 py-3 bg-background/80 backdrop-blur-xl border-b border-border">
+          {/* Left Section: Profile Picture */}
           <div className="shrink-0">
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/20">
               <img 
@@ -66,8 +66,8 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
             </div>
           </div>
 
-          {/* Progress Bar Container */}
-          <div className="flex-1 max-w-2xl">
+          {/* Center Section: Progress Bar */}
+          <div className="flex-1 max-w-xl mx-6">
             <div className="space-y-0.5">
               <div className="flex items-center justify-between text-xs">
                 <p className="font-medium text-foreground/80">
@@ -121,11 +121,11 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
             </div>
           </div>
 
-          {/* Theme Toggle and Points */}
+          {/* Right Section: Points and Theme Toggle */}
           <div className="flex items-center gap-4 shrink-0">
             {/* Points Display */}
             <div className="flex items-center gap-1.5 bg-primary/5 px-3 
-              py-1.5 rounded-full">
+              py-1.5 rounded-full border border-primary/10">
               <Coins className="w-4 h-4 text-primary animate-pulse" />
               <span className="font-medium text-sm">{ogPoints}</span>
             </div>
