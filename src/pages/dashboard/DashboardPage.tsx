@@ -53,7 +53,7 @@ export default function DashboardPage() {
       case "profile":
       default:
         return (
-          <div className="max-w-5xl mx-auto space-y-6">
+          <div className="max-w-5xl mx-auto space-y-6 pt-20">
             <WeeklyFocus />
             <TaskCalendar tasks={tasks} />
           </div>
@@ -73,17 +73,15 @@ export default function DashboardPage() {
         </div>
 
         {/* Right Panel with Header and Content */}
-        <div className="w-[70%] ml-auto mr-[15%] flex flex-col min-h-screen">
+        <div className="w-[85%] ml-auto flex flex-col min-h-screen">
           {/* Top Header with Profile and Progress */}
-          <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <TopProgressBar 
-              dailyProgress={dailyProgress} 
-              ogPoints={ogPoints} 
-            />
-          </div>
+          <TopProgressBar 
+            dailyProgress={dailyProgress} 
+            ogPoints={ogPoints} 
+          />
 
           {/* Main Content Area */}
-          <div className="flex-1 px-4 py-6 overflow-y-auto">
+          <div className="flex-1 px-6 py-6 overflow-y-auto">
             {renderActiveView()}
           </div>
         </div>
