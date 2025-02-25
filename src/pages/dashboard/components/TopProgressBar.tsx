@@ -69,7 +69,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           </div>
 
           {/* Center Section: Progress Bar */}
-          <div className="flex-1 max-w-xl mx-8">
+          <div className="flex-1 max-w-xl mx-8 md:mx-24">
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-sm">
                 <p className="font-medium text-foreground/90">
