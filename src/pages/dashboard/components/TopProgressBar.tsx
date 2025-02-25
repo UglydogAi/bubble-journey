@@ -61,7 +61,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           </div>
 
           {/* Center Section: Progress Bar */}
-          <div className="flex-1 max-w-[800px] mx-auto px-16">
+          <div className="flex-1 mx-4 md:mx-16 max-w-[600px] md:max-w-[800px]">
             <div className="relative h-4">
               <Progress 
                 value={dailyProgress} 
