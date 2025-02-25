@@ -17,14 +17,6 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   const [showMessage, setShowMessage] = useState(false);
   const [prevProgress, setPrevProgress] = useState(dailyProgress);
 
-  const getMilestoneMessage = (progress: number) => {
-    if (progress === 100) return "YOU'RE ABSOLUTELY PAWSOME! 🌟";
-    if (progress >= 75) return "ALMOST THERE, KEEP FETCHING! 🦴";
-    if (progress >= 50) return "HALFWAY TO GREATNESS! 🐾";
-    if (progress >= 25) return "GREAT START, LEGEND! 🐕";
-    return "LET'S BEGIN OUR JOURNEY! 🐾";
-  };
-
   useEffect(() => {
     if (dailyProgress !== prevProgress) {
       const milestones = [25, 50, 75, 100];
@@ -69,54 +61,45 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           </div>
 
           {/* Center Section: Progress Bar */}
-          <div className="flex-1 max-w-xl mx-8 md:mx-24">
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-sm">
-                <p className="font-medium text-foreground/90">
-                  {dailyProgress}% Complete
-                </p>
-                <p className="text-orange-400 font-medium animate-fade-in hidden md:block">
-                  {getMilestoneMessage(dailyProgress)}
-                </p>
-              </div>
-
-              <div className="relative h-4 rounded-full overflow-visible">
-                <Progress 
-                  value={dailyProgress} 
-                  className="h-full relative overflow-visible"
-                />
-                
-                {/* UGLYDOG Character */}
-                <div 
-                  className="absolute top-1/2 -translate-y-1/2"
-                  style={{ 
-                    left: `${Math.min(Math.max(dailyProgress, 0), 100)}%`,
-                    transform: `translateX(-50%) translateY(-50%)` 
-                  }}
-                >
-                  <div className="relative">
-                    {showMessage && (
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
-                        bg-primary/90 text-white text-xs px-3 py-1.5 rounded-full
-                        whitespace-nowrap animate-fade-in
-                        before:absolute before:top-full before:left-1/2 
-                        before:-translate-x-1/2 before:border-4 
-                        before:border-transparent before:border-t-primary/90">
-                        Woof! 🐾
-                      </div>
-                    )}
-                    <div className={cn(
-                      "w-6 h-6 bg-primary rounded-full",
-                      "shadow-[0_0_15px_rgba(138,43,226,0.5)]",
-                      "flex items-center justify-center",
-                      "transition-all duration-300",
-                      "animate-bounce"
-                    )}>
-                      <Dog 
-                        className="w-3.5 h-3.5 text-white transform -scale-x-100" 
-                        strokeWidth={2.5}
-                      />
+          <div className="flex-1 mx-6 md:mx-32 lg:mx-40">
+            <div className="relative h-4">
+              <Progress 
+                value={dailyProgress} 
+                className="h-full relative overflow-visible
+                  before:absolute before:inset-0 before:bg-gradient-to-r 
+                  before:from-primary/5 before:to-orange-500/5"
+              />
+              
+              {/* UGLYDOG Character */}
+              <div 
+                className="absolute top-1/2 -translate-y-1/2"
+                style={{ 
+                  left: `${Math.min(Math.max(dailyProgress, 0), 100)}%`,
+                  transform: `translateX(-50%) translateY(-50%)` 
+                }}
+              >
+                <div className="relative">
+                  {showMessage && (
+                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
+                      bg-primary/90 text-white text-xs px-3 py-1.5 rounded-full
+                      whitespace-nowrap animate-fade-in
+                      before:absolute before:top-full before:left-1/2 
+                      before:-translate-x-1/2 before:border-4 
+                      before:border-transparent before:border-t-primary/90">
+                      Woof! 🐾
                     </div>
+                  )}
+                  <div className={cn(
+                    "w-6 h-6 bg-primary rounded-full",
+                    "shadow-[0_0_15px_rgba(138,43,226,0.5)]",
+                    "flex items-center justify-center",
+                    "transition-all duration-300",
+                    "animate-bounce"
+                  )}>
+                    <Dog 
+                      className="w-3.5 h-3.5 text-white transform -scale-x-100" 
+                      strokeWidth={2.5}
+                    />
                   </div>
                 </div>
               </div>
