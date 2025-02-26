@@ -12,10 +12,10 @@ export function SettingsView({
   onPreferenceChange 
 }: SettingsViewProps) {
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <div className="space-y-1.5 mb-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Settings</h2>
-        <p className="text-muted-foreground">Manage your account preferences</p>
+    <div className="max-w-5xl mx-auto space-y-6 pt-16 md:pt-20">
+      <div className="space-y-1.5">
+        <h2 className="text-xl md:text-2xl font-semibold tracking-tight">Settings</h2>
+        <p className="text-sm md:text-base text-muted-foreground">Manage your account preferences</p>
       </div>
       <NotificationPreferences
         preference={notificationPreference}
