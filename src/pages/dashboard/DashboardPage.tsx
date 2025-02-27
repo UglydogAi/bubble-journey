@@ -35,10 +35,49 @@ export default function DashboardPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Expanded task list with more tasks for each day
   const tasks = [
+    // Monday tasks
     { id: "1", title: "30-minute workout", completed: false },
     { id: "2", title: "10-minute meditation", completed: true },
-    { id: "3", title: "Read 5 pages", completed: false }
+    { id: "3", title: "Read 5 pages", completed: false },
+    { id: "4", title: "Plan weekly meals", completed: true },
+    
+    // Tuesday tasks
+    { id: "5", title: "Team standup meeting", completed: false },
+    { id: "6", title: "Update project documentation", completed: true },
+    { id: "7", title: "1-hour focus block", completed: false },
+    { id: "8", title: "Reply to important emails", completed: false },
+    
+    // Wednesday tasks
+    { id: "9", title: "Morning yoga", completed: true },
+    { id: "10", title: "Review quarterly goals", completed: false },
+    { id: "11", title: "Lunch with mentor", completed: false },
+    { id: "12", title: "Update LinkedIn profile", completed: true },
+    
+    // Thursday tasks
+    { id: "13", title: "Code review session", completed: false },
+    { id: "14", title: "Research new tools", completed: true },
+    { id: "15", title: "Write blog article", completed: false },
+    { id: "16", title: "Evening workout", completed: false },
+    
+    // Friday tasks
+    { id: "17", title: "Weekly retrospective", completed: true },
+    { id: "18", title: "Plan weekend activities", completed: false },
+    { id: "19", title: "Call parents", completed: false },
+    { id: "20", title: "Update personal website", completed: true },
+    
+    // Saturday tasks
+    { id: "21", title: "Farmers market", completed: false },
+    { id: "22", title: "House cleaning", completed: true },
+    { id: "23", title: "Watch documentary", completed: false },
+    { id: "24", title: "Prep meals for week", completed: false },
+    
+    // Sunday tasks
+    { id: "25", title: "Morning walk", completed: true },
+    { id: "26", title: "Review week ahead", completed: false },
+    { id: "27", title: "Hobby time", completed: true },
+    { id: "28", title: "Read book chapter", completed: false }
   ];
 
   const renderActiveView = () => {

@@ -37,6 +37,7 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
     setSelectedDay(index);
   };
 
+  // Get all tasks for the selected day
   const filteredTasks = tasks.filter((_, index) => {
     return index % days.length === selectedDay;
   });
@@ -52,7 +53,7 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
           <Calendar className="w-5 h-5 text-muted-foreground" />
         </div>
 
-        <div className="space-y-3 mb-6">
+        <div className="space-y-3 mb-6 max-h-[250px] overflow-y-auto pr-1">
           {filteredTasks.length > 0 ? (
             filteredTasks.map((task) => (
               <div
@@ -84,7 +85,7 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
           )}
         </div>
 
-        <div className="relative">
+        <div className="relative mt-2">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -96,7 +97,7 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
           
           <div 
             ref={scrollContainer}
-            className="flex overflow-x-auto md:grid md:grid-cols-7 gap-2 md:gap-4 no-scrollbar pb-1"
+            className="flex overflow-x-auto md:grid md:grid-cols-7 gap-2 md:gap-4 no-scrollbar px-1 pb-2"
           >
             {days.map((day, i) => (
               <div
