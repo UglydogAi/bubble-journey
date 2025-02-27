@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Check, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -134,7 +135,8 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
           </Button>
         </div>
 
-        <style jsx>{`
+        <style>
+          {`
           .no-scrollbar {
             -ms-overflow-style: none; /* IE and Edge */
             scrollbar-width: none; /* Firefox */
@@ -142,7 +144,8 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
           .no-scrollbar::-webkit-scrollbar {
             display: none; /* Chrome, Safari, Opera */
           }
-        `}</style>
+          `}
+        </style>
       </CardContent>
     </Card>
   );
