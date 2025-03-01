@@ -48,7 +48,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
         <div className="h-[4rem] md:h-[4.5rem] flex items-center justify-between px-4 md:px-8 py-3 md:py-4 
           bg-background/95 backdrop-blur-xl border-b border-border/30">
           {/* Left Section: Profile Picture */}
-          <div className="shrink-0">
+          <div className="shrink-0 mr-4 md:mr-6">
             <div className="w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden ring-2 ring-primary/20
               hover:ring-primary/40 transition-all duration-300">
               <img 
@@ -61,7 +61,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           </div>
 
           {/* Center Section: Progress Bar */}
-          <div className="flex-1 max-w-[400px] md:max-w-[500px] mx-4 md:mx-8">
+          <div className="flex-1 max-w-[350px] md:max-w-[450px] mx-0">
             <div className="relative h-3 md:h-4">
               <Progress 
                 value={dailyProgress} 
@@ -72,7 +72,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
               
               {/* UGLYDOG Character */}
               <div 
-                className="absolute top-1/2 -translate-y-1/2"
+                className="absolute top-1/2"
                 style={{ 
                   left: `${Math.min(Math.max(dailyProgress, 0), 100)}%`,
                   transform: `translateX(-50%) translateY(-50%)` 
@@ -107,7 +107,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           </div>
 
           {/* Right Section: Points and Theme Toggle */}
-          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0 ml-4 md:ml-6">
             {/* Points Display */}
             <div className="flex items-center gap-1 md:gap-2 bg-primary/10 px-3 md:px-4 
               py-1.5 md:py-2 rounded-full border border-primary/20
