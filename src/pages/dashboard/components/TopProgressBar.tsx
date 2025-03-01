@@ -48,7 +48,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
         <div className="h-[4rem] md:h-[4.5rem] flex items-center justify-between px-4 md:px-8 py-3 md:py-4 
           bg-background/95 backdrop-blur-xl border-b border-border/30">
           {/* Left Section: Profile Picture */}
-          <div className="shrink-0 mr-4 md:mr-6">
+          <div className="shrink-0">
             <div className="w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden ring-2 ring-primary/20
               hover:ring-primary/40 transition-all duration-300">
               <img 
@@ -60,54 +60,54 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
             </div>
           </div>
 
-          {/* Center Section: Progress Bar */}
-          <div className="flex-1 max-w-[350px] md:max-w-[450px] mx-0">
-            <div className="relative h-3 md:h-4">
-              <Progress 
-                value={dailyProgress} 
-                className="h-full relative overflow-visible
-                  before:absolute before:inset-0 before:bg-gradient-to-r 
-                  before:from-primary/5 before:to-orange-500/5"
-              />
-              
-              {/* UGLYDOG Character */}
-              <div 
-                className="absolute top-1/2"
-                style={{ 
-                  left: `${Math.min(Math.max(dailyProgress, 0), 100)}%`,
-                  transform: `translateX(-50%) translateY(-50%)` 
-                }}
-              >
-                <div className="relative">
-                  {showMessage && (
-                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
-                      bg-primary/90 text-white text-xs px-3 py-1.5 rounded-full
-                      whitespace-nowrap animate-fade-in
-                      before:absolute before:top-full before:left-1/2 
-                      before:-translate-x-1/2 before:border-4 
-                      before:border-transparent before:border-t-primary/90">
-                      Woof! 🐾
+          {/* Right Section: Progress Bar, Points and Theme Toggle */}
+          <div className="flex items-center gap-4 md:gap-6 flex-1 justify-end">
+            {/* Progress Bar */}
+            <div className="flex-1 max-w-[280px] md:max-w-[350px] mr-3 md:mr-5 hidden sm:block">
+              <div className="relative h-3 md:h-4">
+                <Progress 
+                  value={dailyProgress} 
+                  className="h-full relative overflow-visible
+                    before:absolute before:inset-0 before:bg-gradient-to-r 
+                    before:from-primary/5 before:to-orange-500/5"
+                />
+                
+                {/* UGLYDOG Character */}
+                <div 
+                  className="absolute top-1/2"
+                  style={{ 
+                    left: `${Math.min(Math.max(dailyProgress, 0), 100)}%`,
+                    transform: `translateX(-50%) translateY(-50%)` 
+                  }}
+                >
+                  <div className="relative">
+                    {showMessage && (
+                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
+                        bg-primary/90 text-white text-xs px-3 py-1.5 rounded-full
+                        whitespace-nowrap animate-fade-in
+                        before:absolute before:top-full before:left-1/2 
+                        before:-translate-x-1/2 before:border-4 
+                        before:border-transparent before:border-t-primary/90">
+                        Woof! 🐾
+                      </div>
+                    )}
+                    <div className={cn(
+                      "w-5 h-5 md:w-6 md:h-6 bg-primary rounded-full",
+                      "shadow-[0_0_15px_rgba(138,43,226,0.5)]",
+                      "flex items-center justify-center",
+                      "transition-all duration-300",
+                      "animate-bounce"
+                    )}>
+                      <Dog 
+                        className="w-3 h-3 md:w-3.5 md:h-3.5 text-white transform -scale-x-100" 
+                        strokeWidth={2.5}
+                      />
                     </div>
-                  )}
-                  <div className={cn(
-                    "w-5 h-5 md:w-6 md:h-6 bg-primary rounded-full",
-                    "shadow-[0_0_15px_rgba(138,43,226,0.5)]",
-                    "flex items-center justify-center",
-                    "transition-all duration-300",
-                    "animate-bounce"
-                  )}>
-                    <Dog 
-                      className="w-3 h-3 md:w-3.5 md:h-3.5 text-white transform -scale-x-100" 
-                      strokeWidth={2.5}
-                    />
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Right Section: Points and Theme Toggle */}
-          <div className="flex items-center gap-2 md:gap-4 shrink-0 ml-4 md:ml-6">
+            
             {/* Points Display */}
             <div className="flex items-center gap-1 md:gap-2 bg-primary/10 px-3 md:px-4 
               py-1.5 md:py-2 rounded-full border border-primary/20
