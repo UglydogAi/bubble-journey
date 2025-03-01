@@ -43,9 +43,9 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
   });
 
   return (
-    <Card className="bg-card/50 backdrop-blur-xl border-border/50 shadow-lg mt-2 md:mt-6">
-      <CardContent className="p-3 md:p-6">
-        <div className="flex items-center justify-between mb-3 md:mb-6">
+    <Card className="bg-card/50 backdrop-blur-xl border-border/50 shadow-lg mt-1 md:mt-6">
+      <CardContent className="p-2 md:p-6">
+        <div className="flex items-center justify-between mb-2 md:mb-6">
           <div className="space-y-0.5 md:space-y-1.5">
             <h3 className="text-base md:text-lg font-semibold tracking-tight text-foreground">Today's Tasks</h3>
             <p className="text-xs md:text-sm text-muted-foreground">Track your daily progress</p>
@@ -53,7 +53,7 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
           <Calendar className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
         </div>
 
-        <div className="space-y-2 md:space-y-3 mb-3 md:mb-6 max-h-[220px] md:max-h-[250px] overflow-y-auto pr-1 pb-2">
+        <div className="space-y-2 md:space-y-3 mb-3 md:mb-6 max-h-[160px] md:max-h-[250px] overflow-y-auto pr-1 pb-2">
           {filteredTasks.length > 0 ? (
             filteredTasks.map((task) => (
               <div
@@ -85,55 +85,58 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
           )}
         </div>
 
-        <div className="relative mt-1 md:mt-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 h-7 w-7 md:h-8 md:w-8 md:hidden bg-background/80 backdrop-blur-sm"
-            onClick={handleScrollLeft}
-          >
-            <ChevronLeft className="h-3 w-3 md:h-4 md:w-4" />
-          </Button>
-          
-          <div 
-            ref={scrollContainer}
-            className="flex overflow-x-auto md:grid md:grid-cols-7 gap-1.5 md:gap-4 no-scrollbar px-1 pb-2"
-          >
-            {days.map((day, i) => (
-              <div
-                key={day}
-                className={cn(
-                  "p-2 md:p-4 rounded-lg border transition-all duration-300 min-w-[52px] md:min-w-0 text-center cursor-pointer hover:bg-primary/20",
-                  i === selectedDay 
-                    ? "bg-primary/20 border-primary" 
-                    : "bg-accent/50 backdrop-blur-sm border-border/50",
-                  "transform hover:scale-105 active:scale-95"
-                )}
-                onClick={() => handleDaySelect(i)}
-              >
-                <p className="text-xs md:text-sm font-medium mb-1 md:mb-2 text-foreground">{day}</p>
-                <div className="space-y-1 md:space-y-1.5">
-                  <div className={cn(
-                    "w-full h-1 rounded", 
-                    i === selectedDay ? "bg-primary/70" : "bg-primary/40"
-                  )} />
-                  <div className={cn(
-                    "w-2/3 h-1 rounded", 
-                    i === selectedDay ? "bg-primary/70" : "bg-primary/40"
-                  )} />
+        {/* Days of week section - Improved visibility and spacing */}
+        <div className="sticky bottom-0 pt-2 mt-1 md:mt-2 bg-card/95 backdrop-blur-sm border-t border-border/30">
+          <div className="relative">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 h-7 w-7 md:h-8 md:w-8 md:hidden bg-background/80 backdrop-blur-sm shadow-sm"
+              onClick={handleScrollLeft}
+            >
+              <ChevronLeft className="h-3 w-3 md:h-4 md:w-4" />
+            </Button>
+            
+            <div 
+              ref={scrollContainer}
+              className="flex overflow-x-auto md:grid md:grid-cols-7 gap-1.5 md:gap-4 no-scrollbar px-1 pb-2"
+            >
+              {days.map((day, i) => (
+                <div
+                  key={day}
+                  className={cn(
+                    "p-2 md:p-4 rounded-lg border transition-all duration-300 min-w-[52px] md:min-w-0 text-center cursor-pointer hover:bg-primary/20",
+                    i === selectedDay 
+                      ? "bg-primary/20 border-primary shadow-sm" 
+                      : "bg-accent/50 backdrop-blur-sm border-border/50",
+                    "transform hover:scale-105 active:scale-95"
+                  )}
+                  onClick={() => handleDaySelect(i)}
+                >
+                  <p className="text-xs md:text-sm font-medium mb-1 md:mb-2 text-foreground">{day}</p>
+                  <div className="space-y-1 md:space-y-1.5">
+                    <div className={cn(
+                      "w-full h-1 rounded", 
+                      i === selectedDay ? "bg-primary/70" : "bg-primary/40"
+                    )} />
+                    <div className={cn(
+                      "w-2/3 h-1 rounded", 
+                      i === selectedDay ? "bg-primary/70" : "bg-primary/40"
+                    )} />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 h-7 w-7 md:h-8 md:w-8 md:hidden bg-background/80 backdrop-blur-sm shadow-sm"
+              onClick={handleScrollRight}
+            >
+              <ChevronRight className="h-3 w-3 md:h-4 md:w-4" />
+            </Button>
           </div>
-          
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 h-7 w-7 md:h-8 md:w-8 md:hidden bg-background/80 backdrop-blur-sm"
-            onClick={handleScrollRight}
-          >
-            <ChevronRight className="h-3 w-3 md:h-4 md:w-4" />
-          </Button>
         </div>
 
         <style>
