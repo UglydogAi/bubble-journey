@@ -43,22 +43,22 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
   });
 
   return (
-    <Card className="bg-card/50 backdrop-blur-xl border-border/50 shadow-lg mt-3 md:mt-6">
-      <CardContent className="p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4 md:mb-6">
-          <div className="space-y-1 md:space-y-1.5">
+    <Card className="bg-card/50 backdrop-blur-xl border-border/50 shadow-lg mt-2 md:mt-6">
+      <CardContent className="p-3 md:p-6">
+        <div className="flex items-center justify-between mb-3 md:mb-6">
+          <div className="space-y-0.5 md:space-y-1.5">
             <h3 className="text-base md:text-lg font-semibold tracking-tight text-foreground">Today's Tasks</h3>
             <p className="text-xs md:text-sm text-muted-foreground">Track your daily progress</p>
           </div>
           <Calendar className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
         </div>
 
-        <div className="space-y-2 md:space-y-3 mb-4 md:mb-6 max-h-[220px] md:max-h-[250px] overflow-y-auto pr-1">
+        <div className="space-y-2 md:space-y-3 mb-3 md:mb-6 max-h-[220px] md:max-h-[250px] overflow-y-auto pr-1 pb-2">
           {filteredTasks.length > 0 ? (
             filteredTasks.map((task) => (
               <div
                 key={task.id}
-                className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-accent/50 backdrop-blur-sm border border-border/50 animate-fade-in"
+                className="flex items-center gap-2 p-2.5 md:p-4 rounded-lg bg-accent/50 backdrop-blur-sm border border-border/50 animate-fade-in"
               >
                 <Button
                   variant={task.completed ? "default" : "outline"}
@@ -137,15 +137,15 @@ export function TaskCalendar({ tasks }: TaskCalendarProps) {
         </div>
 
         <style>
-          {`
-          .no-scrollbar {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
-          }
-          .no-scrollbar::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-          }
-          `}
+        {`
+        .no-scrollbar {
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+        .no-scrollbar::-webkit-scrollbar {
+          display: none; /* Chrome, Safari, Opera */
+        }
+        `}
         </style>
       </CardContent>
     </Card>

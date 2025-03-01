@@ -43,13 +43,13 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   }, [dailyProgress, prevProgress]);
 
   return (
-    <div className="fixed top-0 right-0 w-full md:w-[82%] z-50">
+    <div className="sticky top-0 w-full md:w-[82%] z-50">
       <div className="container mx-auto">
-        <div className="h-[4.5rem] flex items-center justify-between px-4 md:px-8 py-4 
+        <div className="h-[4rem] md:h-[4.5rem] flex items-center justify-between px-4 md:px-8 py-3 md:py-4 
           bg-background/95 backdrop-blur-xl border-b border-border/30">
           {/* Left Section: Profile Picture */}
           <div className="shrink-0">
-            <div className="w-11 h-11 rounded-full overflow-hidden ring-2 ring-primary/20
+            <div className="w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden ring-2 ring-primary/20
               hover:ring-primary/40 transition-all duration-300">
               <img 
                 src="/lovable-uploads/ce8e10ec-31c6-4d22-8be9-25e4d50d8206.png"
@@ -61,8 +61,8 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           </div>
 
           {/* Center Section: Progress Bar */}
-          <div className="flex-1 max-w-[400px] md:max-w-[500px] mx-8">
-            <div className="relative h-4">
+          <div className="flex-1 max-w-[400px] md:max-w-[500px] mx-4 md:mx-8">
+            <div className="relative h-3 md:h-4">
               <Progress 
                 value={dailyProgress} 
                 className="h-full relative overflow-visible
@@ -90,14 +90,14 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                     </div>
                   )}
                   <div className={cn(
-                    "w-6 h-6 bg-primary rounded-full",
+                    "w-5 h-5 md:w-6 md:h-6 bg-primary rounded-full",
                     "shadow-[0_0_15px_rgba(138,43,226,0.5)]",
                     "flex items-center justify-center",
                     "transition-all duration-300",
                     "animate-bounce"
                   )}>
                     <Dog 
-                      className="w-3.5 h-3.5 text-white transform -scale-x-100" 
+                      className="w-3 h-3 md:w-3.5 md:h-3.5 text-white transform -scale-x-100" 
                       strokeWidth={2.5}
                     />
                   </div>
@@ -107,26 +107,26 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           </div>
 
           {/* Right Section: Points and Theme Toggle */}
-          <div className="flex items-center gap-4 shrink-0">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
             {/* Points Display */}
-            <div className="flex items-center gap-2 bg-primary/10 px-4 
-              py-2 rounded-full border border-primary/20
+            <div className="flex items-center gap-1 md:gap-2 bg-primary/10 px-3 md:px-4 
+              py-1.5 md:py-2 rounded-full border border-primary/20
               shadow-sm shadow-primary/10">
-              <Coins className="w-4 h-4 text-primary animate-pulse" />
-              <span className="font-medium text-sm">{ogPoints}</span>
+              <Coins className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary animate-pulse" />
+              <span className="font-medium text-xs md:text-sm">{ogPoints}</span>
             </div>
 
             {/* Theme Toggle */}
             <Toggle
               pressed={theme === "dark"}
               onPressedChange={(pressed) => setTheme(pressed ? "dark" : "light")}
-              className="w-10 h-10 rounded-full bg-muted/50 hover:bg-muted/80 
+              className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-muted/50 hover:bg-muted/80 
                 transition-colors duration-300"
             >
               {theme === "dark" ? (
-                <Moon className="w-5 h-5 text-primary" />
+                <Moon className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               ) : (
-                <Sun className="w-5 h-5 text-primary" />
+                <Sun className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               )}
             </Toggle>
           </div>
