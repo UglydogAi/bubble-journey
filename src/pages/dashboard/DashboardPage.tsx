@@ -92,7 +92,7 @@ export default function DashboardPage() {
       case "profile":
       default:
         return (
-          <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 pt-1 md:pt-20">
+          <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 pt-1 md:pt-6">
             <WeeklyFocus />
             <TaskCalendar tasks={tasks} />
           </div>
@@ -102,7 +102,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen relative">
         {/* Left Sidebar - Navigation Only */}
         <div className="hidden md:block w-[18%] min-h-screen border-r border-border/30">
           <Sidebar 
