@@ -61,9 +61,9 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           </div>
 
           {/* Right Section: Progress Bar, Points and Theme Toggle */}
-          <div className="flex items-center gap-3 md:gap-5">
-            {/* Progress Bar */}
-            <div className="flex-1 max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[350px] hidden sm:block">
+          <div className="flex items-center gap-3 md:gap-5 flex-1 justify-end">
+            {/* Progress Bar - now visible on all devices */}
+            <div className="flex-1 max-w-[180px] xs:max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[350px] block mr-2">
               <div className="relative h-2.5 md:h-3">
                 <Progress 
                   value={dailyProgress} 
@@ -108,24 +108,24 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
               </div>
             </div>
             
-            {/* Points Display */}
-            <div className="flex items-center gap-1 bg-primary/10 px-2.5 py-1.5 
-              rounded-full border border-primary/20 shadow-sm shadow-primary/10">
-              <Coins className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary animate-pulse" />
-              <span className="font-medium text-xs md:text-sm">{ogPoints}</span>
+            {/* Points Display - slightly reduced size */}
+            <div className="flex items-center gap-1 bg-primary/10 px-2 py-1.5 
+              rounded-full border border-primary/20 shadow-sm shadow-primary/10 shrink-0">
+              <Coins className="w-3 h-3 text-primary animate-pulse" />
+              <span className="font-medium text-xs">{ogPoints}</span>
             </div>
 
-            {/* Theme Toggle */}
+            {/* Theme Toggle - slightly reduced size */}
             <Toggle
               pressed={theme === "dark"}
               onPressedChange={(pressed) => setTheme(pressed ? "dark" : "light")}
-              className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-muted/50 hover:bg-muted/80 
-                transition-colors duration-300"
+              className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-muted/50 hover:bg-muted/80 
+                transition-colors duration-300 shrink-0"
             >
               {theme === "dark" ? (
-                <Moon className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
+                <Moon className="w-3.5 h-3.5 text-primary" />
               ) : (
-                <Sun className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
+                <Sun className="w-3.5 h-3.5 text-primary" />
               )}
             </Toggle>
           </div>
