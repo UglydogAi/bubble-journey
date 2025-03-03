@@ -1,7 +1,6 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Skull, Zap, Brain, MessageSquare } from "lucide-react";
+import { Phone, Skull, Zap, Brain, MessageSquare, Github, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -50,6 +49,28 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#1A1F2C] text-white px-4 relative overflow-hidden">
+      {/* Social Icons in top right */}
+      <div className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-4 z-20">
+        <a 
+          href="https://github.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-black/30 backdrop-blur-md rounded-full
+            hover:bg-white/10 transition-all duration-300"
+        >
+          <Github className="w-5 h-5 md:w-6 md:h-6 text-white" />
+        </a>
+        <a 
+          href="https://twitter.com" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-black/30 backdrop-blur-md rounded-full
+            hover:bg-white/10 transition-all duration-300"
+        >
+          <Twitter className="w-5 h-5 md:w-6 md:h-6 text-white" />
+        </a>
+      </div>
+      
       {/* Matrix-like background effect */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PC9zdmc+')] opacity-20" />
       
