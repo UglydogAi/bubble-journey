@@ -20,8 +20,8 @@ const Progress = React.forwardRef<
     <ProgressPrimitive.Indicator
       className={cn(
         "h-full w-full flex-1 bg-gradient-to-r from-primary to-orange-500 transition-all duration-300",
-        "after:absolute after:inset-0 after:bg-gradient-to-b after:from-white/20 after:to-transparent after:rounded-full", // Increased opacity
-        "shadow-[0_0_10px_rgba(138,43,226,0.4)]" // Increased shadow for better visibility
+        "after:absolute after:inset-0 after:bg-gradient-to-b after:from-white/20 after:to-transparent after:rounded-full", 
+        "shadow-[0_0_10px_rgba(138,43,226,0.4)]" // Enhanced shadow for visibility
       )}
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />
