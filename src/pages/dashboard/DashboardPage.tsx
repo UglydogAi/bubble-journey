@@ -120,7 +120,7 @@ export default function DashboardPage() {
           />
 
           {/* Main Content Area */}
-          <div className="flex-1 px-4 md:px-8 py-0 md:py-6 overflow-y-auto">
+          <div className="flex-1 px-4 md:px-8 py-4 md:py-6 overflow-y-auto">
             {renderActiveView()}
           </div>
         </div>
