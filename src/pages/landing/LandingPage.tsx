@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Skull, Zap, Brain, MessageSquare, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,13 +40,39 @@ const categories = [
 export default function LandingPage() {
   const [answered, setAnswered] = useState(false);
   const [declining, setDeclining] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const navigate = useNavigate();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Create an audio element for the connection sound
+    audioRef.current = new Audio("/connection-sound.mp3");
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   const handleAnswerCall = () => {
+    setIsTransitioning(true);
     setAnswered(true);
+    
+    // Try to play the connection sound
+    if (audioRef.current) {
+      audioRef.current.volume = 0.7;
+      audioRef.current.play().catch(err => console.error("Audio play failed:", err));
+    }
+    
+    // Add a subtle vibration if supported by the browser
+    if (navigator.vibrate) {
+      navigator.vibrate([15, 30, 15]);
+    }
+    
     setTimeout(() => {
       navigate('/call');
-    }, 1000);
+    }, 1600); // Give enough time for the transition to complete
   };
 
   return (
@@ -82,6 +108,74 @@ export default function LandingPage() {
       
       {/* Matrix-like background effect */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PC9zdmc+')] opacity-20" />
+      
+      {/* Fullscreen transition overlay */}
+      <AnimatePresence>
+        {isTransitioning && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          >
+            {/* Pulsating waveform animation */}
+            <motion.div className="relative w-40 h-40 flex items-center justify-center">
+              {/* Ripple effects - outer circles */}
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className={`absolute rounded-full ${i % 2 === 0 ? 'bg-[#D946EF]/10' : 'bg-[#00E0FF]/10'}`}
+                  initial={{ width: 0, height: 0, opacity: 0.8 }}
+                  animate={{ 
+                    width: [0, 200], 
+                    height: [0, 200], 
+                    opacity: [0.5, 0],
+                    borderWidth: [2, 1],
+                    borderColor: i % 2 === 0 ? ["#D946EF", "#D946EF00"] : ["#00E0FF", "#00E0FF00"],
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 2.5,
+                    delay: i * 0.6,
+                    ease: "easeOut"
+                  }}
+                  style={{ 
+                    borderStyle: "solid",
+                    boxShadow: i % 2 === 0 ? "0 0 15px #D946EF" : "0 0 15px #00E0FF" 
+                  }}
+                />
+              ))}
+              
+              {/* Audio waveform visualization */}
+              <div className="h-6 flex items-center space-x-1">
+                {[...Array(7)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className={`w-0.5 rounded-full ${i % 2 === 0 ? 'bg-[#D946EF]' : 'bg-[#00E0FF]'}`}
+                    initial={{ height: 10 }}
+                    animate={{ 
+                      height: [10, 15 + Math.random() * 15, 10],
+                      opacity: [0.6, 1, 0.6]
+                    }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 0.8 + (i * 0.1),
+                      repeatType: "reverse",
+                      ease: "easeInOut"
+                    }}
+                    style={{ 
+                      boxShadow: i % 2 === 0 
+                        ? "0 0 8px #D946EF, 0 0 12px #D946EF" 
+                        : "0 0 8px #00E0FF, 0 0 12px #00E0FF" 
+                    }}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <AnimatePresence>
         {!answered && !declining ? (
@@ -153,16 +247,7 @@ export default function LandingPage() {
           >
             "Go back to mediocrity."
           </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-xl sm:text-2xl text-[#D946EF] text-center px-4"
-          >
-            Entering UGLYDOG's world...
-          </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );
