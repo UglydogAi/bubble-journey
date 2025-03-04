@@ -52,26 +52,31 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#1A1F2C] text-white px-4 relative overflow-hidden">
       {/* Social Icons in top right */}
-      <div className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-3 z-20">
+      <div className="absolute top-4 right-5 md:top-6 md:right-7 flex items-center gap-4 z-20">
         <a 
           href="https://docs.uglydog.com" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center bg-black/40 backdrop-blur-lg rounded-full
-            hover:bg-white/10 hover:scale-110 hover:shadow-[0_0_10px_rgba(217,70,239,0.5)] transition-all duration-300"
+          className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center bg-black/15 backdrop-blur-xl rounded-full
+            hover:text-[#BB86FC] hover:scale-110 hover:shadow-[0_0_8px_rgba(187,134,252,0.7)] transition-all duration-300 
+            group active:scale-95 active:opacity-80"
           aria-label="UGLYDOG Docs"
         >
-          <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />
+          <BookOpen 
+            className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#E0E0E0]/50 group-hover:text-[#BB86FC]" 
+            strokeWidth={1.25}
+          />
         </a>
         <a 
           href="https://x.com/uglydogai" 
           target="_blank" 
           rel="noopener noreferrer" 
-          className="w-7 h-7 md:w-9 md:h-9 flex items-center justify-center bg-black/40 backdrop-blur-lg rounded-full
-            hover:bg-white/10 hover:scale-110 hover:shadow-[0_0_10px_rgba(217,70,239,0.5)] transition-all duration-300"
+          className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center bg-black/15 backdrop-blur-xl rounded-full
+            hover:text-[#00E0FF] hover:scale-110 hover:shadow-[0_0_8px_rgba(0,224,255,0.7)] transition-all duration-300
+            group active:scale-95 active:opacity-80"
           aria-label="UGLYDOG X"
         >
-          <XLogo className="w-4 h-4 md:w-5 md:h-5 text-white" />
+          <XLogo className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#E0E0E0]/50 group-hover:text-[#00E0FF]" />
         </a>
       </div>
       
