@@ -1,9 +1,11 @@
 
 import React from "react";
-import { UserRound, Settings, CreditCard, Users, BookOpen } from "lucide-react";
+import { UserRound, Settings, CreditCard, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import XLogo from "@/components/XLogo";
+import DocsIcon from "@/components/DocsIcon";
+import DiscordIcon from "@/components/DiscordIcon";
 
 interface SidebarProps {
   isMobile?: boolean;
@@ -21,13 +23,18 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
 
   const socialItems = [
     { 
-      icon: <BookOpen />, 
+      icon: <DocsIcon />, 
       label: "Docs", 
       url: "https://docs.uglydog.ai" 
     },
     { 
+      icon: <DiscordIcon />, 
+      label: "Discord", 
+      url: "https://discord.gg/uglydogai" 
+    },
+    { 
       icon: <XLogo />, 
-      label: "X (Twitter)", 
+      label: "Twitter", 
       url: "https://x.com/uglydogai" 
     }
   ];
