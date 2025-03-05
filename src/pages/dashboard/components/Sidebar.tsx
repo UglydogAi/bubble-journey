@@ -27,7 +27,7 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
     },
     { 
       icon: <XLogo />, 
-      label: "X", 
+      label: "X (Twitter)", 
       url: "https://x.com/uglydogai" 
     }
   ];
