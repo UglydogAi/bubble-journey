@@ -1,6 +1,6 @@
 
 import React from "react";
-import { UserRound, Settings, CreditCard, Users } from "lucide-react";
+import { UserRound, Settings, CreditCard, Users, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import XLogo from "@/components/XLogo";
@@ -16,6 +16,7 @@ interface SidebarProps {
 export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarProps) {
   const navigationItems = [
     { icon: <UserRound />, label: "Profile", view: "profile" },
+    { icon: <MessageSquare />, label: "Chat", view: "chat" },
     { icon: <Settings />, label: "Settings", view: "settings" },
     { icon: <CreditCard />, label: "Purchase", view: "purchase" },
     { icon: <Users />, label: "Community", view: "community" }
