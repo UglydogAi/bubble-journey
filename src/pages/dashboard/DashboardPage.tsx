@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare } from "lucide-react";
@@ -113,40 +112,18 @@ export default function DashboardPage() {
             ogPoints={ogPoints} 
           />
 
-          <div className="flex-1 px-4 md:px-8 py-4 md:py-6 overflow-y-auto">
+          <div className="flex-1 px-4 md:px-8 py-4 md:py-6 overflow-y-auto pb-20 md:pb-6">
             {renderActiveView()}
           </div>
         </div>
 
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 md:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <motion.div
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 20 }}
-                className="w-4/5 h-full absolute right-0 bg-background/95 border-l border-border/30"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="p-6 space-y-4">
-                  <h2 className="text-lg font-semibold mb-6">Menu</h2>
-                  <Sidebar 
-                    activeView={activeView}
-                    onNavigate={setActiveView}
-                  />
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Hamburger menu for mobile */}
+        <div className="block md:hidden">
+          <Sidebar 
+            activeView={activeView}
+            onNavigate={setActiveView}
+          />
+        </div>
 
         <motion.nav 
           className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border/30 md:hidden z-40"
