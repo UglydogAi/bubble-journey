@@ -128,20 +128,21 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
 
   if (isMobile) {
     return (
-      <div className="flex justify-around items-center p-2 backdrop-blur-xl">
+      <div className="grid grid-cols-5 items-center p-2 backdrop-blur-xl w-full">
         {navigationItems.map((item) => (
           <Button
             key={item.label}
             variant="ghost"
-            size="lg"
+            size="icon"
             className={cn(
-              "flex-col gap-1 h-16 px-2 transition-colors duration-300",
+              "flex flex-col items-center justify-center gap-1 h-16 w-full px-1",
+              "transition-colors duration-300",
               activeView === item.view && "bg-[#8A2BE2] text-white"
             )}
             onClick={() => onNavigate(item.view)}
           >
             {item.icon}
-            <span className="text-xs font-medium">{item.label}</span>
+            <span className="text-[10px] font-medium">{item.label}</span>
           </Button>
         ))}
       </div>
