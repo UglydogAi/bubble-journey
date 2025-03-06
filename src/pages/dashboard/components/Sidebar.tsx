@@ -1,5 +1,6 @@
+
 import React from "react";
-import { UserRound, Settings, CreditCard, MessageSquare } from "lucide-react";
+import { UserRound, Settings, CreditCard, MessageSquare, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import XLogo from "@/components/XLogo";
@@ -16,6 +17,7 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
   const navigationItems = [
     { icon: <UserRound />, label: "Profile", view: "profile" },
     { icon: <MessageSquare />, label: "Chat", view: "chat" },
+    { icon: <Award />, label: "Rewards", view: "rewards" },
     { icon: <Settings />, label: "Settings", view: "settings" },
     { icon: <CreditCard />, label: "Purchase", view: "purchase" }
   ];

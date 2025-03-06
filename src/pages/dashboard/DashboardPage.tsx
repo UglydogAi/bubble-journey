@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare } from "lucide-react";
@@ -9,6 +10,7 @@ import { TaskCalendar } from "./components/TaskCalendar";
 import { SettingsView } from "./components/SettingsView";
 import { useEffect } from "react";
 import { ChatView } from "./components/ChatView";
+import { RewardsView } from "./components/RewardsView";
 
 interface Task {
   id: string;
@@ -82,6 +84,8 @@ export default function DashboardPage() {
         );
       case "chat":
         return <ChatView />;
+      case "rewards":
+        return <RewardsView />;
       case "profile":
       default:
         return (
