@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { UserRound, Settings, CreditCard, MessageSquare, Award, Menu, X } from "lucide-react";
+import { UserRound, Settings, CreditCard, MessageSquare, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import XLogo from "@/components/XLogo";
@@ -42,18 +42,6 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
       url: "https://x.com/uglydogai" 
     }
   ];
-
-  // Mobile hamburger menu button
-  const MobileMenuButton = () => (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="md:hidden fixed top-4 left-4 z-50 bg-background/80 backdrop-blur-sm"
-      onClick={() => setIsMenuOpen(!isMenuOpen)}
-    >
-      {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-    </Button>
-  );
 
   // Mobile sidebar menu
   const MobileSidebar = () => (
@@ -151,7 +139,6 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
 
   return (
     <>
-      <MobileMenuButton />
       <MobileSidebar />
       
       <div className="h-full flex flex-col justify-between bg-sidebar-background/50 backdrop-blur-xl 

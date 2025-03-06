@@ -22,7 +22,6 @@ export default function DashboardPage() {
   const [ogPoints] = useState(1250);
   const [notificationPreference, setNotificationPreference] = useState("whatsapp");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeView, setActiveView] = useState("profile");
 
   useEffect(() => {
@@ -115,14 +114,6 @@ export default function DashboardPage() {
           <div className="flex-1 px-4 md:px-8 py-4 md:py-6 overflow-y-auto pb-20 md:pb-6">
             {renderActiveView()}
           </div>
-        </div>
-
-        {/* Hamburger menu for mobile */}
-        <div className="block md:hidden">
-          <Sidebar 
-            activeView={activeView}
-            onNavigate={setActiveView}
-          />
         </div>
 
         <motion.nav 
