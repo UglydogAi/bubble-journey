@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Trophy, Gem, Award, Star, TrendingUp, 
@@ -308,13 +307,13 @@ export function RewardsView() {
               );
             })}
             
-            <div className="mt-6 flex items-center justify-between">
+            <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="text-sm flex items-center gap-1">
                 <Star className="h-4 w-4 text-primary" />
                 <span>Weekly progress:</span>
                 <span className="font-semibold">{weeklyPointsProgress} points</span>
               </div>
-              <Button size="sm" className="bg-primary hover:bg-primary/90">
+              <Button size="sm" className="self-end sm:self-auto bg-primary hover:bg-primary/90">
                 Claim Bonus
               </Button>
             </div>
