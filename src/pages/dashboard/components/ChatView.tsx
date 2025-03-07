@@ -103,31 +103,31 @@ export function ChatView() {
         </CardContent>
       </Card>
       
-      {/* Chat input bar */}
-      <Card className="p-2">
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+      {/* Chat input bar - redesigned to match the provided image */}
+      <div className="w-full px-4 py-2">
+        <form onSubmit={handleSubmit} className="flex items-center gap-3">
           <div className="flex-1 relative">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message..."
-              className="w-full px-4 py-2 rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              placeholder="Message UGLYDOG..."
+              className="w-full px-6 py-4 rounded-full border border-border/40 bg-background/60 backdrop-blur-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-sm"
             />
           </div>
-          <Button type="submit" size="icon" className="rounded-full">
+          <Button type="submit" size="icon" className="rounded-full bg-white/95 hover:bg-white text-black h-12 w-12 flex items-center justify-center">
             <Send className="h-5 w-5" />
           </Button>
           <Button 
             type="button" 
             onClick={handleCallClick}
             size="icon" 
-            className="rounded-full bg-green-600 hover:bg-green-700"
+            className="rounded-full bg-black/90 hover:bg-black h-12 w-12 flex items-center justify-center"
           >
             <Phone className="h-5 w-5" />
           </Button>
         </form>
-      </Card>
+      </div>
     </div>
   );
 }
