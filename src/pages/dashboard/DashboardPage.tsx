@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TopProgressBar } from "./components/TopProgressBar";
 import { Sidebar } from "./components/Sidebar";
@@ -128,21 +127,6 @@ export default function DashboardPage() {
             onNavigate={setActiveView}
           />
         </motion.nav>
-
-        <motion.div 
-          className="fixed bottom-24 right-6 z-50 md:bottom-8"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Button 
-            size="lg"
-            className="w-14 h-14 rounded-full bg-primary hover:bg-primary/90 
-              shadow-lg transition-colors duration-300
-              shadow-primary/20"
-          >
-            <MessageSquare className="w-6 h-6" />
-          </Button>
-        </motion.div>
       </div>
     </div>
   );
