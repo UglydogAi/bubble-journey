@@ -1,8 +1,7 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
-  Trophy, Shield, Award, Star, TrendingUp, 
-  BadgeCheck, Target, Rocket, Clock, Eye
+  Trophy, Gem, Award, Star, TrendingUp, 
+  BadgeCheck, Target, Rocket, Clock 
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -11,7 +10,6 @@ import {
   ResponsiveContainer, AreaChart, Area, 
   XAxis, YAxis, Tooltip, CartesianGrid 
 } from "recharts";
-import { motion } from "framer-motion";
 
 // Sample weekly data for the chart
 const weeklyData = [
@@ -24,47 +22,39 @@ const weeklyData = [
   { day: "Sun", points: 130 }
 ];
 
-// Badge definitions with enhanced cyberpunk aesthetics
+// Badge definitions
 const badges = [
   { 
     id: "bronze", 
     name: "Bronze", 
-    icon: "trophy",
+    icon: <Trophy className="h-5 w-5 text-amber-600" />, 
     description: "Complete 5 conversations with UGLYDOG", 
     requiredPoints: 500,
-    color: "from-amber-700 via-amber-600 to-amber-500",
-    glowColor: "amber",
-    borderColor: "border-amber-500/30"
+    color: "from-amber-700 to-amber-500"
   },
   { 
     id: "silver", 
     name: "Silver", 
-    icon: "shield",
+    icon: <Trophy className="h-5 w-5 text-slate-400" />, 
     description: "Complete 25 conversations with UGLYDOG", 
     requiredPoints: 2500,
-    color: "from-slate-400 via-slate-300 to-slate-200",
-    glowColor: "sky",
-    borderColor: "border-sky-500/30"
+    color: "from-slate-400 to-slate-300"
   },
   { 
     id: "gold", 
     name: "Gold", 
-    icon: "award",
+    icon: <Trophy className="h-5 w-5 text-yellow-500" />, 
     description: "Complete 50 conversations & weekly goals", 
     requiredPoints: 5000,
-    color: "from-yellow-500 via-amber-400 to-amber-300",
-    glowColor: "yellow",
-    borderColor: "border-yellow-500/30"
+    color: "from-yellow-500 to-amber-300"
   },
   { 
     id: "diamond", 
     name: "Diamond", 
-    icon: "eye",
+    icon: <Gem className="h-5 w-5 text-blue-400" />, 
     description: "Complete 100 conversations & all milestones", 
     requiredPoints: 10000,
-    color: "from-blue-400 via-indigo-300 to-violet-400",
-    glowColor: "indigo",
-    borderColor: "border-indigo-500/30"
+    color: "from-blue-400 to-indigo-300"
   }
 ];
 
@@ -96,183 +86,10 @@ const weeklyGoals = [
   }
 ];
 
-// Badge icon components with special effects
-const BadgeIcon = ({ type, isUnlocked, size = 8 }) => {
-  // For glowing pulse animation
-  const pulseVariants = {
-    pulse: {
-      scale: [1, 1.05, 1],
-      opacity: [0.7, 1, 0.7],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
-  };
-
-  // Map badge type to the appropriate icon
-  const renderIcon = () => {
-    switch (type) {
-      case "trophy":
-        return (
-          <Trophy 
-            className={`h-${size} w-${size} ${isUnlocked ? 'text-amber-500' : 'text-gray-500'}`}
-            strokeWidth={1.5}
-          />
-        );
-      case "shield":
-        return (
-          <Shield 
-            className={`h-${size} w-${size} ${isUnlocked ? 'text-sky-400' : 'text-gray-500'}`}
-            strokeWidth={1.5}
-          />
-        );
-      case "award":
-        return (
-          <Award 
-            className={`h-${size} w-${size} ${isUnlocked ? 'text-yellow-500' : 'text-gray-500'}`}
-            strokeWidth={1.5}
-          />
-        );
-      case "eye":
-        return (
-          <Eye 
-            className={`h-${size} w-${size} ${isUnlocked ? 'text-indigo-400' : 'text-gray-500'}`}
-            strokeWidth={1.5}
-          />
-        );
-      default:
-        return (
-          <BadgeCheck 
-            className={`h-${size} w-${size} ${isUnlocked ? 'text-primary' : 'text-gray-500'}`}
-            strokeWidth={1.5}
-          />
-        );
-    }
-  };
-
-  if (!isUnlocked) {
-    return (
-      <div className="relative flex items-center justify-center opacity-50">
-        {renderIcon()}
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative flex items-center justify-center">
-      {/* Glowing background effect */}
-      <motion.div
-        variants={pulseVariants}
-        animate="pulse"
-        className={`absolute inset-0 rounded-full blur-md bg-opacity-70 z-0`}
-        style={{ 
-          background: `radial-gradient(circle, currentColor 0%, transparent 70%)`,
-          color: getBadgeGlowColor(type)
-        }}
-      />
-      
-      {/* Main icon */}
-      <div className="relative z-10 transform transition-transform duration-300 hover:scale-110">
-        {renderIcon()}
-      </div>
-    </div>
-  );
-};
-
-// Helper to get appropriate glow color based on badge type
-const getBadgeGlowColor = (type) => {
-  switch (type) {
-    case "trophy": return "rgba(245, 158, 11, 0.5)"; // amber
-    case "shield": return "rgba(56, 189, 248, 0.5)"; // sky
-    case "award": return "rgba(234, 179, 8, 0.5)";   // yellow
-    case "eye": return "rgba(129, 140, 248, 0.5)";   // indigo
-    default: return "rgba(139, 92, 246, 0.5)";       // primary
-  }
-};
-
-// Reflective 3D badge component with hover effects
-const CyberpunkBadge = ({ badge, isUnlocked, onClick }) => {
-  return (
-    <motion.div
-      className={`
-        relative overflow-hidden rounded-xl backdrop-blur-sm
-        border ${isUnlocked ? badge.borderColor : 'border-gray-700/50'}
-        transition-all duration-500 cursor-pointer
-        ${isUnlocked ? 'shadow-lg' : 'opacity-60'}
-      `}
-      onClick={onClick}
-      whileHover={isUnlocked ? { scale: 1.05, y: -5 } : { scale: 1.02 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      {/* Background gradient with animated overlay */}
-      <div className={`
-        absolute inset-0 bg-gradient-to-br 
-        ${isUnlocked ? badge.color : 'from-gray-800 to-gray-900'}
-        opacity-80 z-0
-      `}>
-        {/* Scanlines effect */}
-        {isUnlocked && (
-          <div className="absolute inset-0 bg-scanlines opacity-10 mix-blend-overlay z-10"></div>
-        )}
-      </div>
-      
-      {/* Holographic reflection effect */}
-      {isUnlocked && (
-        <motion.div 
-          className="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent opacity-10 z-20"
-          animate={{ 
-            left: ["-100%", "200%"],
-            top: ["-100%", "200%"],
-          }}
-          transition={{ 
-            duration: 3, 
-            repeat: Infinity, 
-            repeatType: "loop",
-            ease: "linear",
-            repeatDelay: 4
-          }}
-        />
-      )}
-      
-      {/* Content */}
-      <div className="relative flex flex-col items-center justify-center py-6 px-4 z-30">
-        {/* Badge icon */}
-        <div className="mb-3">
-          <BadgeIcon 
-            type={badge.icon} 
-            isUnlocked={isUnlocked} 
-          />
-        </div>
-        
-        {/* Badge name with metallic text effect */}
-        <span className={`
-          font-bold text-lg 
-          ${isUnlocked ? 'text-white' : 'text-gray-400'} 
-          ${isUnlocked ? 'text-shadow-sm' : ''}
-        `}>
-          {badge.name}
-        </span>
-        
-        {/* Unlock indicator */}
-        {isUnlocked && (
-          <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1.5 shadow-lg border border-green-400">
-            <BadgeCheck className="h-3 w-3 text-white" strokeWidth={3} />
-          </div>
-        )}
-      </div>
-    </motion.div>
-  );
-};
-
 export function RewardsView() {
   const [totalPoints, setTotalPoints] = useState(3200);
   const [weeklyPoints, setWeeklyPoints] = useState(980);
-  const [selectedBadge, setSelectedBadge] = useState(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [showBadgeInfo, setShowBadgeInfo] = useState<string | null>(null);
   
   // Find current tier based on points
   const currentTier = badges.reduce((prev, current) => {
@@ -297,36 +114,6 @@ export function RewardsView() {
   const weeklyPointsProgress = weeklyGoals.reduce((acc, goal) => {
     return acc + ((goal.current / goal.target) * goal.pointsPerUnit * goal.current);
   }, 0);
-
-  // CSS for cyberpunk/holographic UI 
-  useEffect(() => {
-    // Add global CSS for scanlines and text effects
-    const style = document.createElement('style');
-    style.innerHTML = `
-      @keyframes scanlines {
-        from { background-position: 0 0; }
-        to { background-position: 0 100%; }
-      }
-      .bg-scanlines {
-        background: repeating-linear-gradient(
-          to bottom,
-          transparent 0px,
-          rgba(255, 255, 255, 0.05) 1px,
-          transparent 2px
-        );
-        background-size: 100% 4px;
-        animation: scanlines 8s linear infinite;
-      }
-      .text-shadow-sm {
-        text-shadow: 0 0 5px currentColor, 0 0 10px rgba(255, 255, 255, 0.3);
-      }
-    `;
-    document.head.appendChild(style);
-    
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pt-1 md:pt-6 animate-fade-in">
@@ -422,37 +209,65 @@ export function RewardsView() {
         </Card>
       </div>
 
-      {/* Badge Collection - Cyberpunk Edition */}
-      <Card className="bg-card/50 backdrop-blur-xl border-border/30 shadow-lg overflow-hidden">
-        <CardHeader className="pb-3 relative">
-          <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 w-8 h-16 bg-primary/20 blur-xl rounded-full"></div>
-          <CardTitle className="flex items-center gap-2 relative z-10">
+      {/* Badge Collection */}
+      <Card className="bg-card/50 backdrop-blur-xl border-border/30 shadow-lg">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2">
             <Award className="h-5 w-5 text-primary" />
             <span>Badge Collection</span>
           </CardTitle>
-          <CardDescription className="relative z-10">
+          <CardDescription>
             Unlock badges as you interact with UGLYDOG
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {badges.map((badge) => {
+            {badges.map((badge, index) => {
               const isUnlocked = totalPoints >= badge.requiredPoints;
               return (
-                <CyberpunkBadge
+                <div
                   key={badge.id}
-                  badge={badge}
-                  isUnlocked={isUnlocked}
-                  onClick={() => {
-                    setSelectedBadge(badge);
-                    setIsDetailModalOpen(true);
-                  }}
-                />
+                  className="relative group"
+                  onMouseEnter={() => setShowBadgeInfo(badge.id)}
+                  onMouseLeave={() => setShowBadgeInfo(null)}
+                >
+                  <div 
+                    className={`
+                      h-20 flex flex-col items-center justify-center p-3 rounded-lg
+                      transition-all duration-300 hover:transform hover:scale-105
+                      ${isUnlocked 
+                        ? `bg-gradient-to-br ${badge.color} border border-white/10 shadow-lg` 
+                        : 'bg-gray-800/50 border border-gray-700'}
+                    `}
+                  >
+                    <div className="relative">
+                      {badge.icon}
+                      {isUnlocked && (
+                        <BadgeCheck 
+                          className="absolute -bottom-2 -right-2 h-4 w-4 text-white bg-green-500 rounded-full p-0.5" 
+                        />
+                      )}
+                    </div>
+                    <span className={`mt-2 font-semibold text-sm ${isUnlocked ? 'text-white' : 'text-gray-400'}`}>
+                      {badge.name}
+                    </span>
+                  </div>
+                  
+                  {showBadgeInfo === badge.id && (
+                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full z-50
+                      bg-black/90 text-white text-xs p-2 rounded w-40 backdrop-blur-sm
+                      shadow-lg border border-primary/20 animate-fade-in">
+                      <p className="font-medium mb-1">{badge.name} Badge</p>
+                      <p className="text-gray-300">{badge.description}</p>
+                      <p className="mt-1 text-primary">{badge.requiredPoints} points required</p>
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2
+                        border-8 border-transparent border-t-black/90"></div>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
-          
-          {/* Badge details modal could be added here */}
         </CardContent>
       </Card>
 
