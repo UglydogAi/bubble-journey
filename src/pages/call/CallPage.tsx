@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
+import ElevenLabsWebSocket from "@/services/elevenlabsWebSocket";
 
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
@@ -25,7 +26,10 @@ export default function CallPage() {
   const widgetRef = useRef<HTMLDivElement>(null);
   
   // Ref for the WebSocket connection
-  const wsRef = useRef<WebSocket | null>(null);
+  const wsRef = useRef<ElevenLabsWebSocket | null>(null);
+  
+  // Ref for audio chunks from WebSocket
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // Animate the waveform when processing audio
   useEffect(() => {
@@ -39,21 +43,73 @@ export default function CallPage() {
 
   // Setup ElevenLabs widget
   useEffect(() => {
-    // Give time for the widget script to load
-    const timer = setTimeout(() => {
-      if (widgetRef.current) {
-        // The widget will be created by the script loaded in index.html
-        const widget = document.createElement('elevenlabs-convai');
-        widget.setAttribute('agent-id', 'zna9hXvyrwtNwOt5taJ2');
-        
-        // Clear the ref and append the widget
-        widgetRef.current.innerHTML = '';
-        widgetRef.current.appendChild(widget);
-      }
-    }, 500);
+    if (widgetRef.current) {
+      // The widget will be created by the script loaded in index.html
+      const widget = document.createElement('elevenlabs-convai');
+      widget.setAttribute('agent-id', 'zna9hXvyrwtNwOt5taJ2');
+      
+      // Clear the ref and append the widget
+      widgetRef.current.innerHTML = '';
+      widgetRef.current.appendChild(widget);
+      
+      // Initialize WebSocket service
+      wsRef.current = new ElevenLabsWebSocket(
+        // On audio chunk received
+        (audioChunk) => {
+          audioChunksRef.current.push(audioChunk);
+        },
+        // On complete
+        () => {
+          setIsProcessing(false);
+          playAudioFromChunks();
+        },
+        // On error
+        (error) => {
+          console.error('WebSocket error:', error);
+          toast.error('Error with speech synthesis');
+          setIsProcessing(false);
+        }
+      );
+    }
     
-    return () => clearTimeout(timer);
+    return () => {
+      // Clean up WebSocket on component unmount
+      if (wsRef.current) {
+        wsRef.current.disconnect();
+      }
+    };
   }, []);
+
+  const playAudioFromChunks = async () => {
+    if (audioChunksRef.current.length === 0) return;
+    
+    try {
+      // Create a new Blob from all audio chunks
+      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mpeg' });
+      
+      // Create URL for the audio blob
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      // Play the audio
+      if (currentAudio) {
+        currentAudio.pause();
+      }
+      
+      const audio = new Audio(audioUrl);
+      setCurrentAudio(audio);
+      
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        // Clear audio chunks for next message
+        audioChunksRef.current = [];
+      };
+      
+      await audio.play();
+    } catch (error) {
+      console.error('Error playing audio from chunks:', error);
+      toast.error('Failed to play audio');
+    }
+  };
 
   const handleEndCall = () => {
     setShowControls(false);
@@ -62,8 +118,8 @@ export default function CallPage() {
     }
     
     // Close WebSocket if it's open
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.close();
+    if (wsRef.current) {
+      wsRef.current.disconnect();
     }
     
     setTimeout(() => {
@@ -75,7 +131,21 @@ export default function CallPage() {
     try {
       setIsProcessing(true);
       
-      // Use our new edge function for text-to-speech
+      // Use WebSocket if available, otherwise fallback to Edge Function
+      if (wsRef.current) {
+        try {
+          // Connect if not already connected
+          await wsRef.current.connect();
+          wsRef.current.synthesizeSpeech(text);
+          // Audio chunks will be collected and played when complete
+          return;
+        } catch (wsError) {
+          console.error('WebSocket failed, falling back to edge function:', wsError);
+          // Fall through to edge function
+        }
+      }
+      
+      // Fallback to our Edge Function
       const { data, error } = await supabase.functions.invoke('eleven-labs-tts', {
         body: { text }
       });
@@ -83,6 +153,7 @@ export default function CallPage() {
       if (error) {
         console.error('Error from edge function:', error);
         toast.error('Failed to generate speech. Please try again.');
+        setIsProcessing(false);
         throw error;
       }
 

@@ -18,16 +18,9 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
-    const apiKey = Deno.env.get('ELEVEN_LABS_API_KEY')
-    const voiceId = Deno.env.get('ELEVEN_LABS_VOICE_ID')
-
-    if (!apiKey || !voiceId) {
-      console.error('Missing credentials:', {
-        hasApiKey: !!apiKey,
-        hasVoiceId: !!voiceId
-      })
-      throw new Error('Missing ElevenLabs credentials')
-    }
+    // Use the provided API key and voice ID directly
+    const apiKey = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247'
+    const voiceId = '831ZKnvNLkjUZ4w5GlOe'
 
     console.log('Starting TTS with ElevenLabs for text:', text)
     console.log('Voice ID:', voiceId)
