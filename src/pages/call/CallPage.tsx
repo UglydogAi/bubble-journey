@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import ElevenLabsWebSocket from "@/services/elevenlabsWebSocket";
+import ElevenLabsConversationalAI from "@/services/elevenlabsConversationalAI";
 
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
@@ -16,6 +17,7 @@ export default function CallPage() {
   const [message, setMessage] = useState("");
   const [isVoiceMode, setIsVoiceMode] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
+  const [conversationHistory, setConversationHistory] = useState<{role: string, content: string}[]>([]);
   const textInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   
@@ -27,6 +29,9 @@ export default function CallPage() {
   
   // Ref for the WebSocket connection
   const wsRef = useRef<ElevenLabsWebSocket | null>(null);
+  
+  // Ref for the Conversational AI connection
+  const aiRef = useRef<ElevenLabsConversationalAI | null>(null);
   
   // Ref for audio chunks from WebSocket
   const audioChunksRef = useRef<Blob[]>([]);
@@ -41,18 +46,70 @@ export default function CallPage() {
     }
   }, [isProcessing]);
 
-  // Setup ElevenLabs widget
+  // Setup ElevenLabs conversational AI
   useEffect(() => {
-    if (widgetRef.current) {
-      // The widget will be created by the script loaded in index.html
-      const widget = document.createElement('elevenlabs-convai');
-      widget.setAttribute('agent-id', 'zna9hXvyrwtNwOt5taJ2');
-      
-      // Clear the ref and append the widget
-      widgetRef.current.innerHTML = '';
-      widgetRef.current.appendChild(widget);
-      
-      // Initialize WebSocket service
+    // Initialize Conversational AI service
+    aiRef.current = new ElevenLabsConversationalAI(
+      // On response received
+      (response) => {
+        if (response.message) {
+          // Add AI response to conversation history
+          setConversationHistory(prev => [
+            ...prev,
+            { role: 'assistant', content: response.message }
+          ]);
+        }
+      },
+      // On audio data received
+      (audioChunk) => {
+        audioChunksRef.current.push(audioChunk);
+      },
+      // On complete
+      () => {
+        setIsProcessing(false);
+        playAudioFromChunks();
+      },
+      // On error
+      (error) => {
+        console.error('Conversational AI error:', error);
+        if (retryCount < 2) {
+          setRetryCount(prev => prev + 1);
+        } else {
+          toast.error('Error with conversational AI. Using backup service.');
+          // Fall back to the regular TTS if needed
+          initializeWebSocketTTS();
+        }
+        setIsProcessing(false);
+      }
+    );
+
+    try {
+      // Connect to Conversational AI
+      aiRef.current.connect().catch(error => {
+        console.error('Failed to connect to Conversational AI:', error);
+        // Initialize fallback TTS on connection failure
+        initializeWebSocketTTS();
+      });
+    } catch (error) {
+      console.error('Error initializing Conversational AI:', error);
+      // Initialize fallback TTS
+      initializeWebSocketTTS();
+    }
+    
+    return () => {
+      // Clean up WebSocket connections on component unmount
+      if (aiRef.current) {
+        aiRef.current.disconnect();
+      }
+      if (wsRef.current) {
+        wsRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Initialize the standard WebSocket TTS as fallback
+  const initializeWebSocketTTS = () => {
+    if (!wsRef.current) {
       wsRef.current = new ElevenLabsWebSocket(
         // On audio chunk received
         (audioChunk) => {
@@ -67,7 +124,6 @@ export default function CallPage() {
         (error) => {
           console.error('WebSocket error:', error);
           if (retryCount < 2) {
-            // Only log error, don't show toast, as we'll try the fallback
             setRetryCount(prev => prev + 1);
           } else {
             toast.error('Error with speech synthesis. Using backup service.');
@@ -76,14 +132,7 @@ export default function CallPage() {
         }
       );
     }
-    
-    return () => {
-      // Clean up WebSocket on component unmount
-      if (wsRef.current) {
-        wsRef.current.disconnect();
-      }
-    };
-  }, []);
+  };
 
   const playAudioFromChunks = async () => {
     if (audioChunksRef.current.length === 0) return;
@@ -122,7 +171,10 @@ export default function CallPage() {
       currentAudio.pause();
     }
     
-    // Close WebSocket if it's open
+    // Close WebSocket connections if they're open
+    if (aiRef.current) {
+      aiRef.current.disconnect();
+    }
     if (wsRef.current) {
       wsRef.current.disconnect();
     }
@@ -132,28 +184,50 @@ export default function CallPage() {
     }, 1000);
   };
 
-  const playResponse = async (text: string) => {
+  const sendMessageToAI = async (text: string) => {
     try {
       setIsProcessing(true);
       
-      // Try WebSocket if available
-      if (wsRef.current && retryCount < 2) {
+      // Add user message to conversation history
+      setConversationHistory(prev => [
+        ...prev,
+        { role: 'user', content: text }
+      ]);
+      
+      // Try Conversational AI if available
+      if (aiRef.current && retryCount < 2) {
         try {
           // Connect if not already connected
+          await aiRef.current.connect();
+          aiRef.current.sendMessage(text);
+          return;
+        } catch (aiError) {
+          console.error('Conversational AI failed, falling back to WebSocket TTS:', aiError);
+          setRetryCount(prev => prev + 1);
+        }
+      }
+      
+      // Try regular WebSocket TTS as first fallback
+      if (wsRef.current && retryCount < 3) {
+        try {
+          // Initialize WebSocket TTS if not already done
+          if (!wsRef.current) {
+            initializeWebSocketTTS();
+          }
+          
+          // Connect if not already connected
           await wsRef.current.connect();
-          wsRef.current.synthesizeSpeech(text);
-          // Audio chunks will be collected and played when complete
+          wsRef.current.synthesizeSpeech(`I received your message: "${text}". How can I help you further?`);
           return;
         } catch (wsError) {
           console.error('WebSocket failed, falling back to edge function:', wsError);
           setRetryCount(prev => prev + 1);
-          // Fall through to edge function
         }
       }
       
       // Fallback to Edge Function
       const { data, error } = await supabase.functions.invoke('eleven-labs-tts', {
-        body: { text }
+        body: { text: `I received your message: "${text}". How can I help you further?` }
       });
 
       if (error) {
@@ -194,8 +268,7 @@ export default function CallPage() {
     if (e) e.preventDefault();
     
     if (message.trim()) {
-      // Simulating sending message to AI
-      playResponse(`I'm processing your message: "${message}". How can I help you further?`);
+      sendMessageToAI(message);
       setMessage("");
     }
   };
@@ -219,7 +292,7 @@ export default function CallPage() {
     
     // Small delay before playing initial greeting
     const timer = setTimeout(() => {
-      playResponse("Hello! I'm your AI assistant. I'm now using ElevenLabs to speak. Can you hear me clearly?");
+      sendMessageToAI("Hello! I'm UGLYDOG, your AI assistant. How can I help you today?");
     }, 1000);
     
     return () => clearTimeout(timer);
@@ -419,4 +492,3 @@ export default function CallPage() {
     </div>
   );
 }
-
