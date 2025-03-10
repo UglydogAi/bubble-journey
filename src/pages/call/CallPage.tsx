@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, PhoneOff, Send, AudioWaveform } from "lucide-react";
@@ -20,6 +19,9 @@ export default function CallPage() {
   
   // Animation progress for the waveform
   const [waveProgress, setWaveProgress] = useState(0);
+  
+  // Ref for the ElevenLabs widget
+  const widgetRef = useRef<HTMLDivElement>(null);
 
   // Animate the waveform when processing audio
   useEffect(() => {
@@ -30,6 +32,24 @@ export default function CallPage() {
       return () => clearInterval(interval);
     }
   }, [isProcessing]);
+
+  // Create the ElevenLabs widget
+  useEffect(() => {
+    // Give time for the widget script to load
+    const timer = setTimeout(() => {
+      if (widgetRef.current) {
+        // The widget will be created by the script loaded in index.html
+        const widget = document.createElement('elevenlabs-convai');
+        widget.setAttribute('agent-id', 'zna9hXvyrwtNwOt5taJ2');
+        
+        // Clear the ref and append the widget
+        widgetRef.current.innerHTML = '';
+        widgetRef.current.appendChild(widget);
+      }
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleEndCall = () => {
     setShowControls(false);
@@ -113,6 +133,12 @@ export default function CallPage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#1A1F2C] to-[#0c1015] text-white px-4 relative overflow-hidden">
       {/* Matrix-like background effect */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PC9zdmc+')] opacity-20" />
+
+      {/* ElevenLabs Widget Container */}
+      <div 
+        ref={widgetRef} 
+        className="absolute inset-0 z-0 opacity-0 pointer-events-none"
+      ></div>
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
