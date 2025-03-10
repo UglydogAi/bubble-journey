@@ -17,14 +17,33 @@ export class ElevenLabsWebSocket {
   public connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        // Construct WebSocket URL
-        const wsUrl = `wss://api.elevenlabs.io/v1/text-to-speech?voice_id=${this.voiceId}`;
+        // Construct WebSocket URL with API key as query parameter for authentication
+        const wsUrl = `wss://api.elevenlabs.io/v1/text-to-speech/${this.voiceId}/stream-input?xi-api-key=${this.apiKey}`;
         
         // Create WebSocket connection
         this.socket = new WebSocket(wsUrl);
         
         this.socket.onopen = () => {
           console.log('Connected to ElevenLabs WebSocket');
+          // Send initial BOS (Beginning of Stream) message
+          const bosMessage = {
+            text: " ",
+            voice_settings: {
+              stability: 0.75,
+              similarity_boost: 0.75
+            },
+            xi_api_key: this.apiKey,
+            // Indicate beginning of stream
+            try_trigger_generation: true,
+            generation_config: {
+              chunk_length_schedule: [50]
+            }
+          };
+          
+          if (this.socket?.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify(bosMessage));
+          }
+          
           resolve();
         };
         
@@ -40,7 +59,15 @@ export class ElevenLabsWebSocket {
               const message = JSON.parse(event.data);
               console.log('WebSocket message:', message);
               
-              if (message.completed) {
+              if (message.audio) {
+                // Convert base64 audio to Blob if needed
+                if (this.onAudioChunk) {
+                  const audioData = Uint8Array.from(atob(message.audio), c => c.charCodeAt(0));
+                  this.onAudioChunk(new Blob([audioData], { type: 'audio/mpeg' }));
+                }
+              }
+              
+              if (message.isFinal) {
                 if (this.onComplete) {
                   this.onComplete();
                 }

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, PhoneOff, Send, AudioWaveform } from "lucide-react";
@@ -16,6 +15,7 @@ export default function CallPage() {
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [message, setMessage] = useState("");
   const [isVoiceMode, setIsVoiceMode] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
   const textInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   
@@ -66,7 +66,12 @@ export default function CallPage() {
         // On error
         (error) => {
           console.error('WebSocket error:', error);
-          toast.error('Error with speech synthesis');
+          if (retryCount < 2) {
+            // Only log error, don't show toast, as we'll try the fallback
+            setRetryCount(prev => prev + 1);
+          } else {
+            toast.error('Error with speech synthesis. Using backup service.');
+          }
           setIsProcessing(false);
         }
       );
@@ -131,8 +136,8 @@ export default function CallPage() {
     try {
       setIsProcessing(true);
       
-      // Use WebSocket if available, otherwise fallback to Edge Function
-      if (wsRef.current) {
+      // Try WebSocket if available
+      if (wsRef.current && retryCount < 2) {
         try {
           // Connect if not already connected
           await wsRef.current.connect();
@@ -141,11 +146,12 @@ export default function CallPage() {
           return;
         } catch (wsError) {
           console.error('WebSocket failed, falling back to edge function:', wsError);
+          setRetryCount(prev => prev + 1);
           // Fall through to edge function
         }
       }
       
-      // Fallback to our Edge Function
+      // Fallback to Edge Function
       const { data, error } = await supabase.functions.invoke('eleven-labs-tts', {
         body: { text }
       });
@@ -208,7 +214,15 @@ export default function CallPage() {
   };
 
   useEffect(() => {
-    playResponse("Hello! I'm your AI assistant. I'm now using ElevenLabs to speak. Can you hear me clearly?");
+    // Reset retry count when component mounts
+    setRetryCount(0);
+    
+    // Small delay before playing initial greeting
+    const timer = setTimeout(() => {
+      playResponse("Hello! I'm your AI assistant. I'm now using ElevenLabs to speak. Can you hear me clearly?");
+    }, 1000);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -405,3 +419,4 @@ export default function CallPage() {
     </div>
   );
 }
+
