@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, PhoneOff, Send, AudioWaveform } from "lucide-react";
@@ -22,6 +23,9 @@ export default function CallPage() {
   
   // Ref for the ElevenLabs widget
   const widgetRef = useRef<HTMLDivElement>(null);
+  
+  // Ref for the WebSocket connection
+  const wsRef = useRef<WebSocket | null>(null);
 
   // Animate the waveform when processing audio
   useEffect(() => {
@@ -33,7 +37,7 @@ export default function CallPage() {
     }
   }, [isProcessing]);
 
-  // Create the ElevenLabs widget
+  // Setup ElevenLabs widget
   useEffect(() => {
     // Give time for the widget script to load
     const timer = setTimeout(() => {
@@ -56,6 +60,12 @@ export default function CallPage() {
     if (currentAudio) {
       currentAudio.pause();
     }
+    
+    // Close WebSocket if it's open
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.close();
+    }
+    
     setTimeout(() => {
       navigate('/dashboard');
     }, 1000);
@@ -65,7 +75,8 @@ export default function CallPage() {
     try {
       setIsProcessing(true);
       
-      const { data, error } = await supabase.functions.invoke('text-to-speech', {
+      // Use our new edge function for text-to-speech
+      const { data, error } = await supabase.functions.invoke('eleven-labs-tts', {
         body: { text }
       });
 
@@ -126,7 +137,7 @@ export default function CallPage() {
   };
 
   useEffect(() => {
-    playResponse("Hello! I'm your AI assistant. I'm now using Play.ht to speak. Can you hear me clearly?");
+    playResponse("Hello! I'm your AI assistant. I'm now using ElevenLabs to speak. Can you hear me clearly?");
   }, []);
 
   return (
