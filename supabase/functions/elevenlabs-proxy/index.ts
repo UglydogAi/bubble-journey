@@ -33,6 +33,8 @@ serve(async (req) => {
     // Define the URL for the Conversational AI REST API
     const apiUrl = `https://api.elevenlabs.io/v1/conversational-ai`;
     
+    console.log(`Proxying request to ElevenLabs for conversation: ${conversation_id || 'new'}`);
+    
     // Forward the request to ElevenLabs
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -62,6 +64,7 @@ serve(async (req) => {
 
     // Return the response from ElevenLabs
     const data = await response.json();
+    console.log(`Successfully received response from ElevenLabs`);
     
     return new Response(
       JSON.stringify(data),

@@ -142,6 +142,8 @@ export class ElevenLabsConversationalAI {
 
   private async sendViaProxy(message: string, context?: string): Promise<void> {
     try {
+      // Use the Supabase edge function endpoint for the proxy
+      // The path must match exactly what you've deployed
       const proxyUrl = '/api/functions/v1/elevenlabs-proxy';
       
       const response = await fetch(proxyUrl, {
