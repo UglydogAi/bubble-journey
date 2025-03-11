@@ -14,9 +14,9 @@ const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
         animate={{ 
           opacity: [0.5, 1, 0.5],
           textShadow: [
-            "0 0 7px #D946EF",
-            "0 0 10px #D946EF",
-            "0 0 7px #D946EF"
+            `0 0 7px ${isProcessing ? '#F97316' : '#D946EF'}`,
+            `0 0 10px ${isProcessing ? '#F97316' : '#D946EF'}`,
+            `0 0 7px ${isProcessing ? '#F97316' : '#D946EF'}`
           ]
         }}
         transition={{ 
@@ -28,7 +28,11 @@ const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
       </motion.h2>
 
       <p className="text-base sm:text-lg text-gray-300 mb-8 sm:mb-12">
-        {isProcessing ? "Speaking..." : "Voice Assistant"}
+        {isProcessing ? (
+          <span className="text-orange-200">Speaking...</span>
+        ) : (
+          <span className="text-purple-200">Listening...</span>
+        )}
       </p>
     </>
   );

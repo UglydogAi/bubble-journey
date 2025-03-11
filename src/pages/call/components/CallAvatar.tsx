@@ -14,18 +14,35 @@ const CallAvatar: React.FC<CallAvatarProps> = ({ isProcessing }) => {
         alt="UGLYDOG Mascot"
         className="w-full h-full object-cover"
       />
-      {isProcessing && (
-        <motion.div 
-          className="absolute inset-0 bg-purple-500/20"
-          animate={{ 
-            opacity: [0.2, 0.5, 0.2],
-          }}
-          transition={{ 
-            duration: 1.5, 
-            repeat: Infinity 
-          }}
-        />
-      )}
+      
+      {/* Pulsing background */}
+      <motion.div 
+        className={`absolute inset-0 ${isProcessing ? 'bg-orange-500/20' : 'bg-purple-500/20'}`}
+        animate={{ 
+          opacity: [0.2, 0.5, 0.2],
+          scale: isProcessing ? [1, 1.05, 1] : [0.95, 1, 0.95],
+        }}
+        transition={{ 
+          duration: isProcessing ? 1 : 1.5, 
+          repeat: Infinity 
+        }}
+      />
+      
+      {/* Active indicator ring */}
+      <motion.div 
+        className={`absolute -inset-1 rounded-full ${isProcessing ? 'border-2 border-orange-500/30' : 'border border-purple-500/30'}`}
+        animate={{ 
+          boxShadow: [
+            `0 0 5px 0 ${isProcessing ? 'rgba(249,115,22,0.3)' : 'rgba(139,92,246,0.3)'}`,
+            `0 0 10px 0 ${isProcessing ? 'rgba(249,115,22,0.5)' : 'rgba(139,92,246,0.5)'}`,
+            `0 0 5px 0 ${isProcessing ? 'rgba(249,115,22,0.3)' : 'rgba(139,92,246,0.3)'}`
+          ]
+        }}
+        transition={{ 
+          duration: 2, 
+          repeat: Infinity 
+        }}
+      />
     </div>
   );
 };
