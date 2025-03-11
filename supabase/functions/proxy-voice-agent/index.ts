@@ -23,11 +23,18 @@ serve(async (req) => {
     const body = await req.text();
     console.log("Received request body:", body);
     
-    // Construct the endpoint URL for ElevenLabs Conversational AI
-    const elevenlabsUrl = `https://api.elevenlabs.io/v1/conversational-ai/agents/${AGENT_ID}`;
+    // Update: Use the correct endpoint URL for ElevenLabs Conversational AI
+    const elevenlabsUrl = `https://api.elevenlabs.io/v1/conversational-ai`;
     
     console.log(`Forwarding request to ElevenLabs at: ${elevenlabsUrl}`);
     console.log(`API Key present: ${ELEVENLABS_API_KEY ? "Yes" : "No"}`);
+    
+    // Forward the request to ElevenLabs with the agent_id in the body
+    const bodyObj = JSON.parse(body);
+    const updatedBody = JSON.stringify({
+      ...bodyObj,
+      agent_id: AGENT_ID
+    });
     
     // Forward the request to ElevenLabs
     const response = await fetch(elevenlabsUrl, {
@@ -36,7 +43,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
         "xi-api-key": ELEVENLABS_API_KEY || "",
       },
-      body: body,
+      body: updatedBody,
     });
 
     // Check for successful response

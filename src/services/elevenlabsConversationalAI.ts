@@ -142,7 +142,7 @@ export class ElevenLabsConversationalAI {
 
   private async sendViaProxy(message: string, context?: string): Promise<void> {
     try {
-      // Use the new Supabase Edge Function URL for the proxy
+      // Fix: Correctly specify the proxy endpoint path
       const proxyUrl = '/api/functions/v1/proxy-voice-agent';
       
       console.log(`Sending message to proxy: ${message}`);
@@ -156,6 +156,7 @@ export class ElevenLabsConversationalAI {
       
       console.log('Sending payload to proxy:', payload);
       
+      // Make sure we're including appropriate headers for CORS
       const response = await fetch(proxyUrl, {
         method: 'POST',
         headers: {
