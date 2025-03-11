@@ -6,6 +6,10 @@ import ElevenLabsConversationalAI from "@/services/elevenlabsConversationalAI";
 import ElevenLabsWebSocket from "@/services/elevenlabsWebSocket";
 import { useAudioPlayer } from './useAudioPlayer';
 
+// API Credentials for UGLYDOG Voice Agent
+const API_KEY = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247';
+const AGENT_ID = 'zna9hXvyrwtNwOt5taJ2';
+
 export function useConversation() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [waveProgress, setWaveProgress] = useState(0);
@@ -72,7 +76,10 @@ export function useConversation() {
           initializeWebSocketTTS();
         }
         setIsProcessing(false);
-      }
+      },
+      // Pass API credentials
+      API_KEY,
+      AGENT_ID
     );
 
     try {
@@ -133,7 +140,9 @@ export function useConversation() {
             toast.error('Error with speech synthesis. Using backup service.');
           }
           setIsProcessing(false);
-        }
+        },
+        // Pass API key
+        API_KEY
       );
     }
   };

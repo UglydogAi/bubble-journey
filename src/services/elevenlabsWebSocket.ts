@@ -5,14 +5,17 @@
 
 export class ElevenLabsWebSocket {
   private socket: WebSocket | null = null;
-  private apiKey: string = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247';
+  private apiKey: string;
   private voiceId: string = '831ZKnvNLkjUZ4w5GlOe';
   
   constructor(
     private onAudioChunk?: (audioData: Blob) => void, 
     private onComplete?: () => void,
-    private onError?: (error: any) => void
-  ) {}
+    private onError?: (error: any) => void,
+    apiKey: string = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247'
+  ) {
+    this.apiKey = apiKey;
+  }
 
   public connect(): Promise<void> {
     return new Promise((resolve, reject) => {

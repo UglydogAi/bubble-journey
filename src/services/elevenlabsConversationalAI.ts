@@ -5,16 +5,22 @@
 
 export class ElevenLabsConversationalAI {
   private socket: WebSocket | null = null;
-  private apiKey: string = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247';
-  private agentId: string = 'zna9hXvyrwtNwOt5taJ2';
+  private apiKey: string;
+  private agentId: string;
   private conversationId: string;
   
   constructor(
     private onResponse?: (response: any) => void,
     private onAudioData?: (audioData: Blob) => void,
     private onComplete?: () => void,
-    private onError?: (error: any) => void
+    private onError?: (error: any) => void,
+    apiKey: string = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247',
+    agentId: string = 'zna9hXvyrwtNwOt5taJ2'
   ) {
+    // Store API credentials
+    this.apiKey = apiKey;
+    this.agentId = agentId;
+    
     // Generate a unique conversation ID based on timestamp
     this.conversationId = `convo_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
   }
