@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState, useEffect } from "react";
 import { NotificationPreferences } from "./NotificationPreferences";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -11,6 +10,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 interface SettingsViewProps {
   notificationPreference: string;
   onPreferenceChange: (preference: string) => void;
+}
+
+interface Profile {
+  id: string;
+  avatar_url: string | null;
+  updated_at?: string;
 }
 
 export function SettingsView({ 
@@ -38,7 +43,7 @@ export function SettingsView({
           return;
         }
         
-        const { data: profile, error: profileError } = await supabase
+        const { data, error: profileError } = await supabase
           .from('profiles')
           .select('avatar_url')
           .eq('id', user.id)
@@ -46,6 +51,7 @@ export function SettingsView({
         
         if (profileError) throw profileError;
         
+        const profile = data as Profile | null;
         if (profile?.avatar_url) {
           setAvatarUrl(profile.avatar_url);
         }
@@ -75,25 +81,22 @@ export function SettingsView({
         return;
       }
 
-      // Upload file to storage
       const fileExt = file.name.split('.').pop();
       const filePath = `${user.id}-${Math.random()}.${fileExt}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
-      // Update profile with new avatar URL
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: publicUrl } as any)
         .eq('id', user.id);
 
       if (updateError) throw updateError;

@@ -15,7 +15,7 @@ export class ElevenLabsConversationalAI {
     private onAudioData?: (audioData: Blob) => void,
     private onComplete?: () => void,
     private onError?: (error: any) => void,
-    apiKey: string = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247',
+    apiKey: string = 'your-api-key',
     agentId: string = 'zna9hXvyrwtNwOt5taJ2',
     useProxy: boolean = true
   ) {
@@ -142,9 +142,11 @@ export class ElevenLabsConversationalAI {
 
   private async sendViaProxy(message: string, context?: string): Promise<void> {
     try {
-      // Use the Supabase edge function endpoint for the proxy
-      // The path must match exactly what you've deployed
+      // Get the base URL from window.location for relative URL construction
       const proxyUrl = '/api/functions/v1/elevenlabs-proxy';
+      
+      console.log(`Sending message to proxy: ${message}`);
+      console.log(`Conversation ID: ${this.conversationId}`);
       
       const response = await fetch(proxyUrl, {
         method: 'POST',

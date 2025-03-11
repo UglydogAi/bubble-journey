@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 // Retrieve API key from environment variables
-const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY") || "sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247";
+const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY") || "";
 const AGENT_ID = "zna9hXvyrwtNwOt5taJ2";
 
 serve(async (req) => {
@@ -18,22 +18,25 @@ serve(async (req) => {
   }
 
   try {
-    // For WebSocket connections (if needed later)
-    if (req.headers.get("Upgrade") === "websocket") {
-      console.error("WebSocket connections not supported via the HTTP proxy function");
-      return new Response("WebSocket connections must be made directly", { 
-        status: 400,
-        headers: corsHeaders
-      });
-    }
-
     // Regular HTTP request handling
     const { message, conversation_id, context } = await req.json();
+    
+    if (!message) {
+      return new Response(
+        JSON.stringify({ error: "Message is required" }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
     
     // Define the URL for the Conversational AI REST API
     const apiUrl = `https://api.elevenlabs.io/v1/conversational-ai`;
     
     console.log(`Proxying request to ElevenLabs for conversation: ${conversation_id || 'new'}`);
+    console.log(`Message: ${message}`);
+    console.log(`API Key: ${ELEVENLABS_API_KEY ? "Present" : "Missing"}`);
     
     // Forward the request to ElevenLabs
     const response = await fetch(apiUrl, {
@@ -54,7 +57,10 @@ serve(async (req) => {
       const errorText = await response.text();
       console.error(`ElevenLabs API error: ${response.status} - ${errorText}`);
       return new Response(
-        JSON.stringify({ error: `ElevenLabs API error: ${response.status}` }),
+        JSON.stringify({ 
+          error: `ElevenLabs API error: ${response.status}`,
+          details: errorText
+        }),
         { 
           status: response.status, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -64,7 +70,7 @@ serve(async (req) => {
 
     // Return the response from ElevenLabs
     const data = await response.json();
-    console.log(`Successfully received response from ElevenLabs`);
+    console.log(`Successfully received response from ElevenLabs:`, data);
     
     return new Response(
       JSON.stringify(data),
