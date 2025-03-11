@@ -142,22 +142,26 @@ export class ElevenLabsConversationalAI {
 
   private async sendViaProxy(message: string, context?: string): Promise<void> {
     try {
-      // Use the Supabase Edge Function URL for the proxy
-      const proxyUrl = '/api/functions/v1/elevenlabs-proxy';
+      // Use the new Supabase Edge Function URL for the proxy
+      const proxyUrl = '/api/functions/v1/proxy-voice-agent';
       
       console.log(`Sending message to proxy: ${message}`);
       console.log(`Conversation ID: ${this.conversationId}`);
+      
+      const payload = {
+        message,
+        conversation_id: this.conversationId,
+        context: context || ''
+      };
+      
+      console.log('Sending payload to proxy:', payload);
       
       const response = await fetch(proxyUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          message,
-          conversation_id: this.conversationId,
-          context: context || ''
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
