@@ -142,7 +142,7 @@ export class ElevenLabsConversationalAI {
 
   private async sendViaProxy(message: string, context?: string): Promise<void> {
     try {
-      // Get the base URL from window.location for relative URL construction
+      // Use the Supabase Edge Function URL for the proxy
       const proxyUrl = '/api/functions/v1/elevenlabs-proxy';
       
       console.log(`Sending message to proxy: ${message}`);

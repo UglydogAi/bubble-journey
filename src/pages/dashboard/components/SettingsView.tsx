@@ -1,3 +1,4 @@
+
 import React, { useCallback, useState, useEffect } from "react";
 import { NotificationPreferences } from "./NotificationPreferences";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -43,6 +44,7 @@ export function SettingsView({
           return;
         }
         
+        // Use the correct table name based on what we created in the SQL migration
         const { data, error: profileError } = await supabase
           .from('profiles')
           .select('avatar_url')
@@ -51,9 +53,8 @@ export function SettingsView({
         
         if (profileError) throw profileError;
         
-        const profile = data as Profile | null;
-        if (profile?.avatar_url) {
-          setAvatarUrl(profile.avatar_url);
+        if (data?.avatar_url) {
+          setAvatarUrl(data.avatar_url);
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -94,9 +95,10 @@ export function SettingsView({
         .from('avatars')
         .getPublicUrl(filePath);
 
+      // Use the correct table name based on what we created in the SQL migration
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ avatar_url: publicUrl } as any)
+        .update({ avatar_url: publicUrl })
         .eq('id', user.id);
 
       if (updateError) throw updateError;
