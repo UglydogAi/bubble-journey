@@ -27,12 +27,16 @@ const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
         UGLYDOG
       </motion.h2>
 
-      <p className="text-base sm:text-lg text-gray-300 mb-8 sm:mb-12">
+      <p className="text-base sm:text-lg text-gray-300 mb-2">
         {isProcessing ? (
           <span className="text-orange-200">Speaking...</span>
         ) : (
           <span className="text-purple-200">Listening...</span>
         )}
+      </p>
+      
+      <p className="text-xs text-gray-400 mb-6 sm:mb-10">
+        Secure Proxy Connection
       </p>
     </>
   );

@@ -8,6 +8,7 @@ export class ElevenLabsConversationalAI {
   private apiKey: string;
   private agentId: string;
   private conversationId: string;
+  private useProxy: boolean;
   
   constructor(
     private onResponse?: (response: any) => void,
@@ -15,11 +16,13 @@ export class ElevenLabsConversationalAI {
     private onComplete?: () => void,
     private onError?: (error: any) => void,
     apiKey: string = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247',
-    agentId: string = 'zna9hXvyrwtNwOt5taJ2'
+    agentId: string = 'zna9hXvyrwtNwOt5taJ2',
+    useProxy: boolean = true
   ) {
     // Store API credentials
     this.apiKey = apiKey;
     this.agentId = agentId;
+    this.useProxy = useProxy;
     
     // Generate a unique conversation ID based on timestamp
     this.conversationId = `convo_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
@@ -28,7 +31,15 @@ export class ElevenLabsConversationalAI {
   public connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        // Construct WebSocket URL with agent ID and API key
+        if (this.useProxy) {
+          // Using proxy doesn't require an actual WebSocket connection
+          // We'll use HTTP fallback when sending messages
+          console.log('Using Supabase proxy for ElevenLabs Conversational AI.');
+          resolve();
+          return;
+        }
+
+        // Direct WebSocket connection (original implementation)
         const wsUrl = `wss://api.elevenlabs.io/v1/conversational-ai?agent_id=${this.agentId}&xi-api-key=${this.apiKey}`;
         
         // Create WebSocket connection
@@ -88,27 +99,93 @@ export class ElevenLabsConversationalAI {
     });
   }
 
-  public sendMessage(message: string, context?: string): void {
-    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-      console.error('WebSocket not connected');
-      if (this.onError) {
-        this.onError(new Error('WebSocket not connected'));
-      }
-      return;
-    }
-    
+  public async sendMessage(message: string, context?: string): Promise<void> {
     try {
-      // Construct the payload
-      const payload = {
-        message,
-        conversation_id: this.conversationId,
-        context: context || ''
-      };
+      if (this.useProxy) {
+        // Use HTTP proxy via Supabase edge function
+        await this.sendViaProxy(message, context);
+        return;
+      }
       
-      // Send the payload
-      this.socket.send(JSON.stringify(payload));
+      // Original WebSocket implementation
+      if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+        console.error('WebSocket not connected');
+        if (this.onError) {
+          this.onError(new Error('WebSocket not connected'));
+        }
+        return;
+      }
+      
+      try {
+        // Construct the payload
+        const payload = {
+          message,
+          conversation_id: this.conversationId,
+          context: context || ''
+        };
+        
+        // Send the payload
+        this.socket.send(JSON.stringify(payload));
+      } catch (error) {
+        console.error('Error sending WebSocket message:', error);
+        if (this.onError) {
+          this.onError(error);
+        }
+      }
     } catch (error) {
-      console.error('Error sending WebSocket message:', error);
+      console.error('Error in sendMessage:', error);
+      if (this.onError) {
+        this.onError(error);
+      }
+    }
+  }
+
+  private async sendViaProxy(message: string, context?: string): Promise<void> {
+    try {
+      const proxyUrl = '/api/functions/v1/elevenlabs-proxy';
+      
+      const response = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message,
+          conversation_id: this.conversationId,
+          context: context || ''
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Proxy error: ${response.status} - ${errorText}`);
+        throw new Error(`Proxy error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Proxy response:', data);
+      
+      // Process the response similar to WebSocket
+      if (this.onResponse) {
+        this.onResponse(data);
+      }
+      
+      // Handle audio data if present
+      if (data.audio) {
+        if (this.onAudioData) {
+          const audioData = Uint8Array.from(atob(data.audio), c => c.charCodeAt(0));
+          this.onAudioData(new Blob([audioData], { type: 'audio/mpeg' }));
+        }
+      }
+      
+      // Check if this is the final message
+      if (data.isFinal) {
+        if (this.onComplete) {
+          this.onComplete();
+        }
+      }
+    } catch (error) {
+      console.error('Error using proxy:', error);
       if (this.onError) {
         this.onError(error);
       }
