@@ -28,7 +28,7 @@ const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
       </motion.h2>
 
       <p className="text-base sm:text-lg text-gray-300 mb-8 sm:mb-12">
-        {isProcessing ? "Speaking..." : "Listening..."}
+        {isProcessing ? "Speaking..." : "Voice Assistant"}
       </p>
     </>
   );

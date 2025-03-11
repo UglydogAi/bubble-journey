@@ -11,17 +11,12 @@ import ChatBar from "./components/ChatBar";
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
-  const [isVoiceMode, setIsVoiceMode] = useState(true);
-  const textInputRef = useRef<HTMLInputElement>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   
   const {
     isProcessing,
     waveProgress,
-    message,
-    setMessage,
-    sendMessageToAI,
     pauseCurrentAudio
   } = useConversation();
 
@@ -32,28 +27,6 @@ export default function CallPage() {
     setTimeout(() => {
       navigate('/dashboard');
     }, 1000);
-  };
-
-  const handleSendMessage = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    
-    if (message.trim()) {
-      sendMessageToAI(message);
-      setMessage("");
-    }
-  };
-
-  const toggleInputMode = () => {
-    setIsVoiceMode(!isVoiceMode);
-    if (!isVoiceMode) {
-      // When switching to voice mode, clear any text
-      setMessage("");
-    } else {
-      // When switching to text mode, focus the input
-      setTimeout(() => {
-        textInputRef.current?.focus();
-      }, 100);
-    }
   };
 
   return (
@@ -86,16 +59,10 @@ export default function CallPage() {
         )}
       </motion.div>
 
-      {/* Futuristic Chat Bar - Glass-like with neon glow */}
+      {/* Voice-only Status Bar */}
       <ChatBar 
-        isVoiceMode={isVoiceMode}
         isProcessing={isProcessing}
-        message={message}
         waveProgress={waveProgress}
-        setMessage={setMessage}
-        toggleInputMode={toggleInputMode}
-        handleSendMessage={handleSendMessage}
-        textInputRef={textInputRef}
       />
     </div>
   );
