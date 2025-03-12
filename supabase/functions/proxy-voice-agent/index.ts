@@ -23,7 +23,7 @@ serve(async (req) => {
     const body = await req.text();
     console.log("Received request body:", body);
     
-    // ElevenLabs Conversational AI endpoint
+    // Update: Use the correct endpoint URL for ElevenLabs Conversational AI
     const elevenlabsUrl = `https://api.elevenlabs.io/v1/conversational-ai`;
     
     console.log(`Forwarding request to ElevenLabs at: ${elevenlabsUrl}`);
@@ -48,10 +48,9 @@ serve(async (req) => {
 
     // Check for successful response
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`ElevenLabs API error: ${response.status} - ${errorText}`);
+      console.error(`ElevenLabs API error: ${response.status} - ${await response.text()}`);
       return new Response(
-        JSON.stringify({ error: `ElevenLabs API error: ${response.status}`, details: errorText }),
+        JSON.stringify({ error: `ElevenLabs API error: ${response.status}` }),
         { 
           status: response.status, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
