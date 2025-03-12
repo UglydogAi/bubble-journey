@@ -142,7 +142,7 @@ export class ElevenLabsConversationalAI {
 
   private async sendViaProxy(message: string, context?: string): Promise<void> {
     try {
-      // Fix: Correctly specify the proxy endpoint path
+      // Use the full, absolute path to the proxy endpoint, with leading slash
       const proxyUrl = '/api/functions/v1/proxy-voice-agent';
       
       console.log(`Sending message to proxy: ${message}`);
@@ -156,7 +156,7 @@ export class ElevenLabsConversationalAI {
       
       console.log('Sending payload to proxy:', payload);
       
-      // Make sure we're including appropriate headers for CORS
+      // Make sure we're including proper Content-Type header
       const response = await fetch(proxyUrl, {
         method: 'POST',
         headers: {
