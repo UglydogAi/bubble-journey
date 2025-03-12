@@ -7,6 +7,7 @@ import CallAvatar from "./components/CallAvatar";
 import CallHeader from "./components/CallHeader";
 import CallControls from "./components/CallControls";
 import ChatBar from "./components/ChatBar";
+import SpeechInput from "./components/SpeechInput";
 
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
@@ -17,8 +18,16 @@ export default function CallPage() {
   const {
     isProcessing,
     waveProgress,
-    pauseCurrentAudio
+    pauseCurrentAudio,
+    sendMessageToAI,
+    initialGreetingPlayed
   } = useConversation();
+
+  const handleSpeechResult = (transcription: string) => {
+    if (transcription.trim()) {
+      sendMessageToAI(transcription);
+    }
+  };
 
   const handleEndCall = () => {
     setShowControls(false);
@@ -51,11 +60,20 @@ export default function CallPage() {
         <CallHeader isProcessing={isProcessing} />
 
         {showControls && (
-          <CallControls 
-            muted={muted} 
-            setMuted={setMuted} 
-            onEndCall={handleEndCall} 
-          />
+          <>
+            <CallControls 
+              muted={muted} 
+              setMuted={setMuted} 
+              onEndCall={handleEndCall} 
+            />
+            
+            {/* Show speech input only after initial greeting */}
+            {initialGreetingPlayed && !isProcessing && (
+              <div className="w-full mt-6">
+                <SpeechInput onTranscriptionResult={handleSpeechResult} />
+              </div>
+            )}
+          </>
         )}
       </motion.div>
 

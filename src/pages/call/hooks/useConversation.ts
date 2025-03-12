@@ -11,6 +11,7 @@ export function useConversation() {
   const [message, setMessage] = useState("");
   const [retryCount, setRetryCount] = useState(0);
   const [conversationHistory, setConversationHistory] = useState<{role: string, content: string}[]>([]);
+  const [initialGreetingPlayed, setInitialGreetingPlayed] = useState(false);
   
   const {
     currentAudio,
@@ -18,7 +19,8 @@ export function useConversation() {
     audioChunksRef,
     playAudioFromChunks,
     pauseCurrentAudio,
-    addAudioChunk
+    addAudioChunk,
+    clearAudioChunks
   } = useAudioPlayer();
 
   // Initialize fallback TTS service
@@ -61,13 +63,15 @@ export function useConversation() {
     }
   }, [isProcessing]);
 
-  // Reset retry count when component mounts
+  // Reset retry count when component mounts and play initial greeting
   useEffect(() => {
     setRetryCount(0);
     
-    // Small delay before playing initial greeting
+    // Play UGLYDOG's custom greeting when the call page loads
     const timer = setTimeout(() => {
-      sendMessageToAI("Hello! I'm UGLYDOG, your AI assistant. How can I help you today?");
+      const uglyDogGreeting = "I've been expecting you, I'm UGLYDOG, your no-excuses AI coach. Tell me what's holding you back, and I'll tell you how to CRUSH IT!";
+      sendMessageToAI(uglyDogGreeting);
+      setInitialGreetingPlayed(true);
     }, 1000);
     
     return () => {
@@ -83,11 +87,13 @@ export function useConversation() {
     try {
       setIsProcessing(true);
       
-      // Add user message to conversation history
-      setConversationHistory(prev => [
-        ...prev,
-        { role: 'user', content: text }
-      ]);
+      // Add user message to conversation history if it's not the initial greeting
+      if (initialGreetingPlayed) {
+        setConversationHistory(prev => [
+          ...prev,
+          { role: 'user', content: text }
+        ]);
+      }
       
       // Try Conversational AI if available
       if (aiRef.current && retryCount < 2) {
@@ -118,6 +124,7 @@ export function useConversation() {
     setMessage,
     conversationHistory,
     sendMessageToAI,
-    pauseCurrentAudio
+    pauseCurrentAudio,
+    initialGreetingPlayed
   };
 }
