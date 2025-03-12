@@ -7,20 +7,17 @@ import CallAvatar from "./components/CallAvatar";
 import CallHeader from "./components/CallHeader";
 import CallControls from "./components/CallControls";
 import ChatBar from "./components/ChatBar";
-import SpeechInput from "./components/SpeechInput";
 
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
-  const [userMessage, setUserMessage] = useState("");
   const widgetRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   
   const {
     isProcessing,
     waveProgress,
-    pauseCurrentAudio,
-    sendMessageToAI
+    pauseCurrentAudio
   } = useConversation();
 
   const handleEndCall = () => {
@@ -30,24 +27,6 @@ export default function CallPage() {
     setTimeout(() => {
       navigate('/dashboard');
     }, 1000);
-  };
-
-  const handleSendMessage = () => {
-    if (userMessage.trim() && !isProcessing) {
-      sendMessageToAI(userMessage);
-      setUserMessage("");
-    }
-  };
-
-  const handleTranscriptionComplete = (text: string) => {
-    setUserMessage(text);
-    // Auto-send the transcribed message
-    setTimeout(() => {
-      if (text && !isProcessing) {
-        sendMessageToAI(text);
-        setUserMessage("");
-      }
-    }, 500);
   };
 
   return (
@@ -72,24 +51,11 @@ export default function CallPage() {
         <CallHeader isProcessing={isProcessing} />
 
         {showControls && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="w-full max-w-md mt-6 space-y-4"
-          >
-            {/* Speech to Text Component */}
-            <SpeechInput 
-              onTranscriptionComplete={handleTranscriptionComplete}
-              disabled={isProcessing} 
-            />
-            
-            <CallControls 
-              muted={muted} 
-              setMuted={setMuted} 
-              onEndCall={handleEndCall} 
-            />
-          </motion.div>
+          <CallControls 
+            muted={muted} 
+            setMuted={setMuted} 
+            onEndCall={handleEndCall} 
+          />
         )}
       </motion.div>
 
