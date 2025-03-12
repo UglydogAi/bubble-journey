@@ -38,7 +38,8 @@ serve(async (req) => {
     
     // Create a new FormData to send to ElevenLabs
     const elevenLabsFormData = new FormData();
-    elevenLabsFormData.append('audio', audioFile);
+    elevenLabsFormData.append('file', audioFile);
+    elevenLabsFormData.append('model_id', 'whisper-1'); // Required field that was missing
     
     console.log(`Sending audio to ElevenLabs at: ${apiUrl}`);
     

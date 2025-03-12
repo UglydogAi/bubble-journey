@@ -1,9 +1,10 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mic, MicOff, Loader2 } from "lucide-react";
+import { Mic, MicOff, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSpeechToText } from "../hooks/useSpeechToText";
+import { toast } from "sonner";
 
 interface SpeechInputProps {
   onTranscriptionComplete: (text: string) => void;
@@ -18,19 +19,37 @@ const SpeechInput: React.FC<SpeechInputProps> = ({
     isRecording,
     isProcessing,
     transcription,
+    error,
     startRecording,
     transcribeAudio,
+    cancelRecording,
   } = useSpeechToText();
 
   const handleStartRecording = async () => {
-    await startRecording();
+    const success = await startRecording();
+    if (!success) {
+      toast.error("Failed to start recording. Please check your microphone permissions.");
+    }
   };
 
   const handleStopRecording = async () => {
-    const text = await transcribeAudio();
-    if (text) {
-      onTranscriptionComplete(text);
+    try {
+      const text = await transcribeAudio();
+      if (text) {
+        onTranscriptionComplete(text);
+        toast.success("Successfully transcribed your speech");
+      } else if (error) {
+        toast.error(`Failed to transcribe: ${error}`);
+      }
+    } catch (err) {
+      console.error("Error in transcription:", err);
+      toast.error("Failed to process your speech. Please try again.");
     }
+  };
+
+  const handleCancelRecording = () => {
+    cancelRecording();
+    toast.info("Recording canceled");
   };
 
   return (
@@ -45,6 +64,17 @@ const SpeechInput: React.FC<SpeechInputProps> = ({
         </motion.div>
       )}
       
+      {error && !isRecording && !isProcessing && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full bg-red-900/30 backdrop-blur-sm rounded-lg p-3 mb-3 flex items-center"
+        >
+          <AlertCircle className="h-4 w-4 text-red-400 mr-2" />
+          <p className="text-sm text-red-200">{error}</p>
+        </motion.div>
+      )}
+      
       <div className="flex items-center justify-center gap-2">
         {!isRecording ? (
           <Button
@@ -56,24 +86,34 @@ const SpeechInput: React.FC<SpeechInputProps> = ({
             {isProcessing ? "Processing..." : "Start Speaking"}
           </Button>
         ) : (
-          <Button
-            onClick={handleStopRecording}
-            variant="destructive"
-            className="pulse-animation"
-            disabled={isProcessing}
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <MicOff className="w-5 h-5 mr-2" />
-                Stop Speaking
-              </>
-            )}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleStopRecording}
+              variant="destructive"
+              className="pulse-animation"
+              disabled={isProcessing}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <MicOff className="w-5 h-5 mr-2" />
+                  Stop & Transcribe
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={handleCancelRecording}
+              variant="outline"
+              className="border-white/20 text-white/80 hover:bg-white/10"
+              disabled={isProcessing}
+            >
+              Cancel
+            </Button>
+          </div>
         )}
       </div>
     </div>

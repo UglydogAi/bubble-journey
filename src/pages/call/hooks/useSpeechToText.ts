@@ -7,6 +7,7 @@ export function useSpeechToText() {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcription, setTranscription] = useState("");
+  const [error, setError] = useState<string | null>(null);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -18,6 +19,7 @@ export function useSpeechToText() {
       // Reset state
       audioChunksRef.current = [];
       setTranscription("");
+      setError(null);
       
       // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -41,6 +43,7 @@ export function useSpeechToText() {
       return true;
     } catch (error) {
       console.error('Error starting recording:', error);
+      setError("Could not access microphone. Please check permissions.");
       toast.error('Could not access microphone. Please check permissions.');
       return false;
     }
@@ -75,18 +78,29 @@ export function useSpeechToText() {
   const transcribeAudio = async () => {
     try {
       setIsProcessing(true);
+      setError(null);
       
       // Stop recording and get audio blob
       const audioBlob = await stopRecording();
       
       if (!audioBlob) {
         setIsProcessing(false);
+        setError("No audio recorded");
+        return null;
+      }
+      
+      // Check if audio is too small (likely empty)
+      if (audioBlob.size < 1000) {
+        setIsProcessing(false);
+        setError("Audio recording too short or empty");
         return null;
       }
       
       // Create form data with audio blob
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.webm');
+      
+      console.log("Sending audio to speech-to-text function, size:", audioBlob.size, "bytes");
       
       // Send to Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('speech-to-text', {
@@ -95,24 +109,32 @@ export function useSpeechToText() {
       
       if (error) {
         console.error('Error from speech-to-text function:', error);
-        toast.error('Failed to transcribe audio');
+        setError(`Failed to transcribe: ${error.message}`);
         setIsProcessing(false);
         return null;
       }
+      
+      console.log("Speech-to-text response:", data);
       
       if (data.text) {
         setTranscription(data.text);
         setIsProcessing(false);
         return data.text;
+      } else if (data.error) {
+        setError(`API error: ${data.error}`);
+        console.error('Error from ElevenLabs API:', data.error, data.details);
+        setIsProcessing(false);
+        return null;
       } else {
-        toast.error('Received empty transcription');
+        setError("Received empty transcription");
+        console.error('Received empty transcription response:', data);
         setIsProcessing(false);
         return null;
       }
       
     } catch (error) {
       console.error('Error transcribing audio:', error);
-      toast.error('Failed to process speech');
+      setError(`Error: ${error.message}`);
       setIsProcessing(false);
       return null;
     }
@@ -131,12 +153,14 @@ export function useSpeechToText() {
     
     audioChunksRef.current = [];
     setIsRecording(false);
+    setError(null);
   };
 
   return {
     isRecording,
     isProcessing,
     transcription,
+    error,
     startRecording,
     stopRecording,
     transcribeAudio,
