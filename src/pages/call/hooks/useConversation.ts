@@ -70,8 +70,29 @@ export function useConversation() {
     // Play UGLYDOG's custom greeting when the call page loads
     const timer = setTimeout(() => {
       const uglyDogGreeting = "I've been expecting you, I'm UGLYDOG, your no-excuses AI coach. Tell me what's holding you back, and I'll tell you how to CRUSH IT!";
-      sendMessageToAI(uglyDogGreeting);
-      setInitialGreetingPlayed(true);
+      // Try the edge function first for the initial greeting
+      useEdgeFunctionFallback(uglyDogGreeting)
+        .then(success => {
+          if (!success) {
+            // If edge function fails, try websocket
+            return useWebSocketFallback(uglyDogGreeting);
+          }
+          return true;
+        })
+        .then(success => {
+          if (!success) {
+            // If both fail, try conversational AI
+            return sendToConversationalAI(uglyDogGreeting);
+          }
+          return true;
+        })
+        .catch(error => {
+          console.error("Failed to play initial greeting:", error);
+          toast.error("Failed to play greeting. Please reload the page.");
+        })
+        .finally(() => {
+          setInitialGreetingPlayed(true);
+        });
     }, 1000);
     
     return () => {

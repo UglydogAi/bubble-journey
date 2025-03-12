@@ -142,8 +142,8 @@ export class ElevenLabsConversationalAI {
 
   private async sendViaProxy(message: string, context?: string): Promise<void> {
     try {
-      // Fix: Correctly specify the proxy endpoint path
-      const proxyUrl = '/api/functions/v1/proxy-voice-agent';
+      // Fix: Use the correct endpoint for the elevenlabs-proxy function
+      const proxyUrl = '/api/functions/v1/elevenlabs-proxy';
       
       console.log(`Sending message to proxy: ${message}`);
       console.log(`Conversation ID: ${this.conversationId}`);
