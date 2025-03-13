@@ -1,10 +1,11 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Skull, Zap, Brain, MessageSquare, BookOpen } from "lucide-react";
+import { Phone, Skull, Zap, Brain, MessageSquare, BookOpen, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import XLogo from "@/components/XLogo";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const categories = [
   {
@@ -77,33 +78,58 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#1A1F2C] text-white px-4 relative overflow-hidden">
-      {/* Social Icons in top right */}
+      {/* Social Icons in top right - ENHANCED */}
       <div className="absolute top-4 right-5 md:top-6 md:right-7 flex items-center gap-4 z-20">
-        <a 
-          href="https://docs.uglydog.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center bg-black/15 backdrop-blur-xl rounded-full
-            hover:text-[#BB86FC] hover:scale-110 hover:shadow-[0_0_8px_rgba(187,134,252,0.7)] transition-all duration-300 
-            group active:scale-95 active:opacity-80"
-          aria-label="UGLYDOG Docs"
-        >
-          <BookOpen 
-            className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#E0E0E0]/50 group-hover:text-[#BB86FC]" 
-            strokeWidth={1.25}
-          />
-        </a>
-        <a 
-          href="https://x.com/uglydogai" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center bg-black/15 backdrop-blur-xl rounded-full
-            hover:text-[#00E0FF] hover:scale-110 hover:shadow-[0_0_8px_rgba(0,224,255,0.7)] transition-all duration-300
-            group active:scale-95 active:opacity-80"
-          aria-label="UGLYDOG X"
-        >
-          <XLogo className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#E0E0E0]/50 group-hover:text-[#00E0FF]" />
-        </a>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <a 
+                href="https://uglydog-1.gitbook.io/uglydog/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-8 h-8 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-full
+                  hover:bg-black/30 hover:text-[#BB86FC] hover:scale-105 transition-all duration-200 
+                  group active:scale-95"
+                aria-label="UGLYDOG Documentation"
+              >
+                <BookOpen 
+                  className="w-4 h-4 text-white/90 group-hover:text-[#BB86FC]" 
+                  strokeWidth={2}
+                />
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p className="flex items-center gap-1 text-xs">
+                Documentation
+                <ExternalLink className="w-3 h-3" />
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <a 
+                href="https://x.com/uglydogai" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-8 h-8 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-full
+                  hover:bg-black/30 hover:text-[#00E0FF] hover:scale-105 transition-all duration-200
+                  group active:scale-95"
+                aria-label="UGLYDOG Twitter"
+              >
+                <XLogo className="w-4 h-4 text-white/90 group-hover:text-[#00E0FF]" />
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p className="flex items-center gap-1 text-xs">
+                Twitter/X
+                <ExternalLink className="w-3 h-3" />
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       
       {/* Matrix-like background effect */}
