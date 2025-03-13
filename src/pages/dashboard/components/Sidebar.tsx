@@ -27,17 +27,17 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
 
   const socialItems = [
     { 
-      icon: <DocsIcon />, 
+      icon: <DocsIcon className="h-4 w-4" />, 
       label: "Docs", 
-      url: "https://docs.uglydog.ai" 
+      url: "https://uglydog-1.gitbook.io/uglydog/" 
     },
     { 
-      icon: <DiscordIcon />, 
+      icon: <DiscordIcon className="h-4 w-4" />, 
       label: "Discord", 
       url: "https://discord.gg/uglydogai" 
     },
     { 
-      icon: <XLogo />, 
+      icon: <XLogo className="h-4 w-4" />, 
       label: "Twitter", 
       url: "https://x.com/uglydogai" 
     }
@@ -178,7 +178,7 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
             >
               <a href={item.url} target="_blank" rel="noopener noreferrer">
                 {item.icon}
-                {item.label}
+                <span className="ml-0.5">{item.label}</span>
               </a>
             </Button>
           ))}
