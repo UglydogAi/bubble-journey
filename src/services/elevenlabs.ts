@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 
 interface ElevenLabsOptions {
@@ -17,7 +16,7 @@ interface ElevenLabsOptions {
  */
 export const generateSpeechWithWebSocket = ({
   text,
-  voiceId = "831ZKnvNLkjUZ4w5GlOe", // Default to provided voice ID
+  voiceId = "8O6pFCk0iNpBd4MH3qyT", // Updated to WIZ voice ID
   modelId = "eleven_monolingual_v1",
   stability = 0.75,
   similarityBoost = 0.75,
@@ -47,7 +46,7 @@ export const generateSpeechWithWebSocket = ({
           stability,
           similarity_boost: similarityBoost
         },
-        xi_api_key: "sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247" // This would be better retrieved from an environment variable
+        xi_api_key: "sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf" // Updated API key
       };
       
       // Send the BOS message

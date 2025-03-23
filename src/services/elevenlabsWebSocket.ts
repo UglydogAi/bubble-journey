@@ -7,13 +7,13 @@ export class ElevenLabsWebSocket {
   private socket: WebSocket | null = null;
   private apiKey: string;
   // Updated to use a standard voice ID - Adam
-  private voiceId: string = 'pNInz6obpgDQGcFmaJgB';
+  private voiceId: string = '8O6pFCk0iNpBd4MH3qyT';
   
   constructor(
     private onAudioChunk?: (audioData: Blob) => void, 
     private onComplete?: () => void,
     private onError?: (error: any) => void,
-    apiKey: string = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247'
+    apiKey: string = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf'
   ) {
     this.apiKey = apiKey;
   }

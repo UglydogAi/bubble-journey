@@ -1,8 +1,8 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-// Retrieve API key from environment variables
-const ELEVENLABS_API_KEY = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247';
+// Updated API key
+const ELEVENLABS_API_KEY = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf';
 
 // CORS headers for browser access
 const corsHeaders = {

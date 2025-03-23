@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 // CORS headers for browser access
@@ -7,9 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Retrieve API key from environment variables
-const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY") || "";
-const AGENT_ID = "zna9hXvyrwtNwOt5taJ2";
+// Updated API key and agent ID
+const ELEVENLABS_API_KEY = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf';
+const AGENT_ID = "8O6pFCk0iNpBd4MH3qyT";
 
 serve(async (req) => {
   // Handle CORS preflight requests

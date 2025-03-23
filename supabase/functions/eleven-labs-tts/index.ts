@@ -18,9 +18,9 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
-    // Use the provided API key and voice ID directly
-    const apiKey = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247'
-    const voiceId = '831ZKnvNLkjUZ4w5GlOe'
+    // Use the updated API key and voice ID
+    const apiKey = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf'
+    const voiceId = '8O6pFCk0iNpBd4MH3qyT'
 
     console.log('Starting TTS with ElevenLabs for text:', text)
     console.log('Voice ID:', voiceId)
