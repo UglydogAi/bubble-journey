@@ -1,9 +1,20 @@
 
+/**
+ * Speech Recognition API Type Definitions
+ * 
+ * This file provides TypeScript definitions for the Web Speech API
+ * to ensure proper type checking and autocompletion.
+ */
+
 interface SpeechRecognition extends EventTarget {
+  // Configuration properties
   continuous: boolean;
   interimResults: boolean;
   lang: string;
   maxAlternatives: number;
+  grammars: SpeechGrammarList;
+  
+  // Event handlers
   onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null;
   onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onend: ((this: SpeechRecognition, ev: Event) => any) | null;
@@ -15,7 +26,8 @@ interface SpeechRecognition extends EventTarget {
   onspeechend: ((this: SpeechRecognition, ev: Event) => any) | null;
   onspeechstart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-  grammars: SpeechGrammarList;
+  
+  // Methods
   abort(): void;
   start(): void;
   stop(): void;
@@ -67,6 +79,7 @@ interface SpeechGrammar {
   weight: number;
 }
 
+// Add global window properties
 interface Window {
   SpeechRecognition: typeof SpeechRecognition;
   webkitSpeechRecognition: typeof SpeechRecognition;

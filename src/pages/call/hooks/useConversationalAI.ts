@@ -3,10 +3,10 @@ import { useRef, useEffect } from 'react';
 import ElevenLabsConversationalAI from "@/services/elevenlabsConversationalAI";
 import { supabase } from "@/integrations/supabase/client";
 
-// API Credentials for WIZ Voice Agent
+// Updated API Credentials for Voice Agent
 const API_KEY = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf';
-// Updated to use WIZ voice ID
-const AGENT_ID = '8O6pFCk0iNpBd4MH3qyT';
+// Updated to use the new Voice Agent ID provided by the user
+const AGENT_ID = 'zna9hXvyrwtNwOt5taJ2';
 // Set to true to use Supabase proxy instead of direct WebSocket connection
 const USE_PROXY = true;
 

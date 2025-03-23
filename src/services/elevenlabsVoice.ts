@@ -4,8 +4,8 @@
  * Browser-compatible service for ElevenLabs Text-to-Speech API
  */
 
-// Use the specified Voice Agent ID
-const VOICE_ID = "8O6pFCk0iNpBd4MH3qyT"; 
+// Use the new Voice Agent ID provided by the user
+const VOICE_ID = "zna9hXvyrwtNwOt5taJ2"; 
 const API_KEY = "sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf";
 
 export class ElevenLabsVoiceService {
