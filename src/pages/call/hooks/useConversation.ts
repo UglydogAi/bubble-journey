@@ -14,8 +14,8 @@ export function useConversation() {
   const [conversationHistory, setConversationHistory] = useState<{role: string, content: string}[]>([]);
   const [initialGreetingPlayed, setInitialGreetingPlayed] = useState(false);
   
-  // New direct ElevenLabs voice integration
-  const { speak, isPlaying: isElevenLabsSpeaking } = useElevenLabsVoice();
+  // New direct ElevenLabs voice integration with browser fallback
+  const { speak, isPlaying: isElevenLabsSpeaking, useBrowserSpeech } = useElevenLabsVoice();
   
   const {
     currentAudio,
@@ -75,49 +75,56 @@ export function useConversation() {
     const timer = setTimeout(async () => {
       const uglyDogGreeting = "I've been expecting you, I'm UGLYDOG, your no-excuses AI coach. Tell me what's holding you back, and I'll tell you how to CRUSH IT!";
       
+      setIsProcessing(true);
       try {
-        // First try the direct ElevenLabs method
-        setIsProcessing(true);
-        const success = await speak(uglyDogGreeting);
+        console.log("Attempting to play initial greeting...");
+        // Try all available methods until one works
         
-        if (success) {
+        // 1. First try direct speak method with browser fallback
+        const directSuccess = await speak(uglyDogGreeting);
+        if (directSuccess) {
+          console.log("Initial greeting played successfully with direct speak method");
           setInitialGreetingPlayed(true);
           setIsProcessing(false);
           return;
         }
         
-        // If direct method fails, continue with existing fallback methods
-        // Try the edge function first for the initial greeting
-        const edgeFunctionSuccess = await useEdgeFunctionFallback(uglyDogGreeting);
-        if (edgeFunctionSuccess) {
-          setInitialGreetingPlayed(true);
-          return;
-        }
-
-        // If edge function fails, try websocket
-        const websocketSuccess = await useWebSocketFallback(uglyDogGreeting);
-        if (websocketSuccess) {
-          setInitialGreetingPlayed(true);
-          return;
-        }
-
-        // If both fail, try conversational AI
+        // 2. Try conversational AI
+        console.log("Direct speak failed, trying conversational AI...");
         const aiSuccess = await sendToConversationalAI(uglyDogGreeting);
         if (aiSuccess) {
+          console.log("Initial greeting played successfully with conversational AI");
           setInitialGreetingPlayed(true);
           return;
         }
         
-        // All methods failed
-        toast.error("Failed to play greeting. Please reload the page.");
-        // Even if all voice methods fail, still set initialGreetingPlayed to true
-        // so the user can at least type messages
-        setInitialGreetingPlayed(true);
+        // 3. Try WebSocket
+        console.log("Conversational AI failed, trying WebSocket...");
+        const websocketSuccess = await useWebSocketFallback(uglyDogGreeting);
+        if (websocketSuccess) {
+          console.log("Initial greeting played successfully with WebSocket");
+          setInitialGreetingPlayed(true);
+          return;
+        }
+        
+        // 4. Try Edge Function
+        console.log("WebSocket failed, trying Edge Function...");
+        const edgeFunctionSuccess = await useEdgeFunctionFallback(uglyDogGreeting);
+        if (edgeFunctionSuccess) {
+          console.log("Initial greeting played successfully with Edge Function");
+          setInitialGreetingPlayed(true);
+          return;
+        }
+        
+        // All methods failed but we'll still allow the user to continue
+        console.log("All voice playback methods failed");
+        toast.error("Voice playback unavailable. You can still use text chat.");
+        
       } catch (error) {
         console.error("Failed to play initial greeting:", error);
-        toast.error("Failed to play greeting. Please reload the page.");
-        setInitialGreetingPlayed(true);
       } finally {
+        // Always set initialGreetingPlayed to true so the user can interact
+        setInitialGreetingPlayed(true);
         setIsProcessing(false);
       }
     }, 1000);
@@ -135,48 +142,45 @@ export function useConversation() {
     try {
       setIsProcessing(true);
       
-      // Add user message to conversation history if it's not the initial greeting
-      if (initialGreetingPlayed) {
-        setConversationHistory(prev => [
-          ...prev,
-          { role: 'user', content: text }
-        ]);
-      }
+      // Add user message to conversation history
+      setConversationHistory(prev => [
+        ...prev,
+        { role: 'user', content: text }
+      ]);
       
-      // First, try the direct ElevenLabs voice method
+      // Create AI response
       const response = `I received your message: "${text}". How can I help you further?`;
       setConversationHistory(prev => [
         ...prev,
         { role: 'assistant', content: response }
       ]);
       
-      // Try direct ElevenLabs voice
+      // Try each voice method in sequence until one works
+      
+      // 1. Try direct speak with browser fallback
       const directSuccess = await speak(response);
       if (directSuccess) {
         setIsProcessing(false);
         return;
       }
       
-      // If direct method fails, try existing methods
-      // Try Conversational AI if available
+      // 2. Try Conversational AI
       if (aiRef.current && retryCount < 2) {
-        const success = await sendToConversationalAI(text);
-        if (success) return;
+        const aiSuccess = await sendToConversationalAI(text);
+        if (aiSuccess) return;
       }
       
-      // Try regular WebSocket TTS as first fallback
-      if (retryCount < 3) {
-        const success = await useWebSocketFallback(text);
-        if (success) return;
-      }
+      // 3. Try WebSocket
+      const socketSuccess = await useWebSocketFallback(response);
+      if (socketSuccess) return;
       
-      // Fallback to Edge Function as last resort
-      await useEdgeFunctionFallback(text);
+      // 4. Try Edge Function
+      await useEdgeFunctionFallback(response);
       
     } catch (error) {
       console.error('Error in sendMessageToAI:', error);
+    } finally {
       setIsProcessing(false);
-      toast.error('Something went wrong. Please try again.');
     }
   };
 
@@ -188,6 +192,7 @@ export function useConversation() {
     conversationHistory,
     sendMessageToAI,
     pauseCurrentAudio,
-    initialGreetingPlayed
+    initialGreetingPlayed,
+    useBrowserSpeech
   };
 }

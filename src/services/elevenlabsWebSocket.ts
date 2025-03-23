@@ -22,7 +22,7 @@ export class ElevenLabsWebSocket {
     return new Promise((resolve, reject) => {
       try {
         // Construct WebSocket URL with API key as query parameter for authentication
-        const wsUrl = `wss://api.elevenlabs.io/v1/text-to-speech/${this.voiceId}/stream-input?xi-api-key=${this.apiKey}`;
+        const wsUrl = `wss://api.elevenlabs.io/v1/text-to-speech/${this.voiceId}/stream-input?xi-api-key=${this.apiKey}&model_id=eleven_turbo_v2`;
         
         // Create WebSocket connection
         this.socket = new WebSocket(wsUrl);

@@ -20,7 +20,8 @@ export default function CallPage() {
     waveProgress,
     pauseCurrentAudio,
     sendMessageToAI,
-    initialGreetingPlayed
+    initialGreetingPlayed,
+    useBrowserSpeech
   } = useConversation();
 
   const handleSpeechResult = (transcription: string) => {
@@ -48,6 +49,12 @@ export default function CallPage() {
         ref={widgetRef} 
         className="absolute inset-0 z-0 opacity-0 pointer-events-none"
       ></div>
+
+      {useBrowserSpeech && (
+        <div className="absolute top-4 left-4 bg-yellow-600 text-white text-xs px-2 py-1 rounded-full">
+          Using Browser Speech
+        </div>
+      )}
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
