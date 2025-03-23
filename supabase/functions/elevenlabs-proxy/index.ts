@@ -8,7 +8,7 @@ const corsHeaders = {
 
 // Updated API key and agent ID
 const ELEVENLABS_API_KEY = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf';
-const AGENT_ID = "8O6pFCk0iNpBd4MH3qyT";
+const AGENT_ID = "pNInz6obpgDQGcFmaJgB";
 
 serve(async (req) => {
   // Handle CORS preflight requests

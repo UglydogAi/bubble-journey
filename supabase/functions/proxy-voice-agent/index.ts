@@ -3,8 +3,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 // Updated API key and agent ID
 const ELEVENLABS_API_KEY = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf';
-// Voice Agent ID for WIZ
-const AGENT_ID = "8O6pFCk0iNpBd4MH3qyT";
+// Voice Agent ID for a standard ElevenLabs voice
+const AGENT_ID = "pNInz6obpgDQGcFmaJgB";
 
 // CORS headers for browser access
 const corsHeaders = {

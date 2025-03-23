@@ -5,7 +5,7 @@
  */
 
 // Use a standard voice ID - Adam (reliable default voice)
-const VOICE_ID = "8O6pFCk0iNpBd4MH3qyT"; 
+const VOICE_ID = "pNInz6obpgDQGcFmaJgB"; 
 const API_KEY = "sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf";
 
 export class ElevenLabsVoiceService {
