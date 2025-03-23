@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +25,6 @@ export default function CallPage() {
     useBrowserSpeech
   } = useConversation();
 
-  // Handle voice input without displaying text chat
   useEffect(() => {
     const startSpeechRecognition = () => {
       if (recognitionRef.current) {
@@ -35,8 +33,11 @@ export default function CallPage() {
       
       try {
         console.log("Starting speech recognition...");
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
+        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognitionAPI) {
+          throw new Error('Speech recognition not supported in this browser');
+        }
+        const recognition = new SpeechRecognitionAPI();
         recognitionRef.current = recognition;
         
         recognition.continuous = false;
@@ -60,7 +61,6 @@ export default function CallPage() {
           console.log("Speech recognition ended");
           setRecognitionActive(false);
           
-          // Restart recognition if not processing (speaking)
           if (!isProcessing && initialGreetingPlayed) {
             console.log("Restarting speech recognition");
             setTimeout(() => {
@@ -73,7 +73,6 @@ export default function CallPage() {
           console.error("Speech recognition error", event.error);
           setRecognitionActive(false);
           
-          // Attempt to restart on error
           if (!isProcessing && initialGreetingPlayed) {
             console.log("Attempting to restart speech recognition after error");
             setTimeout(() => {
@@ -89,7 +88,6 @@ export default function CallPage() {
       }
     };
     
-    // Start continuous voice recognition when initial greeting is done
     if (initialGreetingPlayed && !isProcessing && !muted) {
       startSpeechRecognition();
     }
@@ -106,7 +104,6 @@ export default function CallPage() {
     setShowControls(false);
     pauseCurrentAudio();
     
-    // Stop speech recognition
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
@@ -121,17 +118,18 @@ export default function CallPage() {
     setMuted(newMutedState);
     
     if (newMutedState) {
-      // Stop recognition if muted
       if (recognitionRef.current) {
         recognitionRef.current.stop();
         recognitionRef.current = null;
       }
       toast.info("Microphone muted");
     } else {
-      // Restart recognition if unmuted
       if (initialGreetingPlayed && !isProcessing) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
+        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognitionAPI) {
+          throw new Error('Speech recognition not supported in this browser');
+        }
+        const recognition = new SpeechRecognitionAPI();
         recognitionRef.current = recognition;
         
         recognition.continuous = false;
@@ -163,10 +161,8 @@ export default function CallPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#1A1F2C] to-[#0c1015] text-white px-4 relative overflow-hidden">
-      {/* Matrix-like background effect */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PC9zdmc+')] opacity-20" />
 
-      {/* ElevenLabs Widget Container */}
       <div 
         ref={widgetRef} 
         className="absolute inset-0 z-0 opacity-0 pointer-events-none"
@@ -192,7 +188,6 @@ export default function CallPage() {
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center justify-center relative z-10 w-full max-w-md px-4"
       >
-        {/* UGLYDOG Profile Section */}
         <CallAvatar isProcessing={isProcessing} />
         <CallHeader isProcessing={isProcessing} />
 
@@ -205,7 +200,6 @@ export default function CallPage() {
         )}
       </motion.div>
 
-      {/* Voice-only Status Bar */}
       <ChatBar 
         isProcessing={isProcessing}
         waveProgress={waveProgress}
