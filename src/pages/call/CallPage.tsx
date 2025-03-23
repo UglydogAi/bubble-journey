@@ -27,7 +27,8 @@ export default function CallPage() {
   useEffect(() => {
     // Start continuous voice recognition when initial greeting is done
     if (initialGreetingPlayed && !isProcessing) {
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = 'en-US';

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, Speaker, Waveform } from "lucide-react";
+import { Mic, Speaker, AudioWaveform } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface ChatBarProps {
