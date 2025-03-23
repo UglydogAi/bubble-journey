@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 // API Credentials for UGLYDOG Voice Agent
 const API_KEY = 'sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247';
-const AGENT_ID = 'zna9hXvyrwtNwOt5taJ2';
+// Updated to use a standard voice ID - Adam
+const AGENT_ID = 'pNInz6obpgDQGcFmaJgB';
 // Set to true to use Supabase proxy instead of direct WebSocket connection
 const USE_PROXY = true;
 

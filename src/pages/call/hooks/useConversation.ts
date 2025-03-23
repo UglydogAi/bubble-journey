@@ -75,18 +75,18 @@ export function useConversation() {
     const timer = setTimeout(async () => {
       const uglyDogGreeting = "I've been expecting you, I'm UGLYDOG, your no-excuses AI coach. Tell me what's holding you back, and I'll tell you how to CRUSH IT!";
       
-      // First try the direct ElevenLabs method
-      setIsProcessing(true);
-      const success = await speak(uglyDogGreeting);
-      
-      if (success) {
-        setInitialGreetingPlayed(true);
-        setIsProcessing(false);
-        return;
-      }
-      
-      // If direct method fails, continue with existing fallback methods
       try {
+        // First try the direct ElevenLabs method
+        setIsProcessing(true);
+        const success = await speak(uglyDogGreeting);
+        
+        if (success) {
+          setInitialGreetingPlayed(true);
+          setIsProcessing(false);
+          return;
+        }
+        
+        // If direct method fails, continue with existing fallback methods
         // Try the edge function first for the initial greeting
         const edgeFunctionSuccess = await useEdgeFunctionFallback(uglyDogGreeting);
         if (edgeFunctionSuccess) {
@@ -110,11 +110,14 @@ export function useConversation() {
         
         // All methods failed
         toast.error("Failed to play greeting. Please reload the page.");
+        // Even if all voice methods fail, still set initialGreetingPlayed to true
+        // so the user can at least type messages
+        setInitialGreetingPlayed(true);
       } catch (error) {
         console.error("Failed to play initial greeting:", error);
         toast.error("Failed to play greeting. Please reload the page.");
-      } finally {
         setInitialGreetingPlayed(true);
+      } finally {
         setIsProcessing(false);
       }
     }, 1000);

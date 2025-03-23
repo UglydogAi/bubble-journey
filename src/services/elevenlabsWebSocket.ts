@@ -6,7 +6,8 @@
 export class ElevenLabsWebSocket {
   private socket: WebSocket | null = null;
   private apiKey: string;
-  private voiceId: string = '831ZKnvNLkjUZ4w5GlOe';
+  // Updated to use a standard voice ID - Adam
+  private voiceId: string = 'pNInz6obpgDQGcFmaJgB';
   
   constructor(
     private onAudioChunk?: (audioData: Blob) => void, 

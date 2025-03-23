@@ -4,8 +4,8 @@
  * Browser-compatible service for ElevenLabs Text-to-Speech API
  */
 
-// Voice ID for UGLYDOG
-const VOICE_ID = "zna9hXvyrwtNwOt5taJ2"; 
+// Use a standard voice ID - Adam (reliable default voice)
+const VOICE_ID = "pNInz6obpgDQGcFmaJgB"; 
 const API_KEY = "sk_c2822d915c042b181a997206c6b3f1257442239fcebaf247";
 
 export class ElevenLabsVoiceService {
