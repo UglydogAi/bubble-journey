@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from "@/integrations/supabase/client";
 import ElevenLabsWebSocket from "@/services/elevenlabsWebSocket";
 
-// Updated API key for ElevenLabs
+// Updated API key for WIZ Voice Agent
 const API_KEY = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf';
 
 export function useFallbackTTS(

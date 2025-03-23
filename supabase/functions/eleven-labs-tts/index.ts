@@ -20,7 +20,7 @@ serve(async (req) => {
 
     // Use the updated API key and voice ID
     const apiKey = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf'
-    const voiceId = 'pNInz6obpgDQGcFmaJgB'
+    const voiceId = '8O6pFCk0iNpBd4MH3qyT'
 
     console.log('Starting TTS with ElevenLabs for text:', text)
     console.log('Voice ID:', voiceId)

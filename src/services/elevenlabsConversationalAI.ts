@@ -16,7 +16,7 @@ export class ElevenLabsConversationalAI {
     private onComplete?: () => void,
     private onError?: (error: any) => void,
     apiKey: string = 'sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf',
-    agentId: string = 'pNInz6obpgDQGcFmaJgB',
+    agentId: string = '8O6pFCk0iNpBd4MH3qyT',
     useProxy: boolean = true
   ) {
     // Store API credentials
