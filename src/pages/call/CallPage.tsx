@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useConversation } from "./hooks/useConversation";
+import { toast } from "sonner";
 import CallAvatar from "./components/CallAvatar";
 import CallHeader from "./components/CallHeader";
 import CallControls from "./components/CallControls";
@@ -11,7 +12,9 @@ import ChatBar from "./components/ChatBar";
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [recognitionActive, setRecognitionActive] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const navigate = useNavigate();
   
   const {
@@ -25,56 +28,137 @@ export default function CallPage() {
 
   // Handle voice input without displaying text chat
   useEffect(() => {
-    // Start continuous voice recognition when initial greeting is done
-    if (initialGreetingPlayed && !isProcessing) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-      
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript.trim()) {
-          console.log("Voice input detected:", transcript);
-          sendMessageToAI(transcript);
-        }
-      };
-      
-      recognition.onend = () => {
-        // Restart recognition if not processing (speaking)
-        if (!isProcessing) {
-          recognition.start();
-        }
-      };
-      
-      recognition.onerror = (event) => {
-        console.error("Speech recognition error", event.error);
-        // Attempt to restart on error
-        if (!isProcessing) {
-          setTimeout(() => recognition.start(), 1000);
-        }
-      };
+    const startSpeechRecognition = () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
       
       try {
+        console.log("Starting speech recognition...");
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+        
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        
+        recognition.onstart = () => {
+          console.log("Speech recognition started");
+          setRecognitionActive(true);
+        };
+        
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          console.log("Voice input detected:", transcript);
+          if (transcript.trim()) {
+            sendMessageToAI(transcript);
+          }
+        };
+        
+        recognition.onend = () => {
+          console.log("Speech recognition ended");
+          setRecognitionActive(false);
+          
+          // Restart recognition if not processing (speaking)
+          if (!isProcessing && initialGreetingPlayed) {
+            console.log("Restarting speech recognition");
+            setTimeout(() => {
+              startSpeechRecognition();
+            }, 500);
+          }
+        };
+        
+        recognition.onerror = (event) => {
+          console.error("Speech recognition error", event.error);
+          setRecognitionActive(false);
+          
+          // Attempt to restart on error
+          if (!isProcessing && initialGreetingPlayed) {
+            console.log("Attempting to restart speech recognition after error");
+            setTimeout(() => {
+              startSpeechRecognition();
+            }, 1000);
+          }
+        };
+        
         recognition.start();
       } catch (err) {
         console.error("Error starting speech recognition:", err);
+        toast.error("Failed to start speech recognition. Please check your browser permissions.");
       }
-      
-      return () => {
-        recognition.stop();
-      };
+    };
+    
+    // Start continuous voice recognition when initial greeting is done
+    if (initialGreetingPlayed && !isProcessing && !muted) {
+      startSpeechRecognition();
     }
-  }, [initialGreetingPlayed, isProcessing, sendMessageToAI]);
+    
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+    };
+  }, [initialGreetingPlayed, isProcessing, sendMessageToAI, muted]);
 
   const handleEndCall = () => {
     setShowControls(false);
     pauseCurrentAudio();
     
+    // Stop speech recognition
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    
     setTimeout(() => {
       navigate('/dashboard');
     }, 1000);
+  };
+
+  const handleMuteToggle = (newMutedState: boolean) => {
+    setMuted(newMutedState);
+    
+    if (newMutedState) {
+      // Stop recognition if muted
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+      toast.info("Microphone muted");
+    } else {
+      // Restart recognition if unmuted
+      if (initialGreetingPlayed && !isProcessing) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+        
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          if (transcript.trim()) {
+            sendMessageToAI(transcript);
+          }
+        };
+        
+        recognition.onend = () => {
+          if (!isProcessing && !muted) {
+            setTimeout(() => {
+              if (!muted && recognitionRef.current) {
+                recognitionRef.current.start();
+              }
+            }, 500);
+          }
+        };
+        
+        recognition.start();
+      }
+      toast.info("Microphone active");
+    }
   };
 
   return (
@@ -94,6 +178,14 @@ export default function CallPage() {
         </div>
       )}
 
+      {!initialGreetingPlayed && (
+        <div className="absolute top-16 left-0 right-0 flex justify-center">
+          <div className="bg-blue-500/40 text-white text-xs px-3 py-1.5 rounded-full animate-pulse">
+            Initializing UGLYDOG...
+          </div>
+        </div>
+      )}
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -107,7 +199,7 @@ export default function CallPage() {
         {showControls && (
           <CallControls 
             muted={muted} 
-            setMuted={setMuted} 
+            setMuted={handleMuteToggle} 
             onEndCall={handleEndCall} 
           />
         )}

@@ -11,10 +11,12 @@ const API_KEY = "sk_de8e3854a6d2b040110a01edc86e978b953ce4530f06cbaf";
 export class ElevenLabsVoiceService {
   private apiKey: string;
   private voiceId: string;
+  private currentAudio: HTMLAudioElement | null = null;
   
   constructor(apiKey = API_KEY, voiceId = VOICE_ID) {
     this.apiKey = apiKey;
     this.voiceId = voiceId;
+    console.log(`ElevenLabsVoiceService initialized with voice ID: ${voiceId}`);
   }
   
   /**
@@ -24,6 +26,9 @@ export class ElevenLabsVoiceService {
    */
   async generateSpeech(text: string): Promise<ArrayBuffer> {
     try {
+      console.log(`Generating speech for text: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+      console.log(`Using voice ID: ${this.voiceId}`);
+      
       const response = await fetch(
         `https://api.elevenlabs.io/v1/text-to-speech/${this.voiceId}`,
         {
@@ -38,7 +43,7 @@ export class ElevenLabsVoiceService {
             model_id: 'eleven_turbo_v2', // Use the lightweight model which costs fewer credits
             voice_settings: {
               stability: 0.5,
-              similarity_boost: 0.5,
+              similarity_boost: 0.75,
             },
           }),
         }
@@ -46,9 +51,11 @@ export class ElevenLabsVoiceService {
       
       if (!response.ok) {
         const errorText = await response.text();
+        console.error(`ElevenLabs API error (${response.status}):`, errorText);
         throw new Error(`ElevenLabs API error (${response.status}): ${errorText}`);
       }
       
+      console.log('Successfully received audio data from ElevenLabs');
       return await response.arrayBuffer();
     } catch (error) {
       console.error('Error generating speech:', error);
@@ -63,23 +70,50 @@ export class ElevenLabsVoiceService {
    */
   async playAudio(text: string): Promise<void> {
     try {
+      // Stop any currently playing audio
+      if (this.currentAudio) {
+        this.currentAudio.pause();
+        this.currentAudio = null;
+      }
+      
       const audioData = await this.generateSpeech(text);
       const audioBlob = new Blob([audioData], { type: 'audio/mpeg' });
       const audioUrl = URL.createObjectURL(audioBlob);
+      
+      console.log('Creating audio element to play response');
       const audio = new Audio(audioUrl);
+      this.currentAudio = audio;
       
       return new Promise((resolve, reject) => {
+        audio.volume = 1.0; // Ensure volume is at maximum
+        
+        audio.oncanplaythrough = () => {
+          console.log('Audio can play through, starting playback');
+        };
+        
+        audio.onplay = () => {
+          console.log('Audio playback started');
+        };
+        
         audio.onended = () => {
+          console.log('Audio playback completed');
           URL.revokeObjectURL(audioUrl);
+          this.currentAudio = null;
           resolve();
         };
         
         audio.onerror = (error) => {
+          console.error('Audio playback error:', error);
           URL.revokeObjectURL(audioUrl);
+          this.currentAudio = null;
           reject(error);
         };
         
-        audio.play().catch(reject);
+        // Start playback
+        audio.play().catch(error => {
+          console.error('Failed to start audio playback:', error);
+          reject(error);
+        });
       });
     } catch (error) {
       console.error('Failed to play audio:', error);

@@ -80,6 +80,7 @@ export function useConversation() {
         // Try all available methods until one works
         
         // 1. First try direct speak method with browser fallback
+        console.log("Trying direct speak method for initial greeting");
         const directSuccess = await speak(uglyDogGreeting);
         if (directSuccess) {
           console.log("Initial greeting played successfully with direct speak method");
@@ -117,7 +118,7 @@ export function useConversation() {
         
         // All methods failed but we'll still allow the user to continue
         console.log("All voice playback methods failed");
-        toast.error("Voice playback unavailable. Please try again later.");
+        toast.error("Voice playback unavailable. Please check your audio settings and try again.");
         
       } catch (error) {
         console.error("Failed to play initial greeting:", error);
@@ -144,6 +145,7 @@ export function useConversation() {
         return;
       }
       
+      console.log("Processing new user message:", text);
       setIsProcessing(true);
       
       // Add user message to conversation history
@@ -154,9 +156,8 @@ export function useConversation() {
       
       // Try each voice method in sequence until one works
       
-      // 1. Try direct speak with browser fallback
+      // 1. Try conversational AI with the actual agent for a more natural conversation
       try {
-        // Try conversational AI with the actual agent for a more natural conversation
         if (aiRef.current && retryCount < 2) {
           console.log("Sending to conversational AI:", text);
           const aiSuccess = await sendToConversationalAI(text);
@@ -177,6 +178,7 @@ export function useConversation() {
       ]);
       
       // 2. Try direct speak with browser fallback
+      console.log("Trying direct speak for response");
       const directSuccess = await speak(response);
       if (directSuccess) {
         setIsProcessing(false);
@@ -184,14 +186,17 @@ export function useConversation() {
       }
       
       // 3. Try WebSocket
+      console.log("Direct speak failed, trying WebSocket");
       const socketSuccess = await useWebSocketFallback(response);
       if (socketSuccess) return;
       
       // 4. Try Edge Function
+      console.log("WebSocket failed, trying Edge Function");
       await useEdgeFunctionFallback(response);
       
     } catch (error) {
       console.error('Error in sendMessageToAI:', error);
+      toast.error("Failed to process your message. Please try again.");
     } finally {
       setIsProcessing(false);
     }

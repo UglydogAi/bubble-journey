@@ -11,11 +11,17 @@ export function useElevenLabsVoice() {
   const [useBrowserSpeech, setUseBrowserSpeech] = useState(false);
   const voiceServiceRef = useRef<ElevenLabsVoiceService>(elevenlabsVoice);
   const isMountedRef = useRef(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
+      // Stop any playing audio on unmount
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
   }, []);
   
@@ -23,19 +29,23 @@ export function useElevenLabsVoice() {
     if (!text?.trim()) return false;
     
     try {
+      console.log('Starting speech synthesis for:', text);
       setIsProcessing(true);
       setError(null);
       setIsPlaying(true);
       
       // If we previously detected quota issues, use browser speech immediately
       if (useBrowserSpeech) {
+        console.log('Using browser speech synthesis');
         await browserSpeech.playAudio(text);
       } else {
         try {
           // First try ElevenLabs
+          console.log('Attempting ElevenLabs voice synthesis');
           await voiceServiceRef.current.playAudio(text);
+          console.log('ElevenLabs playback completed successfully');
         } catch (elevenlabsError) {
-          console.log('ElevenLabs failed, falling back to browser speech:', elevenlabsError);
+          console.error('ElevenLabs failed, falling back to browser speech:', elevenlabsError);
           
           // Check if it's a quota error
           const errorMsg = elevenlabsError instanceof Error ? elevenlabsError.message : '';
@@ -46,6 +56,7 @@ export function useElevenLabsVoice() {
           }
           
           // Use browser speech as fallback
+          console.log('Using browser speech as fallback');
           await browserSpeech.playAudio(text);
         }
       }
