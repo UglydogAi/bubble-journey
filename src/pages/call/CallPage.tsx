@@ -7,7 +7,6 @@ import CallAvatar from "./components/CallAvatar";
 import CallHeader from "./components/CallHeader";
 import CallControls from "./components/CallControls";
 import ChatBar from "./components/ChatBar";
-import SpeechInput from "./components/SpeechInput";
 
 export default function CallPage() {
   const [muted, setMuted] = useState(false);
@@ -24,11 +23,49 @@ export default function CallPage() {
     useBrowserSpeech
   } = useConversation();
 
-  const handleSpeechResult = (transcription: string) => {
-    if (transcription.trim()) {
-      sendMessageToAI(transcription);
+  // Handle voice input without displaying text chat
+  useEffect(() => {
+    // Start continuous voice recognition when initial greeting is done
+    if (initialGreetingPlayed && !isProcessing) {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+      
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript.trim()) {
+          console.log("Voice input detected:", transcript);
+          sendMessageToAI(transcript);
+        }
+      };
+      
+      recognition.onend = () => {
+        // Restart recognition if not processing (speaking)
+        if (!isProcessing) {
+          recognition.start();
+        }
+      };
+      
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error", event.error);
+        // Attempt to restart on error
+        if (!isProcessing) {
+          setTimeout(() => recognition.start(), 1000);
+        }
+      };
+      
+      try {
+        recognition.start();
+      } catch (err) {
+        console.error("Error starting speech recognition:", err);
+      }
+      
+      return () => {
+        recognition.stop();
+      };
     }
-  };
+  }, [initialGreetingPlayed, isProcessing, sendMessageToAI]);
 
   const handleEndCall = () => {
     setShowControls(false);
@@ -67,20 +104,11 @@ export default function CallPage() {
         <CallHeader isProcessing={isProcessing} />
 
         {showControls && (
-          <>
-            <CallControls 
-              muted={muted} 
-              setMuted={setMuted} 
-              onEndCall={handleEndCall} 
-            />
-            
-            {/* Show speech input only after initial greeting */}
-            {initialGreetingPlayed && !isProcessing && (
-              <div className="w-full mt-6">
-                <SpeechInput onTranscriptionResult={handleSpeechResult} />
-              </div>
-            )}
-          </>
+          <CallControls 
+            muted={muted} 
+            setMuted={setMuted} 
+            onEndCall={handleEndCall} 
+          />
         )}
       </motion.div>
 

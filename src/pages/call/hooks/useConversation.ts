@@ -9,7 +9,6 @@ import { useElevenLabsVoice } from './useElevenLabsVoice';
 export function useConversation() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [waveProgress, setWaveProgress] = useState(0);
-  const [message, setMessage] = useState("");
   const [retryCount, setRetryCount] = useState(0);
   const [conversationHistory, setConversationHistory] = useState<{role: string, content: string}[]>([]);
   const [initialGreetingPlayed, setInitialGreetingPlayed] = useState(false);
@@ -118,7 +117,7 @@ export function useConversation() {
         
         // All methods failed but we'll still allow the user to continue
         console.log("All voice playback methods failed");
-        toast.error("Voice playback unavailable. You can still use text chat.");
+        toast.error("Voice playback unavailable. Please try again later.");
         
       } catch (error) {
         console.error("Failed to play initial greeting:", error);
@@ -140,6 +139,11 @@ export function useConversation() {
 
   const sendMessageToAI = async (text: string) => {
     try {
+      if (isProcessing) {
+        console.log("Already processing a message, ignoring new input");
+        return;
+      }
+      
       setIsProcessing(true);
       
       // Add user message to conversation history
@@ -148,6 +152,23 @@ export function useConversation() {
         { role: 'user', content: text }
       ]);
       
+      // Try each voice method in sequence until one works
+      
+      // 1. Try direct speak with browser fallback
+      try {
+        // Try conversational AI with the actual agent for a more natural conversation
+        if (aiRef.current && retryCount < 2) {
+          console.log("Sending to conversational AI:", text);
+          const aiSuccess = await sendToConversationalAI(text);
+          if (aiSuccess) {
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Error with conversational AI:", error);
+      }
+      
+      // Fallback to simpler TTS if conversational AI fails
       // Create AI response
       const response = `I received your message: "${text}". How can I help you further?`;
       setConversationHistory(prev => [
@@ -155,19 +176,11 @@ export function useConversation() {
         { role: 'assistant', content: response }
       ]);
       
-      // Try each voice method in sequence until one works
-      
-      // 1. Try direct speak with browser fallback
+      // 2. Try direct speak with browser fallback
       const directSuccess = await speak(response);
       if (directSuccess) {
         setIsProcessing(false);
         return;
-      }
-      
-      // 2. Try Conversational AI
-      if (aiRef.current && retryCount < 2) {
-        const aiSuccess = await sendToConversationalAI(text);
-        if (aiSuccess) return;
       }
       
       // 3. Try WebSocket
@@ -187,8 +200,6 @@ export function useConversation() {
   return {
     isProcessing: isProcessing || isElevenLabsSpeaking,
     waveProgress,
-    message,
-    setMessage,
     conversationHistory,
     sendMessageToAI,
     pauseCurrentAudio,

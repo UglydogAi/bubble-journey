@@ -1,7 +1,7 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, Speaker } from "lucide-react";
+import { Mic, Speaker, Waveform } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface ChatBarProps {
@@ -13,6 +13,13 @@ const ChatBar: React.FC<ChatBarProps> = ({
   isProcessing,
   waveProgress,
 }) => {
+  const [showPulse, setShowPulse] = useState(false);
+  
+  // Show pulsing indicator when not processing to indicate active listening
+  useEffect(() => {
+    setShowPulse(!isProcessing);
+  }, [isProcessing]);
+
   return (
     <AnimatePresence>
       <motion.div 
@@ -50,17 +57,33 @@ const ChatBar: React.FC<ChatBarProps> = ({
                     </motion.p>
                   </div>
                 ) : (
-                  <motion.p 
-                    className="text-sm text-purple-200 text-center flex items-center gap-2"
-                    animate={{ 
-                      opacity: [0.6, 1, 0.6],
-                      scale: [1, 1.03, 1]
-                    }}
-                    transition={{ duration: 1.8, repeat: Infinity }}
+                  <motion.div
+                    className="flex flex-col items-center"
                   >
-                    <Mic className="h-4 w-4 text-primary/70" />
-                    <span>Listening to you... speak to UGLYDOG</span>
-                  </motion.p>
+                    <motion.div
+                      animate={showPulse ? {
+                        scale: [1, 1.2, 1],
+                        opacity: [0.7, 1, 0.7]
+                      } : {}}
+                      transition={{ 
+                        duration: 1.5,
+                        repeat: Infinity,
+                        repeatType: "reverse"
+                      }}
+                      className="bg-purple-600/20 p-3 rounded-full mb-2"
+                    >
+                      <Mic className="h-5 w-5 text-purple-400" />
+                    </motion.div>
+                    <motion.p 
+                      className="text-sm text-purple-200 text-center"
+                      animate={{ 
+                        opacity: [0.6, 1, 0.6]
+                      }}
+                      transition={{ duration: 1.8, repeat: Infinity }}
+                    >
+                      <span>Listening... speak to UGLYDOG</span>
+                    </motion.p>
+                  </motion.div>
                 )}
               </div>
             </div>
