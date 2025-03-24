@@ -15,16 +15,14 @@ const WizMascot: React.FC<WizMascotProps> = ({
   const mascotVariants = {
     idle: {
       y: [0, -5, 0],
-      rotate: [-1, 1, -1],
       transition: {
-        duration: 4,
+        duration: 3,
         repeat: Infinity,
         ease: "easeInOut"
       }
     },
     processing: {
       y: [0, -3, 0],
-      rotate: [0, 0, 0],
       transition: {
         duration: 2,
         repeat: Infinity,
@@ -36,8 +34,8 @@ const WizMascot: React.FC<WizMascotProps> = ({
   // Animation for the magical particles
   const particleVariants = {
     animate: (i: number) => ({
-      y: [0, -20, 0],
-      x: [0, i % 2 === 0 ? 10 : -10, 0],
+      y: [0, -15, 0],
+      x: [0, i % 2 === 0 ? 8 : -8, 0],
       opacity: [0, 0.8, 0],
       scale: [0.6, 1, 0.6],
       transition: {
@@ -53,7 +51,7 @@ const WizMascot: React.FC<WizMascotProps> = ({
   const orbGlowVariants = {
     animate: {
       opacity: [0.5, 1, 0.5],
-      scale: [1, 1.1, 1],
+      scale: [1, 1.05, 1],
       boxShadow: [
         "0 0 8px rgba(255, 215, 0, 0.5)",
         "0 0 15px rgba(255, 215, 0, 0.7)",
@@ -70,8 +68,7 @@ const WizMascot: React.FC<WizMascotProps> = ({
   // Animation for the cloak
   const cloakVariants = {
     animate: {
-      rotate: [-1, 1, -1],
-      scale: [1, 1.02, 1],
+      rotate: [-0.5, 0.5, -0.5],
       transition: {
         duration: 4,
         repeat: Infinity,
@@ -80,36 +77,24 @@ const WizMascot: React.FC<WizMascotProps> = ({
     }
   };
 
-  // Animation for the paw wave
-  const pawWaveVariants = {
-    animate: {
-      rotate: [0, 5, 0, 5, 0],
-      transition: {
-        duration: 6,
-        repeat: Infinity,
-        ease: "easeInOut",
-        times: [0, 0.2, 0.4, 0.6, 1]
-      }
-    }
-  };
-
   return (
     <div className={`relative ${className}`}>
-      {/* Main mascot image with 3D float animation */}
+      {/* Main mascot image */}
       <motion.div
         variants={isProcessing ? mascotVariants.processing : mascotVariants.idle}
+        initial="initial"
         animate="idle"
         className="relative z-10"
       >
         <img 
-          src="/lovable-uploads/28201889-82c5-4c8b-9cb7-47064b3a1d22.png" 
+          src="/lovable-uploads/0e0dc07d-b4ae-40b8-98be-23fa96e2ce61.png" 
           alt="Wiz the Panda" 
-          className="w-48 h-48 sm:w-56 sm:h-56 object-contain transform-gpu" 
+          className="w-40 h-40 sm:w-48 sm:h-48 object-contain" 
         />
       </motion.div>
 
-      {/* Magic particles floating around */}
-      {Array.from({ length: 8 }).map((_, index) => (
+      {/* Magic particles */}
+      {Array.from({ length: 6 }).map((_, index) => (
         <motion.div
           key={`particle-${index}`}
           custom={index}
@@ -118,8 +103,8 @@ const WizMascot: React.FC<WizMascotProps> = ({
           animate="animate"
           className="absolute w-2 h-2 rounded-full bg-yellow-400"
           style={{
-            top: `${40 + Math.random() * 30}%`,
-            left: `${35 + (index * 5) - 10 + (Math.random() * 15)}%`,
+            top: `${50 + Math.random() * 30}%`,
+            left: `${45 + (index * 5) - 15 + (Math.random() * 10)}%`,
             filter: "blur(1px)"
           }}
         />
@@ -130,23 +115,16 @@ const WizMascot: React.FC<WizMascotProps> = ({
         variants={orbGlowVariants}
         initial={{ opacity: 0.5 }}
         animate="animate"
-        className="absolute top-[30%] right-[22%] w-8 h-8 rounded-full bg-yellow-400/30"
+        className="absolute top-[35%] right-[15%] w-6 h-6 rounded-full bg-yellow-400/30"
         style={{ filter: "blur(4px)" }}
       />
 
-      {/* Cloak animation - subtle flowing effect */}
+      {/* Cloak animation container - slightly rotates to simulate flowing */}
       <motion.div
         variants={cloakVariants}
         initial={{ rotate: 0 }}
         animate="animate"
-        className="absolute top-[40%] left-[43%] w-24 h-24 rounded-full opacity-0"
-      />
-
-      {/* Paw wave animation container */}
-      <motion.div
-        variants={pawWaveVariants}
-        animate="animate"
-        className="absolute top-[42%] left-[30%] w-12 h-12 opacity-0"
+        className="absolute inset-0 z-0 opacity-0"
       />
     </div>
   );

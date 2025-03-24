@@ -12,17 +12,17 @@ const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
     <>
       <WizMascot 
         isProcessing={isProcessing} 
-        className="mb-2"
+        className="mb-4"
       />
       
       <motion.h2 
-        className="text-3xl sm:text-4xl font-bold mb-3 font-sans tracking-wider text-yellow-400"
+        className="text-3xl sm:text-4xl font-bold mb-3 font-sans tracking-wider"
         animate={{ 
           opacity: [0.8, 1, 0.8],
           textShadow: [
-            `0 0 8px ${isProcessing ? 'rgba(59,130,246,0.7)' : 'rgba(255,215,0,0.7)'}`,
-            `0 0 12px ${isProcessing ? 'rgba(59,130,246,0.9)' : 'rgba(255,215,0,0.9)'}`,
-            `0 0 8px ${isProcessing ? 'rgba(59,130,246,0.7)' : 'rgba(255,215,0,0.7)'}`
+            `0 0 8px ${isProcessing ? 'rgba(59,130,246,0.7)' : 'rgba(139,92,246,0.7)'}`,
+            `0 0 12px ${isProcessing ? 'rgba(59,130,246,0.9)' : 'rgba(139,92,246,0.9)'}`,
+            `0 0 8px ${isProcessing ? 'rgba(59,130,246,0.7)' : 'rgba(139,92,246,0.7)'}`
           ]
         }}
         transition={{ 
