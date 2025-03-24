@@ -14,41 +14,41 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    /* Gold primary color */
-    --primary: 51 100% 50%;
+    /* Neon purple primary color */
+    --primary: 267 100% 61%;
     --primary-foreground: 0 0% 100%;
 
-    /* Dark gold secondary */
-    --secondary: 51 50% 25%;
+    /* Dark purple secondary */
+    --secondary: 267 32% 17%;
     --secondary-foreground: 0 0% 98%;
 
-    /* Muted colors with gold tint */
-    --muted: 51 32% 17%;
+    /* Muted colors with purple tint */
+    --muted: 267 32% 17%;
     --muted-foreground: 215 20% 65%;
 
-    /* Accent colors with gold glow */
-    --accent: 51 32% 17%;
+    /* Accent colors with purple glow */
+    --accent: 267 32% 17%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
 
     /* Borders and inputs with neon effect */
-    --border: 51 32% 17%;
-    --input: 51 32% 17%;
-    --ring: 51 100% 50%;
+    --border: 267 32% 17%;
+    --input: 267 32% 17%;
+    --ring: 267 76% 48%;
 
     --radius: 0.5rem;
 
     /* Sidebar specific colors */
     --sidebar-background: 240 10% 3.9%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 51 100% 50%;
+    --sidebar-primary: 267 100% 61%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 51 32% 17%;
+    --sidebar-accent: 267 32% 17%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 51 32% 17%;
-    --sidebar-ring: 51 100% 50%;
+    --sidebar-border: 267 32% 17%;
+    --sidebar-ring: 267 100% 61%;
   }
 
   .light {
@@ -61,36 +61,36 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    /* Light mode gold primary */
-    --primary: 51 85% 50%;
+    /* Light mode purple primary */
+    --primary: 267 85% 61%;
     --primary-foreground: 0 0% 100%;
 
     /* Light secondary */
-    --secondary: 51 10% 95.9%;
+    --secondary: 267 10% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
 
     /* Muted colors */
-    --muted: 51 10% 95.9%;
+    --muted: 267 10% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
 
     /* Accent colors */
-    --accent: 51 10% 95.9%;
+    --accent: 267 10% 95.9%;
     --accent-foreground: 240 5.9% 10%;
 
     /* Light mode specific colors */
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 51 85% 50%;
+    --ring: 267 85% 61%;
 
     /* Sidebar light mode colors */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 10% 3.9%;
-    --sidebar-primary: 51 85% 50%;
+    --sidebar-primary: 267 85% 61%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 51 10% 95.9%;
+    --sidebar-accent: 267 10% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 240 5.9% 90%;
-    --sidebar-ring: 51 85% 50%;
+    --sidebar-ring: 267 85% 61%;
   }
 }
 
@@ -107,3 +107,4 @@
     @apply bg-background text-foreground transition-colors duration-300;
   }
 }
+
