@@ -10,7 +10,7 @@ const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
   return (
     <>
       <motion.h2 
-        className="text-3xl sm:text-4xl font-bold mt-4 mb-1 font-sans tracking-wider"
+        className="text-3xl sm:text-4xl font-bold mt-4 mb-6 font-sans tracking-wider"
         animate={{ 
           opacity: [0.8, 1, 0.8],
           textShadow: [
@@ -26,10 +26,6 @@ const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
       >
         WIZ
       </motion.h2>
-
-      <p className="text-sm sm:text-base font-serif text-white/80 italic mb-4">
-        Your Magical AI Assistant
-      </p>
 
       <p className="text-base sm:text-lg text-gray-300 mb-1 font-sans">
         {isProcessing ? (
