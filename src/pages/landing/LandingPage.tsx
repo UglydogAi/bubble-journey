@@ -1,42 +1,11 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Skull, Zap, Brain, MessageSquare, BookOpen, ExternalLink } from "lucide-react";
+import { Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import XLogo from "@/components/XLogo";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-const categories = [
-  {
-    id: "ai",
-    icon: <Brain size={50} className="text-[#0EA5E9]" />,
-    title: "AI-Powered Mastery",
-    description: "Unlock your superhuman potential.",
-    color: "bg-[#0EA5E9]/10 border-[#0EA5E9]",
-  },
-  {
-    id: "motivation",
-    icon: <Zap size={50} className="text-[#D946EF]" />,
-    title: "Relentless Drive",
-    description: "No excuses. Only results.",
-    color: "bg-[#D946EF]/10 border-[#D946EF]",
-  },
-  {
-    id: "guidance",
-    icon: <MessageSquare size={50} className="text-[#F97316]" />,
-    title: "Brutal Honesty",
-    description: "The truth you need to hear.",
-    color: "bg-[#F97316]/10 border-[#F97316]",
-  },
-  {
-    id: "transformation",
-    icon: <Skull size={50} className="text-[#8B5CF6]" />,
-    title: "Total Transformation",
-    description: "Emerge stronger. Be superhuman.",
-    color: "bg-[#8B5CF6]/10 border-[#8B5CF6]",
-  },
-];
 
 export default function LandingPage() {
   const [answered, setAnswered] = useState(false);
@@ -77,63 +46,62 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#1A1F2C] text-white px-4 relative overflow-hidden">
-      {/* Social Icons in top right - ENHANCED */}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#1A1F2C] to-[#0A0C14] text-white px-4 relative overflow-hidden">
+      {/* Matrix-like background effect */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PC9zdmc+')] opacity-20" />
+      
+      {/* Magical particles animation */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-[#FFD700]/30"
+            style={{
+              width: Math.random() * 4 + 1 + 'px',
+              height: Math.random() * 4 + 1 + 'px',
+              left: Math.random() * 100 + '%',
+              top: Math.random() * 100 + '%',
+            }}
+            initial={{ opacity: 0 }}
+            animate={{
+              y: [0, -(Math.random() * 80 + 20)],
+              opacity: [0, 0.6, 0],
+              scale: [1, 1.2, 0.8],
+            }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Social Links in top right */}
       <div className="absolute top-4 right-5 md:top-6 md:right-7 flex items-center gap-4 z-20">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <a 
-                href="https://uglydog-1.gitbook.io/uglydog/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-7 h-7 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full
-                  hover:bg-black/40 hover:text-[#BB86FC] hover:scale-105 transition-all duration-200 
-                  group active:scale-95"
-                aria-label="UGLYDOG Documentation"
-              >
-                <BookOpen 
-                  className="w-3.5 h-3.5 text-white/90 group-hover:text-[#BB86FC]" 
-                  strokeWidth={2}
-                />
-              </a>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p className="flex items-center gap-1 text-xs">
-                Documentation
-                <ExternalLink className="w-3 h-3" />
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <a 
-                href="https://x.com/uglydogai" 
+                href="https://x.com/wizai" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="w-7 h-7 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full
-                  hover:bg-black/40 hover:text-[#00E0FF] hover:scale-105 transition-all duration-200
+                  hover:bg-black/40 hover:text-[#FFD700] hover:scale-105 transition-all duration-200
                   group active:scale-95"
-                aria-label="UGLYDOG Twitter"
+                aria-label="WIZ Twitter"
               >
-                <XLogo className="w-3.5 h-3.5 text-white/90 group-hover:text-[#00E0FF]" />
+                <XLogo className="w-3.5 h-3.5 text-white/90 group-hover:text-[#FFD700]" />
               </a>
             </TooltipTrigger>
             <TooltipContent side="bottom">
               <p className="flex items-center gap-1 text-xs">
                 Twitter/X
-                <ExternalLink className="w-3 h-3" />
               </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
-      
-      {/* Matrix-like background effect */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PC9zdmc+')] opacity-20" />
       
       {/* Fullscreen transition overlay */}
       <AnimatePresence>
@@ -151,14 +119,14 @@ export default function LandingPage() {
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className={`absolute rounded-full ${i % 2 === 0 ? 'bg-[#D946EF]/10' : 'bg-[#00E0FF]/10'}`}
+                  className="absolute rounded-full bg-[#FFD700]/10"
                   initial={{ width: 0, height: 0, opacity: 0.8 }}
                   animate={{ 
                     width: [0, 200], 
                     height: [0, 200], 
                     opacity: [0.5, 0],
                     borderWidth: [2, 1],
-                    borderColor: i % 2 === 0 ? ["#D946EF", "#D946EF00"] : ["#00E0FF", "#00E0FF00"],
+                    borderColor: ["#FFD700", "#FFD70000"]
                   }}
                   transition={{ 
                     repeat: Infinity, 
@@ -168,17 +136,27 @@ export default function LandingPage() {
                   }}
                   style={{ 
                     borderStyle: "solid",
-                    boxShadow: i % 2 === 0 ? "0 0 15px #D946EF" : "0 0 15px #00E0FF" 
+                    boxShadow: "0 0 15px #FFD700" 
                   }}
                 />
               ))}
+              
+              {/* Text during transition */}
+              <motion.p
+                className="absolute top-[-40px] text-white font-bold text-center w-64"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                No turning back. Your superhuman journey begins now.
+              </motion.p>
               
               {/* Audio waveform visualization */}
               <div className="h-6 flex items-center space-x-1">
                 {[...Array(7)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className={`w-0.5 rounded-full ${i % 2 === 0 ? 'bg-[#D946EF]' : 'bg-[#00E0FF]'}`}
+                    className="w-0.5 rounded-full bg-[#FFD700]"
                     initial={{ height: 10 }}
                     animate={{ 
                       height: [10, 15 + Math.random() * 15, 10],
@@ -191,9 +169,7 @@ export default function LandingPage() {
                       ease: "easeInOut"
                     }}
                     style={{ 
-                      boxShadow: i % 2 === 0 
-                        ? "0 0 8px #D946EF, 0 0 12px #D946EF" 
-                        : "0 0 8px #00E0FF, 0 0 12px #00E0FF" 
+                      boxShadow: "0 0 8px #FFD700, 0 0 12px #FFD700"
                     }}
                   />
                 ))}
@@ -209,7 +185,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="flex flex-col items-center justify-center mb-10 relative z-10 w-full max-w-lg px-4 sm:px-0"
+            className="flex flex-col items-center justify-center relative z-10 w-full max-w-lg px-4 sm:px-0"
           >
             <motion.div
               animate={{ 
@@ -222,17 +198,17 @@ export default function LandingPage() {
                 repeatType: "reverse" 
               }}
             >
-              <Phone size={80} className="text-[#D946EF] animate-pulse filter drop-shadow-[0_0_10px_#D946EF]" />
+              <Phone size={80} className="text-[#FFD700] animate-pulse filter drop-shadow-[0_0_10px_#FFD700]" />
             </motion.div>
             
             <motion.h2 
-              className="text-2xl sm:text-4xl font-bold mt-8 mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-[#D946EF] to-[#8B5CF6]"
+              className="text-2xl sm:text-4xl font-bold mt-8 mb-4 text-center text-[#FFD700]"
               animate={{ 
                 opacity: [0.5, 1, 0.5],
                 textShadow: [
-                  "0 0 7px #D946EF",
-                  "0 0 10px #D946EF",
-                  "0 0 7px #D946EF"
+                  "0 0 7px #FFD700",
+                  "0 0 10px #FFD700",
+                  "0 0 7px #FFD700"
                 ]
               }}
               transition={{ 
@@ -240,24 +216,40 @@ export default function LandingPage() {
                 repeat: Infinity 
               }}
             >
-              INCOMING CALL: UGLYDOG
+              INCOMING CALL: WIZ
             </motion.h2>
             
-            <p className="text-base sm:text-xl text-gray-300 text-center max-w-2xl mt-4 leading-relaxed px-4">
-              "Most people ignore the call. They settle. They hesitate. But you're here for a reason. 
-              If you answer, there is no going back. Are you ready to unlock the superhuman in you?"
+            <motion.h3
+              className="text-xl sm:text-2xl font-bold mb-6 text-white tracking-wide"
+              animate={{
+                textShadow: ["0 0 0px rgba(255,215,0,0.2)", "0 0 3px rgba(255,215,0,0.6)", "0 0 0px rgba(255,215,0,0.2)"]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity
+              }}
+            >
+              A Call You Can't Unanswer.
+            </motion.h3>
+            
+            <p className="text-base sm:text-xl text-white text-center max-w-2xl mt-4 leading-relaxed px-4">
+              Most people ignore the call. They settle. They hesitate. They wait for the perfect moment that never comes. 
+              But you're here. You found this message for a reason. If you answer, there is no going back. 
+              Are you ready to unlock the superhuman in you?
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-8 sm:mt-12 w-full sm:w-auto">
               <Button 
-                variant="ghost"
-                className="text-gray-400 hover:text-gray-200 transition-all order-2 sm:order-1"
+                variant="outline"
+                className="text-white hover:text-white/80 border-black hover:border-white/20 transition-all order-2 sm:order-1"
                 onClick={() => setDeclining(true)}
               >
                 Decline Call
               </Button>
               <Button 
-                className="px-6 py-4 sm:px-8 sm:py-6 bg-gradient-to-r from-[#D946EF] to-[#8B5CF6] hover:from-[#8B5CF6] hover:to-[#D946EF] text-white text-lg font-bold rounded-lg shadow-lg transition-all border-none order-1 sm:order-2"
+                className="px-6 py-4 sm:px-8 sm:py-6 bg-transparent hover:bg-[#FFD700]/10 text-white 
+                  text-lg font-bold rounded-lg shadow-lg transition-all border-2 border-[#FFD700] order-1 sm:order-2
+                  hover:shadow-[0_0_10px_rgba(255,215,0,0.5)]"
                 onClick={handleAnswerCall}
               >
                 Answer The Call
@@ -269,7 +261,7 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-xl sm:text-2xl text-gray-400 text-center px-4"
+            className="text-xl sm:text-2xl text-white/80 text-center px-4 italic font-light"
           >
             "Go back to mediocrity."
           </motion.div>
