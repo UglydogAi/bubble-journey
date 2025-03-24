@@ -87,13 +87,13 @@ export default function LandingPage() {
                 href="https://uglydog-1.gitbook.io/uglydog/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-8 h-8 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-full
-                  hover:bg-black/30 hover:text-[#BB86FC] hover:scale-105 transition-all duration-200 
+                className="w-7 h-7 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full
+                  hover:bg-black/40 hover:text-[#BB86FC] hover:scale-105 transition-all duration-200 
                   group active:scale-95"
                 aria-label="UGLYDOG Documentation"
               >
                 <BookOpen 
-                  className="w-4 h-4 text-white/90 group-hover:text-[#BB86FC]" 
+                  className="w-3.5 h-3.5 text-white/90 group-hover:text-[#BB86FC]" 
                   strokeWidth={2}
                 />
               </a>
@@ -114,12 +114,12 @@ export default function LandingPage() {
                 href="https://x.com/uglydogai" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-8 h-8 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-full
-                  hover:bg-black/30 hover:text-[#00E0FF] hover:scale-105 transition-all duration-200
+                className="w-7 h-7 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full
+                  hover:bg-black/40 hover:text-[#00E0FF] hover:scale-105 transition-all duration-200
                   group active:scale-95"
                 aria-label="UGLYDOG Twitter"
               >
-                <XLogo className="w-4 h-4 text-white/90 group-hover:text-[#00E0FF]" />
+                <XLogo className="w-3.5 h-3.5 text-white/90 group-hover:text-[#00E0FF]" />
               </a>
             </TooltipTrigger>
             <TooltipContent side="bottom">
