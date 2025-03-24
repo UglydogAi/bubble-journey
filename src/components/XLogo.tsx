@@ -8,8 +8,8 @@ interface XLogoProps {
 const XLogo: React.FC<XLogoProps> = ({ className = "" }) => {
   return (
     <svg 
-      width="24" 
-      height="24" 
+      width="20" 
+      height="20" 
       viewBox="0 0 24 24" 
       className={className} 
       fill="currentColor"
