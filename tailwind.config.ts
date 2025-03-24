@@ -22,6 +22,10 @@ export default {
       screens: {
         "xs": "480px", // Added xs breakpoint
       },
+      fontFamily: {
+        'sans': ['Montserrat', 'system-ui', 'sans-serif'],
+        'serif': ['Playfair Display', 'Georgia', 'serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -80,6 +84,16 @@ export default {
         "bounce": {
           "0%, 100%": { transform: "translateY(-5%)" },
           "50%": { transform: "translateY(0)" }
+        },
+        "pulse-glow": {
+          "0%, 100%": { 
+            boxShadow: "0 0 5px 0 rgba(139,92,246,0.5)",
+            opacity: "0.8"
+          },
+          "50%": { 
+            boxShadow: "0 0 20px 5px rgba(139,92,246,0.8)",
+            opacity: "1" 
+          }
         }
       },
       animation: {
@@ -88,7 +102,8 @@ export default {
         "rotate-slow": "rotate-slow 8s linear infinite",
         shimmer: "shimmer 2s linear infinite",
         "fade-in": "fade-in 0.3s ease-out",
-        bounce: "bounce 2s ease-in-out infinite"
+        bounce: "bounce 2s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite"
       }
     },
   },

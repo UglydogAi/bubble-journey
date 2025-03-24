@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useConversation } from "./hooks/useConversation";
 import { toast } from "sonner";
+import { Settings } from "lucide-react";
 import CallAvatar from "./components/CallAvatar";
 import CallHeader from "./components/CallHeader";
 import CallControls from "./components/CallControls";
@@ -159,9 +160,52 @@ export default function CallPage() {
     }
   };
 
+  const particleVariants = {
+    animate: {
+      y: [0, -10, 0],
+      opacity: [0, 0.5, 0],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        repeatType: "loop" as const,
+      }
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#1A1F2C] to-[#0c1015] text-white px-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjEpIi8+PC9zdmc+')] opacity-20" />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#0F172A] to-[#020617] text-white px-4 relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-purple-500/30"
+            style={{
+              width: Math.random() * 4 + 1 + 'px',
+              height: Math.random() * 4 + 1 + 'px',
+              left: Math.random() * 100 + '%',
+              top: Math.random() * 100 + '%',
+            }}
+            initial={{ opacity: 0 }}
+            animate={{
+              y: [0, -(Math.random() * 80 + 20)],
+              opacity: [0, 0.6, 0],
+              scale: [1, 1.2, 0.8],
+            }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="absolute top-4 right-4 z-30">
+        <button className="w-9 h-9 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center
+                         hover:bg-gray-700/60 transition-colors duration-200 group">
+          <Settings className="w-5 h-5 text-gray-400 group-hover:text-white" />
+        </button>
+      </div>
 
       <div 
         ref={widgetRef} 
@@ -177,7 +221,7 @@ export default function CallPage() {
       {!initialGreetingPlayed && (
         <div className="absolute top-16 left-0 right-0 flex justify-center">
           <div className="bg-blue-500/40 text-white text-xs px-3 py-1.5 rounded-full animate-pulse">
-            Initializing UGLYDOG...
+            Initializing WIZ...
           </div>
         </div>
       )}
