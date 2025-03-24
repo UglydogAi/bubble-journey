@@ -1,6 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import WizMascot from "@/components/WizMascot";
 
 interface CallHeaderProps {
   isProcessing: boolean;
@@ -9,8 +10,13 @@ interface CallHeaderProps {
 const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
   return (
     <>
+      <WizMascot 
+        isProcessing={isProcessing} 
+        className="mb-4"
+      />
+      
       <motion.h2 
-        className="text-3xl sm:text-4xl font-bold mt-4 mb-6 font-sans tracking-wider"
+        className="text-3xl sm:text-4xl font-bold mb-3 font-sans tracking-wider"
         animate={{ 
           opacity: [0.8, 1, 0.8],
           textShadow: [
@@ -35,7 +41,7 @@ const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
         )}
       </p>
       
-      <p className="text-xs text-green-300/70 font-light italic mb-6 sm:mb-10 font-sans">
+      <p className="text-xs text-green-300/70 font-light italic mb-6 sm:mb-8 font-sans">
         SECURE PROXY CONNECTION
       </p>
     </>
