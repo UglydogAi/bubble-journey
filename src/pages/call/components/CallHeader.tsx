@@ -1,7 +1,6 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import WizMascot from "@/components/WizMascot";
 
 interface CallHeaderProps {
   isProcessing: boolean;
@@ -10,19 +9,14 @@ interface CallHeaderProps {
 const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
   return (
     <>
-      <WizMascot 
-        isProcessing={isProcessing} 
-        className="mb-4"
-      />
-      
       <motion.h2 
-        className="text-3xl sm:text-4xl font-bold mb-3 font-sans tracking-wider"
+        className="text-3xl sm:text-4xl font-bold mt-4 mb-6 font-sans tracking-wider text-[#FFD700]"
         animate={{ 
           opacity: [0.8, 1, 0.8],
           textShadow: [
-            `0 0 8px ${isProcessing ? 'rgba(59,130,246,0.7)' : 'rgba(139,92,246,0.7)'}`,
-            `0 0 12px ${isProcessing ? 'rgba(59,130,246,0.9)' : 'rgba(139,92,246,0.9)'}`,
-            `0 0 8px ${isProcessing ? 'rgba(59,130,246,0.7)' : 'rgba(139,92,246,0.7)'}`
+            "0 0 8px rgba(255,215,0,0.7)",
+            "0 0 12px rgba(255,215,0,0.9)",
+            "0 0 8px rgba(255,215,0,0.7)"
           ]
         }}
         transition={{ 
@@ -33,15 +27,15 @@ const CallHeader: React.FC<CallHeaderProps> = ({ isProcessing }) => {
         WIZ
       </motion.h2>
 
-      <p className="text-base sm:text-lg text-gray-300 mb-1 font-sans">
+      <p className="text-base sm:text-lg text-white mb-1 font-sans">
         {isProcessing ? (
-          <span className="text-blue-200">Speaking...</span>
+          <span className="text-white">Speaking...</span>
         ) : (
-          <span className="text-purple-200">Listening...</span>
+          <span className="text-white">Listening...</span>
         )}
       </p>
       
-      <p className="text-xs text-green-300/70 font-light italic mb-6 sm:mb-8 font-sans">
+      <p className="text-xs text-black/70 font-light italic mb-6 sm:mb-10 font-sans">
         SECURE PROXY CONNECTION
       </p>
     </>
