@@ -1,11 +1,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Skull, Zap, Brain, MessageSquare, ExternalLink } from "lucide-react";
+import { Phone, Skull, Zap, Brain, MessageSquare, BookOpen, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import XLogo from "@/components/XLogo";
-import DocsIcon from "@/components/DocsIcon";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const categories = [
@@ -79,8 +78,8 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#1A1F2C] text-white px-4 relative overflow-hidden">
-      {/* Social Icons in top right - REDESIGNED */}
-      <div className="absolute top-4 right-5 md:top-6 md:right-7 flex items-center gap-3 z-20">
+      {/* Social Icons in top right - ENHANCED */}
+      <div className="absolute top-4 right-5 md:top-6 md:right-7 flex items-center gap-4 z-20">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -88,13 +87,14 @@ export default function LandingPage() {
                 href="https://uglydog-1.gitbook.io/uglydog/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-7 h-7 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full
-                  hover:bg-black/40 hover:text-[#BB86FC] transition-all duration-200 
-                  group active:scale-95 border border-white/10"
+                className="w-8 h-8 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-full
+                  hover:bg-black/30 hover:text-[#BB86FC] hover:scale-105 transition-all duration-200 
+                  group active:scale-95"
                 aria-label="UGLYDOG Documentation"
               >
-                <DocsIcon 
-                  className="w-3.5 h-3.5 text-white/90 group-hover:text-[#BB86FC]" 
+                <BookOpen 
+                  className="w-4 h-4 text-white/90 group-hover:text-[#BB86FC]" 
+                  strokeWidth={2}
                 />
               </a>
             </TooltipTrigger>
@@ -114,12 +114,12 @@ export default function LandingPage() {
                 href="https://x.com/uglydogai" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-7 h-7 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full
-                  hover:bg-black/40 hover:text-[#00E0FF] transition-all duration-200
-                  group active:scale-95 border border-white/10"
+                className="w-8 h-8 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-full
+                  hover:bg-black/30 hover:text-[#00E0FF] hover:scale-105 transition-all duration-200
+                  group active:scale-95"
                 aria-label="UGLYDOG Twitter"
               >
-                <XLogo className="w-3.5 h-3.5 text-white/90 group-hover:text-[#00E0FF]" />
+                <XLogo className="w-4 h-4 text-white/90 group-hover:text-[#00E0FF]" />
               </a>
             </TooltipTrigger>
             <TooltipContent side="bottom">
