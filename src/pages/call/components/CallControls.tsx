@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface CallControlsProps {
   isMuted: boolean;
@@ -19,6 +20,13 @@ const CallControls: React.FC<CallControlsProps> = ({
   onEndCall,
   toggleChat
 }) => {
+  const navigate = useNavigate();
+  
+  const handleEndCall = () => {
+    onEndCall();
+    navigate('/dashboard');
+  };
+  
   return (
     <div className="flex space-x-4">
       {/* Mute button */}
@@ -47,7 +55,7 @@ const CallControls: React.FC<CallControlsProps> = ({
       
       {/* End call button */}
       <button
-        onClick={onEndCall}
+        onClick={handleEndCall}
         className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors"
       >
         <PhoneOff className="w-5 h-5 text-white" />
