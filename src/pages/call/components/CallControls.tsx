@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, MonitorShare, MonitorStop } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface CallControlsProps {
@@ -10,6 +10,8 @@ interface CallControlsProps {
   setIsVideoOn: (videoOn: boolean) => void;
   onEndCall: () => void;
   toggleChat: () => void;
+  isScreenSharing?: boolean;
+  toggleScreenShare?: () => void;
 }
 
 const CallControls: React.FC<CallControlsProps> = ({
@@ -18,7 +20,9 @@ const CallControls: React.FC<CallControlsProps> = ({
   isVideoOn,
   setIsVideoOn,
   onEndCall,
-  toggleChat
+  toggleChat,
+  isScreenSharing = false,
+  toggleScreenShare = () => {}
 }) => {
   const navigate = useNavigate();
   
@@ -50,6 +54,18 @@ const CallControls: React.FC<CallControlsProps> = ({
           <Video className="w-5 h-5 text-white" />
         ) : (
           <VideoOff className="w-5 h-5 text-red-400" />
+        )}
+      </button>
+      
+      {/* Screen share button */}
+      <button
+        onClick={toggleScreenShare}
+        className="w-12 h-12 rounded-full bg-[#1E293B] hover:bg-[#2D3748] flex items-center justify-center transition-colors"
+      >
+        {isScreenSharing ? (
+          <MonitorStop className="w-5 h-5 text-red-400" />
+        ) : (
+          <MonitorShare className="w-5 h-5 text-white" />
         )}
       </button>
       
