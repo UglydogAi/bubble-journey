@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, MonitorShare, MonitorStop } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, Monitor, MonitorOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface CallControlsProps {
@@ -63,9 +63,9 @@ const CallControls: React.FC<CallControlsProps> = ({
         className="w-12 h-12 rounded-full bg-[#1E293B] hover:bg-[#2D3748] flex items-center justify-center transition-colors"
       >
         {isScreenSharing ? (
-          <MonitorStop className="w-5 h-5 text-red-400" />
+          <MonitorOff className="w-5 h-5 text-red-400" />
         ) : (
-          <MonitorShare className="w-5 h-5 text-white" />
+          <Monitor className="w-5 h-5 text-white" />
         )}
       </button>
       
