@@ -1,80 +1,66 @@
 
 import React from "react";
-import { motion } from "framer-motion";
-import { Mic, MicOff, PhoneOff, Volume2, VolumeX, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare } from "lucide-react";
 
 interface CallControlsProps {
-  muted: boolean;
-  setMuted: (muted: boolean) => void;
+  isMuted: boolean;
+  setIsMuted: (muted: boolean) => void;
+  isVideoOn: boolean;
+  setIsVideoOn: (videoOn: boolean) => void;
   onEndCall: () => void;
+  toggleChat: () => void;
 }
 
-const CallControls: React.FC<CallControlsProps> = ({ 
-  muted, 
-  setMuted, 
-  onEndCall 
+const CallControls: React.FC<CallControlsProps> = ({
+  isMuted,
+  setIsMuted,
+  isVideoOn,
+  setIsVideoOn,
+  onEndCall,
+  toggleChat
 }) => {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex gap-6 sm:gap-8"
-    >
-      <Button
-        variant="outline"
-        size="lg"
-        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full relative overflow-hidden 
-                 border-2 ${muted ? 'border-yellow-500/70' : 'border-blue-500/70'} 
-                 bg-transparent hover:bg-blue-500/10`}
-        onClick={() => setMuted(!muted)}
+    <div className="flex space-x-4">
+      {/* Mute button */}
+      <button
+        onClick={() => setIsMuted(!isMuted)}
+        className="w-12 h-12 rounded-full bg-[#1E293B] hover:bg-[#2D3748] flex items-center justify-center transition-colors"
       >
-        {muted ? (
-          <MicOff className="w-6 h-6 sm:w-7 sm:h-7 text-yellow-400" />
+        {isMuted ? (
+          <MicOff className="w-5 h-5 text-red-400" />
         ) : (
-          <>
-            <Mic className="w-6 h-6 sm:w-7 sm:h-7 text-blue-400" />
-            {/* Pulse animation for active mic */}
-            <motion.div 
-              className="absolute inset-0 rounded-full bg-blue-500/20"
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.2, 0, 0.2]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity
-              }}
-            />
-          </>
+          <Mic className="w-5 h-5 text-white" />
         )}
-      </Button>
-
-      <Button
-        variant="outline"
-        size="lg"
-        className="w-14 h-14 sm:w-16 sm:h-16 rounded-full relative overflow-hidden
-                 border-2 border-red-500/70 bg-transparent hover:bg-red-500/10
-                 transition-transform duration-200 hover:scale-105"
-        onClick={onEndCall}
-      >
-        <PhoneOff className="w-6 h-6 sm:w-7 sm:h-7 text-red-500" />
-      </Button>
+      </button>
       
-      <Button
-        variant="outline"
-        size="lg"
-        className="w-14 h-14 sm:w-16 sm:h-16 rounded-full relative overflow-hidden
-                 border-2 border-gray-500/50 bg-transparent hover:bg-gray-500/10
-                 transition-transform duration-200 hover:scale-105"
+      {/* Video button */}
+      <button
+        onClick={() => setIsVideoOn(!isVideoOn)}
+        className="w-12 h-12 rounded-full bg-[#1E293B] hover:bg-[#2D3748] flex items-center justify-center transition-colors"
       >
-        {true ? (
-          <Volume2 className="w-6 h-6 sm:w-7 sm:h-7 text-gray-400" />
+        {isVideoOn ? (
+          <Video className="w-5 h-5 text-white" />
         ) : (
-          <VolumeX className="w-6 h-6 sm:w-7 sm:h-7 text-yellow-400" />
+          <VideoOff className="w-5 h-5 text-red-400" />
         )}
-      </Button>
-    </motion.div>
+      </button>
+      
+      {/* End call button */}
+      <button
+        onClick={onEndCall}
+        className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors"
+      >
+        <PhoneOff className="w-5 h-5 text-white" />
+      </button>
+      
+      {/* Toggle chat */}
+      <button
+        onClick={toggleChat}
+        className="w-12 h-12 rounded-full bg-[#1E293B] hover:bg-[#2D3748] flex items-center justify-center transition-colors"
+      >
+        <MessageSquare className="w-5 h-5 text-white" />
+      </button>
+    </div>
   );
 };
 
