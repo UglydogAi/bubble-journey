@@ -28,7 +28,7 @@ const InvitePage: React.FC = () => {
       toast.success("Invitation request submitted successfully");
       setEmail("");
       
-      // Navigate to call page after successful submission (can be adjusted)
+      // Navigate to call page after successful submission
       setTimeout(() => {
         navigate('/call');
       }, 2000);
@@ -66,43 +66,47 @@ const InvitePage: React.FC = () => {
         ))}
       </div>
       
-      {/* Radial gradient bg */}
+      {/* Enhanced radial gradient bg */}
       <div 
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-40"
         style={{
-          background: "radial-gradient(circle at center, rgba(139,92,246,0.3) 0%, rgba(12,18,29,0) 70%)",
+          background: "radial-gradient(circle at center, rgba(139,92,246,0.4) 0%, rgba(12,18,29,0) 70%)",
         }}
       />
       
       <div className="relative container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-screen">
-        {/* Logo */}
+        {/* Logo with enhanced glow */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-8 flex flex-col items-center"
+          className="mb-12 flex flex-col items-center relative"
         >
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white drop-shadow-lg">
-            MANUS
+          <div className="absolute inset-0 blur-[20px] bg-[#8B5CF6]/30 rounded-full scale-150" />
+          <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white drop-shadow-lg relative z-10">
+            WIZ
           </h1>
           <div className="mt-1 w-16 h-1 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] rounded-full" />
         </motion.div>
         
-        {/* Main content */}
+        {/* Main content - seamlessly integrated with background */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full max-w-md backdrop-blur-lg bg-black/30 p-8 rounded-2xl border border-[#8B5CF6]/20 shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+          className="w-full max-w-md relative"
         >
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
-            Unlock the Future with Manus & Wiz
+          {/* Soft glow behind form */}
+          <div className="absolute inset-0 blur-[30px] bg-[#8B5CF6]/10 rounded-2xl -z-10" />
+          
+          <h2 className="text-2xl md:text-3xl font-light text-center mb-2 tracking-wide">
+            Become Limitless
           </h2>
           
-          <p className="text-gray-300 text-center mb-8">
-            Manus is currently in private beta. Meet Wiz, your personal AI assistant, 
-            designed to help with a wide range of tasks. Enter your email below to 
-            request an exclusive invitation.
+          <p className="text-gray-300 text-center mb-8 leading-relaxed">
+            WIZ is currently in private beta. Your personal AI coach, built to 
+            push limits, break barriers, and unlock your true potential. Enter 
+            your email below to request exclusive access.
           </p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -111,7 +115,7 @@ const InvitePage: React.FC = () => {
               placeholder="Enter your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-12 bg-[#1E293B] focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/50 text-white placeholder:text-gray-400"
+              className="h-12 bg-[#1E293B]/80 backdrop-blur-sm border-[#8B5CF6]/30 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/30 text-white placeholder:text-gray-400 rounded-xl transition-all"
               icon={<Sparkles className="h-5 w-5 text-[#8B5CF6] opacity-70" />}
               required
             />
@@ -119,13 +123,13 @@ const InvitePage: React.FC = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:from-[#D946EF] hover:to-[#8B5CF6] text-white font-medium rounded-md flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_10px_rgba(139,92,246,0.5)]"
+              className="w-full h-12 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:from-[#D946EF] hover:to-[#8B5CF6] text-white font-normal rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_15px_rgba(139,92,246,0.3)] backdrop-blur-sm border border-white/10"
             >
               {isSubmitting ? (
                 "Processing..."
               ) : (
                 <>
-                  Request Invitation
+                  Request Exclusive Access
                   <ArrowRight className="h-5 w-5" />
                 </>
               )}
