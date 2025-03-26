@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, ChevronRight, ArrowRight } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -27,6 +27,11 @@ const InvitePage: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       toast.success("Invitation request submitted successfully");
       setEmail("");
+      
+      // Navigate to call page after successful submission (can be adjusted)
+      setTimeout(() => {
+        navigate('/call');
+      }, 2000);
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
     } finally {
@@ -65,7 +70,7 @@ const InvitePage: React.FC = () => {
       <div 
         className="absolute inset-0 opacity-30"
         style={{
-          background: "radial-gradient(circle at center, rgba(59,130,246,0.3) 0%, rgba(12,18,29,0) 70%)",
+          background: "radial-gradient(circle at center, rgba(139,92,246,0.3) 0%, rgba(12,18,29,0) 70%)",
         }}
       />
       
@@ -80,7 +85,7 @@ const InvitePage: React.FC = () => {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white drop-shadow-lg">
             MANUS
           </h1>
-          <div className="mt-1 w-16 h-1 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full" />
+          <div className="mt-1 w-16 h-1 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] rounded-full" />
         </motion.div>
         
         {/* Main content */}
@@ -88,7 +93,7 @@ const InvitePage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full max-w-md backdrop-blur-lg bg-black/30 p-8 rounded-2xl border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+          className="w-full max-w-md backdrop-blur-lg bg-black/30 p-8 rounded-2xl border border-[#8B5CF6]/20 shadow-[0_0_15px_rgba(139,92,246,0.3)]"
         >
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
             Unlock the Future with Manus & Wiz
@@ -101,22 +106,20 @@ const InvitePage: React.FC = () => {
           </p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
-              <Input
-                type="email"
-                placeholder="Enter your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-12 bg-[#1E293B] border-blue-500/40 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 text-white placeholder:text-gray-400"
-                required
-              />
-              <Sparkles className="absolute right-3 top-3.5 h-5 w-5 text-blue-400 opacity-70" />
-            </div>
+            <TextField
+              type="email"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-12 bg-[#1E293B] focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/50 text-white placeholder:text-gray-400"
+              icon={<Sparkles className="h-5 w-5 text-[#8B5CF6] opacity-70" />}
+              required
+            />
             
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-medium rounded-md flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+              className="w-full h-12 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:from-[#D946EF] hover:to-[#8B5CF6] text-white font-medium rounded-md flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_10px_rgba(139,92,246,0.5)]"
             >
               {isSubmitting ? (
                 "Processing..."
@@ -133,7 +136,7 @@ const InvitePage: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate("/call")}
-              className="text-blue-300 hover:text-blue-200 text-sm flex items-center justify-center mx-auto gap-1 transition-colors duration-200"
+              className="text-[#8B5CF6] hover:text-[#A78BFA] text-sm flex items-center justify-center mx-auto gap-1 transition-colors duration-200"
             >
               Already have a code? Activate Account
               <ChevronRight className="h-4 w-4" />
@@ -153,6 +156,6 @@ const InvitePage: React.FC = () => {
       </div>
     </div>
   );
-};
+}
 
 export default InvitePage;

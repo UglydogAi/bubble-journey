@@ -72,12 +72,13 @@ export default function LandingPage() {
     }
     
     setTimeout(() => {
-      navigate('/call');
+      // Navigate to invite page instead of directly to call
+      navigate('/invite');
     }, 1600); // Give enough time for the transition to complete
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#1A1F2C] text-white px-4 relative overflow-hidden">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#0C121D] text-white px-4 relative overflow-hidden">
       {/* Social Icons in top right - ENHANCED */}
       <div className="absolute top-4 right-5 md:top-6 md:right-7 flex items-center gap-4 z-20">
         <TooltipProvider>
@@ -88,12 +89,12 @@ export default function LandingPage() {
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-7 h-7 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full
-                  hover:bg-black/40 hover:text-[#BB86FC] hover:scale-105 transition-all duration-200 
+                  hover:bg-black/40 hover:text-[#8B5CF6] hover:scale-105 transition-all duration-200 
                   group active:scale-95"
-                aria-label="UGLYDOG Documentation"
+                aria-label="Documentation"
               >
                 <BookOpen 
-                  className="w-3.5 h-3.5 text-white/90 group-hover:text-[#BB86FC]" 
+                  className="w-3.5 h-3.5 text-white/90 group-hover:text-[#8B5CF6]" 
                   strokeWidth={2}
                 />
               </a>
@@ -115,11 +116,11 @@ export default function LandingPage() {
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="w-7 h-7 flex items-center justify-center bg-black/30 backdrop-blur-sm rounded-full
-                  hover:bg-black/40 hover:text-[#00E0FF] hover:scale-105 transition-all duration-200
+                  hover:bg-black/40 hover:text-[#8B5CF6] hover:scale-105 transition-all duration-200
                   group active:scale-95"
-                aria-label="UGLYDOG Twitter"
+                aria-label="Twitter"
               >
-                <XLogo className="w-3.5 h-3.5 text-white/90 group-hover:text-[#00E0FF]" />
+                <XLogo className="w-3.5 h-3.5 text-white/90 group-hover:text-[#8B5CF6]" />
               </a>
             </TooltipTrigger>
             <TooltipContent side="bottom">
@@ -151,14 +152,14 @@ export default function LandingPage() {
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className={`absolute rounded-full ${i % 2 === 0 ? 'bg-[#D946EF]/10' : 'bg-[#00E0FF]/10'}`}
+                  className={`absolute rounded-full ${i % 2 === 0 ? 'bg-[#8B5CF6]/10' : 'bg-[#00E0FF]/10'}`}
                   initial={{ width: 0, height: 0, opacity: 0.8 }}
                   animate={{ 
                     width: [0, 200], 
                     height: [0, 200], 
                     opacity: [0.5, 0],
                     borderWidth: [2, 1],
-                    borderColor: i % 2 === 0 ? ["#D946EF", "#D946EF00"] : ["#00E0FF", "#00E0FF00"],
+                    borderColor: i % 2 === 0 ? ["#8B5CF6", "#8B5CF600"] : ["#00E0FF", "#00E0FF00"],
                   }}
                   transition={{ 
                     repeat: Infinity, 
@@ -168,7 +169,7 @@ export default function LandingPage() {
                   }}
                   style={{ 
                     borderStyle: "solid",
-                    boxShadow: i % 2 === 0 ? "0 0 15px #D946EF" : "0 0 15px #00E0FF" 
+                    boxShadow: i % 2 === 0 ? "0 0 15px #8B5CF6" : "0 0 15px #00E0FF" 
                   }}
                 />
               ))}
@@ -178,7 +179,7 @@ export default function LandingPage() {
                 {[...Array(7)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className={`w-0.5 rounded-full ${i % 2 === 0 ? 'bg-[#D946EF]' : 'bg-[#00E0FF]'}`}
+                    className={`w-0.5 rounded-full ${i % 2 === 0 ? 'bg-[#8B5CF6]' : 'bg-[#00E0FF]'}`}
                     initial={{ height: 10 }}
                     animate={{ 
                       height: [10, 15 + Math.random() * 15, 10],
@@ -192,7 +193,7 @@ export default function LandingPage() {
                     }}
                     style={{ 
                       boxShadow: i % 2 === 0 
-                        ? "0 0 8px #D946EF, 0 0 12px #D946EF" 
+                        ? "0 0 8px #8B5CF6, 0 0 12px #8B5CF6" 
                         : "0 0 8px #00E0FF, 0 0 12px #00E0FF" 
                     }}
                   />
@@ -222,17 +223,17 @@ export default function LandingPage() {
                 repeatType: "reverse" 
               }}
             >
-              <Phone size={80} className="text-[#D946EF] animate-pulse filter drop-shadow-[0_0_10px_#D946EF]" />
+              <Phone size={80} className="text-[#8B5CF6] animate-pulse filter drop-shadow-[0_0_10px_#8B5CF6]" />
             </motion.div>
             
             <motion.h2 
-              className="text-2xl sm:text-4xl font-bold mt-8 mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-[#D946EF] to-[#8B5CF6]"
+              className="text-2xl sm:text-4xl font-bold mt-8 mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]"
               animate={{ 
                 opacity: [0.5, 1, 0.5],
                 textShadow: [
-                  "0 0 7px #D946EF",
-                  "0 0 10px #D946EF",
-                  "0 0 7px #D946EF"
+                  "0 0 7px #8B5CF6",
+                  "0 0 10px #8B5CF6",
+                  "0 0 7px #8B5CF6"
                 ]
               }}
               transition={{ 
@@ -240,7 +241,7 @@ export default function LandingPage() {
                 repeat: Infinity 
               }}
             >
-              INCOMING CALL: UGLYDOG
+              INCOMING CALL: WIZ
             </motion.h2>
             
             <p className="text-base sm:text-xl text-gray-300 text-center max-w-2xl mt-4 leading-relaxed px-4">
@@ -257,7 +258,7 @@ export default function LandingPage() {
                 Decline Call
               </Button>
               <Button 
-                className="px-6 py-4 sm:px-8 sm:py-6 bg-gradient-to-r from-[#D946EF] to-[#8B5CF6] hover:from-[#8B5CF6] hover:to-[#D946EF] text-white text-lg font-bold rounded-lg shadow-lg transition-all border-none order-1 sm:order-2"
+                className="px-6 py-4 sm:px-8 sm:py-6 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:from-[#D946EF] hover:to-[#8B5CF6] text-white text-lg font-bold rounded-lg shadow-lg transition-all border-none order-1 sm:order-2"
                 onClick={handleAnswerCall}
               >
                 Answer The Call
