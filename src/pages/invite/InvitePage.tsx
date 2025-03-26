@@ -146,6 +146,12 @@ const InvitePage: React.FC = () => {
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
+          
+          <div className="mt-8 bg-[#1E293B]/50 p-4 rounded-xl border border-[#8B5CF6]/20">
+            <p className="text-xs text-gray-400 text-center">
+              <span className="text-[#A78BFA] font-medium">Limited Access:</span> We're currently onboarding the first 10,000 users with invitation codes. Request your code above or enter an existing code to join the revolution.
+            </p>
+          </div>
         </motion.div>
         
         {/* Footer */}
