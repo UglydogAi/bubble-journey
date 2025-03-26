@@ -94,7 +94,7 @@ export default function LandingPage() {
                 aria-label="Documentation"
               >
                 <GitBookIcon 
-                  className="w-3.5 h-3.5 text-white/90 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" 
+                  className="w-4 h-4 text-white/90 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" 
                 />
               </a>
             </TooltipTrigger>
@@ -119,7 +119,7 @@ export default function LandingPage() {
                   group active:scale-95"
                 aria-label="Twitter"
               >
-                <XLogo className="w-3.5 h-3.5 text-white/90 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />
+                <XLogo className="w-4 h-4 text-white/90 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />
               </a>
             </TooltipTrigger>
             <TooltipContent side="bottom">
