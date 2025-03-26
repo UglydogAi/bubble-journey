@@ -4,7 +4,7 @@ import { UserRound, Settings, CreditCard, MessageSquare, Award } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import XLogo from "@/components/XLogo";
-import DocsIcon from "@/components/DocsIcon";
+import GitBookIcon from "@/components/GitBookIcon";
 import DiscordIcon from "@/components/DiscordIcon";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -27,17 +27,17 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
 
   const socialItems = [
     { 
-      icon: <DocsIcon className="h-4 w-4" />, 
+      icon: <GitBookIcon className="h-5 w-5 transition-all duration-200 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />, 
       label: "Docs", 
       url: "https://uglydog-1.gitbook.io/uglydog/" 
     },
     { 
-      icon: <DiscordIcon className="h-4 w-4" />, 
+      icon: <DiscordIcon className="h-5 w-5 transition-all duration-200 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />, 
       label: "Discord", 
       url: "https://discord.gg/uglydogai" 
     },
     { 
-      icon: <XLogo className="h-4 w-4" />, 
+      icon: <XLogo className="h-5 w-5 transition-all duration-200 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />, 
       label: "Twitter", 
       url: "https://x.com/uglydogai" 
     }
@@ -96,7 +96,7 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
                     className={cn(
                       "w-full justify-start gap-3 text-sidebar-foreground/70",
                       "hover:text-white hover:bg-[#8A2BE2]/90",
-                      "transition-colors duration-300 px-2.5 py-2.5 mt-1.5"
+                      "transition-colors duration-300 px-2.5 py-2.5 mt-1.5 group"
                     )}
                     asChild
                   >
@@ -172,7 +172,7 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
               className={cn(
                 "w-full justify-start gap-3 text-sidebar-foreground/70",
                 "hover:text-white hover:bg-[#8A2BE2]/90",
-                "transition-colors duration-300 px-2.5 py-2.5 mt-1.5"
+                "transition-colors duration-300 px-2.5 py-2.5 mt-1.5 group"
               )}
               asChild
             >

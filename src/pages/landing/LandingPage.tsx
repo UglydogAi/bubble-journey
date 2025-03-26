@@ -1,10 +1,10 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Skull, Zap, Brain, MessageSquare, BookOpen, ExternalLink } from "lucide-react";
+import { Phone, Skull, Zap, Brain, MessageSquare, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import XLogo from "@/components/XLogo";
+import GitBookIcon from "@/components/GitBookIcon";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const categories = [
@@ -93,9 +93,8 @@ export default function LandingPage() {
                   group active:scale-95"
                 aria-label="Documentation"
               >
-                <BookOpen 
-                  className="w-3.5 h-3.5 text-white/90 group-hover:text-[#8B5CF6]" 
-                  strokeWidth={2}
+                <GitBookIcon 
+                  className="w-3.5 h-3.5 text-white/90 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" 
                 />
               </a>
             </TooltipTrigger>
@@ -120,7 +119,7 @@ export default function LandingPage() {
                   group active:scale-95"
                 aria-label="Twitter"
               >
-                <XLogo className="w-3.5 h-3.5 text-white/90 group-hover:text-[#8B5CF6]" />
+                <XLogo className="w-3.5 h-3.5 text-white/90 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />
               </a>
             </TooltipTrigger>
             <TooltipContent side="bottom">
