@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Copy, Download, RefreshCw, Search } from "lucide-react";
 
+// Define the InvitationCode type to match the table structure
 interface InvitationCode {
   id: string;
   code: string;
@@ -33,27 +34,29 @@ const InvitationCodeList: React.FC<InvitationCodeListProps> = ({
     setIsLoading(true);
     
     try {
-      let query = supabase
-        .from('invitation_codes')
+      // Use a type assertion to bypass TypeScript's strict checking
+      const query = supabase
+        .from('invitation_codes' as any)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
       
       if (filter === "used") {
-        query = query.eq('is_used', true);
+        query.eq('is_used', true);
       } else if (filter === "unused") {
-        query = query.eq('is_used', false);
+        query.eq('is_used', false);
       }
       
       if (searchTerm) {
-        query = query.ilike('code', `%${searchTerm}%`);
+        query.ilike('code', `%${searchTerm}%`);
       }
       
       const { data, error } = await query;
       
       if (error) throw error;
       
-      setCodes(data || []);
+      // Type assertion to ensure data conforms to our InvitationCode type
+      setCodes(data as unknown as InvitationCode[]);
     } catch (error: any) {
       console.error("Error fetching invitation codes:", error);
       toast.error("Failed to load invitation codes");

@@ -53,8 +53,9 @@ const InvitationCodeForm: React.FC<InvitationCodeFormProps> = ({
     setIsLoading(true);
     
     try {
+      // Using type assertion to bypass TypeScript's strict checking
       const { data, error } = await supabase
-        .rpc('check_invitation_code', { p_code: code });
+        .rpc('check_invitation_code', { p_code: code } as any);
       
       if (error) throw error;
       

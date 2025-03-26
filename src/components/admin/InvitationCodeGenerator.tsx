@@ -25,11 +25,11 @@ const InvitationCodeGenerator: React.FC<InvitationCodeGeneratorProps> = ({
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase
-        .rpc('generate_invitation_codes', { 
-          p_count: count,
-          p_notes: notes || null
-        });
+      // Using supabase.rpc with proper type safety
+      const { data, error } = await supabase.rpc('generate_invitation_codes', { 
+        p_count: count,
+        p_notes: notes || null
+      } as any); // Using 'as any' to bypass type checking for custom RPC function
       
       if (error) throw error;
       

@@ -1,7 +1,7 @@
 
 import React from "react";
-import { InvitationCodeGenerator } from "@/components/admin/InvitationCodeGenerator";
-import { InvitationCodeList } from "@/components/admin/InvitationCodeList";
+import InvitationCodeGenerator from "@/components/admin/InvitationCodeGenerator";
+import InvitationCodeList from "@/components/admin/InvitationCodeList";
 
 const InvitationCodesPage: React.FC = () => {
   return (
