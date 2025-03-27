@@ -40,14 +40,14 @@ const InvitationCodesPage: React.FC<InvitationCodesPageProps> = () => {
         
         {/* Settings Dialog */}
         <Dialog open={showSettings} onOpenChange={setShowSettings}>
-          <DialogContent className="sm:max-w-[600px] bg-transparent border-0 p-0" showClose={false}>
+          <DialogContent className="sm:max-w-[600px] bg-transparent border-0 p-0">
             <AdminSettingsPanel onClose={() => setShowSettings(false)} />
           </DialogContent>
         </Dialog>
         
         {/* Notifications Dialog */}
         <Dialog open={showNotifications} onOpenChange={setShowNotifications}>
-          <DialogContent className="sm:max-w-[500px] bg-transparent border-0 p-0" showClose={false}>
+          <DialogContent className="sm:max-w-[500px] bg-transparent border-0 p-0">
             <AdminNotificationsPanel onClose={handleNotificationsClose} />
           </DialogContent>
         </Dialog>
