@@ -61,7 +61,7 @@ const InvitationCodesPage: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-amber-50">Admin Control Panel</h1>
-                <p className="text-amber-200/70">Manage system access and invitation codes</p>
+                <p className="text-amber-200/70">System administration dashboard for user access management</p>
               </div>
             </div>
             
@@ -74,13 +74,13 @@ const InvitationCodesPage: React.FC = () => {
               >
                 <a href="/auth">
                   <LogIn className="h-4 w-4" />
-                  <span>Admin Login</span>
+                  <span>User Login</span>
                 </a>
               </Button>
               
               <div className="flex items-center gap-2 bg-amber-500/20 text-amber-400 px-4 py-2 rounded-full text-sm shadow-inner">
                 <Shield className="h-4 w-4" />
-                <span className="font-medium">Restricted Area</span>
+                <span className="font-medium">Admin Area</span>
               </div>
             </div>
           </div>
@@ -112,12 +112,53 @@ const InvitationCodesPage: React.FC = () => {
           <InvitationCodeList className="bg-amber-900/40 backdrop-blur-sm border border-amber-500/20 shadow-lg shadow-amber-900/20" />
         </motion.div>
 
+        {/* Information panel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="bg-amber-900/40 backdrop-blur-sm border border-amber-500/20 shadow-lg shadow-amber-900/20 p-4 rounded-lg mt-8"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-amber-500/20 flex-shrink-0 flex items-center justify-center">
+              <Key className="h-5 w-5 text-amber-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-amber-100">About This Dashboard</h3>
+              <p className="text-amber-200/70 text-sm mt-1">
+                This is the administrator control panel where you can create admin accounts and manage invitation codes. 
+                For standard user login, please visit the <a href="/auth" className="text-amber-400 hover:underline">User Authentication Page</a>.
+              </p>
+              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="bg-amber-900/40 p-3 rounded-lg border border-amber-500/30">
+                  <h4 className="text-amber-300 font-medium flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    Admin Setup
+                  </h4>
+                  <p className="text-amber-200/70 text-xs mt-1">
+                    Create and manage administrator accounts with system-wide privileges
+                  </p>
+                </div>
+                <div className="bg-amber-900/40 p-3 rounded-lg border border-amber-500/30">
+                  <h4 className="text-amber-300 font-medium flex items-center gap-2">
+                    <Key className="h-4 w-4" />
+                    Invitation Codes
+                  </h4>
+                  <p className="text-amber-200/70 text-xs mt-1">
+                    Generate and distribute invitation codes for controlled user registration
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Direct links at the bottom */}
         <motion.div 
           className="flex justify-center mt-12 pb-8 gap-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.8 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
         >
           <a 
             href="/auth" 

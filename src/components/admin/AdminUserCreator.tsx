@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Loader2, UserPlus, Shield, CheckCircle, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AdminUserCreatorProps {
   className?: string;
@@ -21,6 +22,38 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({ className }) => {
   const [error, setError] = useState<string | null>(null);
   const { createAdminUser } = useAuth();
 
+  // Function to check if the admin user already exists
+  const checkAdminExists = async (email: string) => {
+    try {
+      // Try signing in with the credentials to see if they exist
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      // If there's no error, the user exists and credentials are valid
+      if (!error) {
+        console.log("Admin user already exists and credentials are valid");
+        setIsCreated(true);
+        toast.success("Admin user verified!");
+        
+        // Sign out immediately since we're just checking
+        await supabase.auth.signOut();
+        return true;
+      }
+      
+      // If there's an error but it's not about invalid credentials, log it
+      if (error && error.message !== "Invalid login credentials") {
+        console.error("Error checking admin:", error);
+      }
+      
+      return false;
+    } catch (err) {
+      console.error("Error checking admin existence:", err);
+      return false;
+    }
+  };
+
   // Auto-create admin on component mount
   useEffect(() => {
     const createAdmin = async () => {
@@ -29,6 +62,16 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({ className }) => {
         setError(null);
         
         try {
+          // First check if admin already exists with valid credentials
+          const adminExists = await checkAdminExists(email);
+          
+          if (adminExists) {
+            setIsCreated(true);
+            setIsLoading(false);
+            return;
+          }
+          
+          // If not, try to create the admin
           await createAdminUser(email, password);
           console.log("Admin user created automatically!");
           toast.success("Admin user created automatically!");
@@ -91,12 +134,12 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({ className }) => {
             <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center mr-2">
               <Shield className="h-4 w-4 text-amber-500" />
             </div>
-            <CardTitle className="text-xl text-amber-50">Admin Access</CardTitle>
+            <CardTitle className="text-xl text-amber-50">Admin Setup</CardTitle>
           </div>
           <CardDescription className="text-amber-200/70">
             {isCreated ? 
               "Admin account has been created successfully" : 
-              "Create a new admin user with full system privileges"}
+              "Create the system administrator account with full privileges"}
           </CardDescription>
         </CardHeader>
         
@@ -108,7 +151,7 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({ className }) => {
                 <p className="text-red-400 font-medium">Error</p>
                 <p className="text-red-400/70 text-sm">{error}</p>
                 <p className="text-amber-400/70 text-sm mt-2">
-                  Note: If the error says "unauthorized" or "permission denied", try signing up with this email on the Auth page first.
+                  This is the admin setup page. For standard user login, please visit the <a href="/auth" className="text-amber-400 hover:underline">Auth page</a>
                 </p>
               </div>
             </div>
@@ -121,7 +164,7 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({ className }) => {
                 <p className="text-green-400 font-medium">Admin user created</p>
                 <p className="text-green-400/70 text-sm">Email: {email}</p>
                 <p className="text-amber-200/70 text-sm mt-2">
-                  You can now log in with these credentials on the <a href="/auth" className="text-amber-400 hover:underline">Auth page</a>
+                  You can now log in with these credentials on the <a href="/auth" className="text-amber-400 hover:underline">Authentication page</a>
                 </p>
               </div>
             </div>

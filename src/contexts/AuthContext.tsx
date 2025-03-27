@@ -164,24 +164,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (signUpError) {
-        // If the error is due to the user already existing, this is fine
+        // If the error is due to the user already existing, we'll try signing in
         if (!signUpError.message.includes("already registered")) {
           throw signUpError;
         }
-        console.log('User already exists, attempting to log in');
+        console.log('User already exists, attempting to update password');
+        
+        // Try to sign in to verify credentials
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+        
+        if (signInError) {
+          console.log('Sign in failed, user might exist but password is different');
+          
+          // User exists but password doesn't match - we can't reset it programmatically 
+          // in this context, so we'll throw an error
+          throw new Error(`Admin user exists but credentials are invalid. Please use the password reset feature or try another email.`);
+        } else {
+          // Successfully signed in, now sign out
+          await supabase.auth.signOut();
+          console.log('Admin user verified with credentials');
+        }
+      } else {
+        console.log('Admin user created successfully');
       }
-      
-      // If the user was created or already exists, try to sign in to verify credentials
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (signInError) {
-        throw new Error(`Admin user exists but credentials are invalid. ${signInError.message}`);
-      }
-      
-      console.log('Admin user created or verified successfully');
       
       return;
     } catch (error: any) {

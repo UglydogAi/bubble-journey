@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserPlus, LogIn, Key } from "lucide-react";
+import { UserPlus, LogIn, Key, Info, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 
 const AuthPage: React.FC = () => {
@@ -141,9 +141,9 @@ const AuthPage: React.FC = () => {
           
           <Card className="bg-[#1E293B]/80 border-[#8B5CF6]/20 backdrop-blur-sm">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold text-white">Authentication</CardTitle>
+              <CardTitle className="text-2xl font-bold text-white">User Authentication</CardTitle>
               <CardDescription className="text-gray-300">
-                Sign in or create an account to access the admin panel
+                Sign in with your account or create a new one
               </CardDescription>
             </CardHeader>
             
@@ -167,7 +167,7 @@ const AuthPage: React.FC = () => {
                       <Input
                         id="email-login"
                         type="email"
-                        placeholder="admin@example.com"
+                        placeholder="your.email@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -207,7 +207,7 @@ const AuthPage: React.FC = () => {
                       <Input
                         id="email-signup"
                         type="email"
-                        placeholder="admin@example.com"
+                        placeholder="your.email@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -254,14 +254,20 @@ const AuthPage: React.FC = () => {
           </Card>
           
           <div className="mt-8 bg-[#1E293B]/50 p-4 rounded-xl border border-[#8B5CF6]/20">
-            <p className="text-xs text-gray-400 text-center">
-              <span className="text-[#A78BFA] font-medium">Need admin access?</span> Visit the{" "}
+            <div className="flex items-center mb-2">
+              <Info className="h-4 w-4 text-[#A78BFA] mr-2" />
+              <p className="text-sm text-[#A78BFA] font-medium">Admin Access</p>
+            </div>
+            <p className="text-xs text-gray-400">
+              This is the user authentication page. If you need to set up an admin account, please visit the{" "}
               <a 
                 href="/admin/invitation-codes" 
-                className="text-[#8B5CF6] hover:underline"
+                className="text-[#8B5CF6] hover:underline inline-flex items-center"
               >
                 Admin Management
-              </a> page to create an admin user.
+                <Shield className="h-3 w-3 ml-1" />
+              </a>
+              {" "}page.
             </p>
           </div>
         </motion.div>
