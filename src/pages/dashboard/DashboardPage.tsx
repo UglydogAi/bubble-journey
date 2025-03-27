@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { TopProgressBar } from "./components/TopProgressBar";
@@ -6,7 +7,6 @@ import { Sidebar } from "./components/Sidebar";
 import { WeeklyFocus } from "./components/WeeklyFocus";
 import { TaskCalendar } from "./components/TaskCalendar";
 import { SettingsView } from "./components/SettingsView";
-import { useEffect } from "react";
 import { ChatView } from "./components/ChatView";
 import { RewardsView } from "./components/RewardsView";
 
@@ -21,7 +21,7 @@ export default function DashboardPage() {
   const [ogPoints] = useState(1250);
   const [notificationPreference, setNotificationPreference] = useState("whatsapp");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeView, setActiveView] = useState("profile");
+  const [activeView, setActiveView] = useState("settings"); // Default to settings view
 
   useEffect(() => {
     const handleResize = () => {

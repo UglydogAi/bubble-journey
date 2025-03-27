@@ -35,6 +35,7 @@ const InvitationCodesPage: React.FC<InvitationCodesPageProps> = () => {
           title="Admin Dashboard" 
           subtitle="Manage invitation codes and admin accounts"
           hasNotifications={hasNewNotifications}
+          onNotificationsClick={() => setShowNotifications(true)}
           onSettingsClick={() => setShowSettings(true)}
         />
         
@@ -77,19 +78,6 @@ const InvitationCodesPage: React.FC<InvitationCodesPageProps> = () => {
                 <p className="text-sm text-gray-400">Admin Users</p>
                 <p className="text-2xl font-bold text-purple-400">3</p>
               </div>
-            </div>
-            
-            {/* Button to open notifications panel */}
-            <div className="mt-6">
-              <button 
-                onClick={() => setShowNotifications(true)}
-                className="w-full py-2.5 px-4 rounded-md bg-purple-500/20 text-purple-200 hover:bg-purple-500/30 transition-colors flex items-center justify-center gap-2"
-              >
-                <span>View Notifications</span>
-                {hasNewNotifications && (
-                  <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
-                )}
-              </button>
             </div>
           </Card>
           

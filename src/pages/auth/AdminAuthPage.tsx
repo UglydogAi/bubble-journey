@@ -290,7 +290,7 @@ const AdminAuthPage: React.FC = () => {
                 />
               </div>
               <p className="text-sm text-gray-400 mt-2">
-                Enter the verification code sent to your device. (Use 123456 for demo)
+                Enter the verification code sent to your device.
               </p>
             </motion.div>
           )}
@@ -336,18 +336,6 @@ const AdminAuthPage: React.FC = () => {
               </button>
             </motion.div>
           )}
-          
-          {/* Demo credentials hint */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-4 p-3 bg-[#121927]/50 rounded-md border border-[#8B5CF6]/20"
-          >
-            <p className="text-xs text-gray-400">
-              <strong className="text-[#8B5CF6]">Demo Credentials:</strong> Use 
-              email: <span className="text-gray-300">admin@example.com</span> and 
-              password: <span className="text-gray-300">admin123</span>
-            </p>
-          </motion.div>
         </motion.form>
       </motion.div>
       

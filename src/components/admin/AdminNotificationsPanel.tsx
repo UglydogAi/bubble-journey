@@ -111,9 +111,32 @@ const AdminNotificationsPanel: React.FC<AdminNotificationsPanelProps> = ({ onClo
         description: "alex.jones@example.com joined using an invitation code",
         icon: <UserPlus className="h-4 w-4 text-green-500" />
       });
-    }, 5000);
+    }, 8000);
     
-    return () => clearTimeout(timer);
+    // Simulate another notification after 15 seconds
+    const timer2 = setTimeout(() => {
+      const newNotification = {
+        id: (Date.now() + 1).toString(),
+        type: 'invite' as const,
+        title: 'New User Registered',
+        description: 'maria.rodriguez@example.com used invitation code WIZ-789-123',
+        time: 'Just now',
+        read: false,
+        icon: <UserPlus className="h-5 w-5 text-green-400" />
+      };
+      
+      setNotifications(prev => [newNotification, ...prev]);
+      
+      toast.success("New user registered", {
+        description: "maria.rodriguez@example.com joined using an invitation code",
+        icon: <UserPlus className="h-4 w-4 text-green-500" />
+      });
+    }, 15000);
+    
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(timer2);
+    };
   }, []);
   
   return (

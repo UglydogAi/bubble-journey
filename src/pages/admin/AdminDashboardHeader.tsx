@@ -24,13 +24,15 @@ interface AdminDashboardHeaderProps {
   subtitle?: string;
   hasNotifications?: boolean;
   onSettingsClick?: () => void;
+  onNotificationsClick?: () => void;
 }
 
 const AdminDashboardHeader: React.FC<AdminDashboardHeaderProps> = ({ 
   title,
   subtitle = "Manage your application resources",
   hasNotifications = false,
-  onSettingsClick
+  onSettingsClick,
+  onNotificationsClick
 }) => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
@@ -65,6 +67,7 @@ const AdminDashboardHeader: React.FC<AdminDashboardHeaderProps> = ({
             variant="ghost" 
             size="icon"
             className="relative"
+            onClick={onNotificationsClick}
           >
             <Bell className="h-5 w-5 text-gray-400" />
             {hasNotifications && (

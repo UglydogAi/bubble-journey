@@ -11,7 +11,7 @@ const CodeActivationPage: React.FC = () => {
   
   const handleCodeSuccess = () => {
     setCodeActivated(true);
-    setTimeout(() => navigate('/dashboard'), 2000);
+    setTimeout(() => navigate('/call/chat'), 2000);
   };
   
   return (
@@ -89,7 +89,7 @@ const CodeActivationPage: React.FC = () => {
             >
               <h2 className="text-2xl font-semibold">Access Granted!</h2>
               <p className="text-gray-300">
-                Welcome to WIZ. Redirecting you to your dashboard...
+                Welcome to WIZ. Redirecting you to connect with Wiz...
               </p>
               <div className="flex justify-center pt-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#8B5CF6]"></div>
