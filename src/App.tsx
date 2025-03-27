@@ -34,7 +34,7 @@ const App = () => (
               <Route path="/call/chat" element={<CallPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               
-              {/* Admin Auth Routes */}
+              {/* Admin Login Routes */}
               <Route path="/admin" element={<AdminAuthPage />} />
               <Route path="/admin/auth" element={<AdminAuthPage />} />
               

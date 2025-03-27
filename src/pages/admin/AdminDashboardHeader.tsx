@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, LogOut, Bell, User, Settings } from "lucide-react";
 import { motion } from "framer-motion";
-import WizLogo from "@/components/WizLogo";
+import { useNavigate } from "react-router-dom";
 
 interface AdminDashboardHeaderProps {
   title: string;
@@ -16,10 +16,12 @@ const AdminDashboardHeader: React.FC<AdminDashboardHeaderProps> = ({
   subtitle = "Manage your application resources"
 }) => {
   const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await logout();
+      navigate('/admin/auth');
     } catch (error) {
       console.error("Logout error:", error);
     }
