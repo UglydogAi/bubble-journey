@@ -1,11 +1,12 @@
 
 import React, { useEffect, useState } from "react";
-import { Sun, Moon, Coins, Dog } from "lucide-react";
+import { Sun, Moon, Coins } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Toggle } from "@/components/ui/toggle";
 import { useTheme } from "next-themes";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface TopProgressBarProps {
   dailyProgress: number;
@@ -50,15 +51,14 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           
           {/* Left Section: Container that holds profile picture */}
           <div className="px-4 md:px-6 flex-shrink-0 border-r border-border/10 h-full flex items-center justify-center">
-            <div className="w-9 h-9 md:w-10 md:h-10 rounded-full overflow-hidden ring-2 ring-primary/20
-              hover:ring-primary/40 transition-all duration-300">
-              <img 
-                src="/lovable-uploads/ce8e10ec-31c6-4d22-8be9-25e4d50d8206.png"
-                alt="Profile"
+            <Avatar className="w-9 h-9 md:w-10 md:h-10 ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300">
+              <AvatarImage 
+                src="/lovable-uploads/db35f051-e13b-4656-92f1-843b07d7584b.png"
+                alt="Wiz Panda"
                 className="w-full h-full object-cover"
-                loading="lazy"
               />
-            </div>
+              <AvatarFallback>WP</AvatarFallback>
+            </Avatar>
           </div>
 
           {/* Middle Section: Progress Bar (contained in the right panel) */}
@@ -69,7 +69,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                 className="h-full relative"
               />
               
-              {/* UGLYDOG Character */}
+              {/* Character Avatar */}
               <div 
                 className="absolute top-1/2"
                 style={{ 
@@ -85,7 +85,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                       before:absolute before:top-full before:left-1/2 
                       before:-translate-x-1/2 before:border-4 
                       before:border-transparent before:border-t-primary/90">
-                      Woof! 🐾
+                      Great job! 🐼
                     </div>
                   )}
                   <div className={cn(
@@ -95,10 +95,16 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                     "transition-all duration-300",
                     "animate-bounce"
                   )}>
-                    <Dog 
-                      className="w-2.5 h-2.5 md:w-3 md:h-3 text-white transform -scale-x-100" 
-                      strokeWidth={2.5}
-                    />
+                    <Avatar 
+                      className="w-full h-full"
+                    >
+                      <AvatarImage 
+                        src="/lovable-uploads/db35f051-e13b-4656-92f1-843b07d7584b.png"
+                        alt="Wiz Panda"
+                        className="w-full h-full object-cover"
+                      />
+                      <AvatarFallback className="w-full h-full text-[8px] text-white">WP</AvatarFallback>
+                    </Avatar>
                   </div>
                 </div>
               </div>

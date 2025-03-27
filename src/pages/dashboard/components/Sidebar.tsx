@@ -1,12 +1,13 @@
 
 import React, { useState } from "react";
-import { UserRound, Settings, CreditCard, MessageSquare, Award } from "lucide-react";
+import { UserRound, Settings, CreditCard, MessageSquare, Award, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import XLogo from "@/components/XLogo";
 import GitBookIcon from "@/components/GitBookIcon";
 import DiscordIcon from "@/components/DiscordIcon";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SidebarProps {
   isMobile?: boolean;
@@ -16,6 +17,7 @@ interface SidebarProps {
 
 export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { logout } = useAuth();
 
   const navigationItems = [
     { icon: <UserRound />, label: "Profile", view: "profile" },
@@ -42,6 +44,10 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
       url: "https://x.com/uglydogai" 
     }
   ];
+
+  const handleLogout = async () => {
+    await logout();
+  };
 
   // Mobile sidebar menu
   const MobileSidebar = () => (
@@ -85,6 +91,16 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
                     {item.label}
                   </Button>
                 ))}
+                
+                {/* Logout Button */}
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5"
+                  onClick={handleLogout}
+                >
+                  <LogOut />
+                  Logout
+                </Button>
               </nav>
               
               {/* Social Links (Bottom) */}
@@ -117,7 +133,7 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
   if (isMobile) {
     return (
       <div className="grid grid-cols-5 items-center p-2 backdrop-blur-xl w-full">
-        {navigationItems.map((item) => (
+        {navigationItems.slice(0, 4).map((item) => (
           <Button
             key={item.label}
             variant="ghost"
@@ -133,6 +149,17 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
             <span className="text-[10px] font-medium">{item.label}</span>
           </Button>
         ))}
+        
+        {/* Logout Button for Mobile */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="flex flex-col items-center justify-center gap-1 h-16 w-full px-1 hover:text-red-500"
+          onClick={handleLogout}
+        >
+          <LogOut />
+          <span className="text-[10px] font-medium">Logout</span>
+        </Button>
       </div>
     );
   }
@@ -161,6 +188,16 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
               {item.label}
             </Button>
           ))}
+          
+          {/* Logout Button */}
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5"
+            onClick={handleLogout}
+          >
+            <LogOut />
+            Logout
+          </Button>
         </nav>
         
         {/* Social Links (Bottom) */}
