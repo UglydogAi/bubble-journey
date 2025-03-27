@@ -2,6 +2,7 @@
 import React from "react";
 import InvitationCodeGenerator from "@/components/admin/InvitationCodeGenerator";
 import InvitationCodeList from "@/components/admin/InvitationCodeList";
+import AdminUserCreator from "@/components/admin/AdminUserCreator";
 import { useAuth } from "@/contexts/AuthContext";
 import { Shield } from "lucide-react";
 
@@ -19,7 +20,10 @@ const InvitationCodesPage: React.FC = () => {
         </div>
       </div>
       
-      <InvitationCodeGenerator className="bg-card" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <InvitationCodeGenerator className="bg-card" />
+        <AdminUserCreator className="bg-card" />
+      </div>
       
       <InvitationCodeList className="bg-card" />
     </div>

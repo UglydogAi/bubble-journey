@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +15,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   checkIsAdmin: () => Promise<boolean>;
+  createAdminUser: (email: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,7 +29,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -37,7 +36,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAuthenticated(!!session);
         
         if (session?.user) {
-          // Don't use async directly in the callback
           setTimeout(() => {
             checkIsAdmin();
           }, 0);
@@ -47,7 +45,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -68,11 +65,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkIsAdmin = async (): Promise<boolean> => {
     try {
-      // In a real application, you would check against a user_roles table in your database
-      // For this example, we'll use a simple approach based on user metadata
-      // You should replace this with an actual database check
-
-      // Temporary implementation - you'd replace this with a proper database check
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -81,8 +73,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (profileError) throw profileError;
 
-      // For demonstration purposes, we'll consider users with specific emails as admins
-      // In a real app, you'd look up roles in a dedicated table
       const adminEmails = ['admin@example.com', 'admin@wiz.app'];
       const isUserAdmin = adminEmails.includes(user?.email);
       
@@ -125,7 +115,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (data.user && !data.session) {
         toast.info('Please check your email to confirm your account');
       } else if (data.session) {
-        // If email confirmation is disabled in Supabase, the user will be logged in immediately
         toast.success('Account created and logged in successfully');
         navigate('/dashboard');
       }
@@ -153,6 +142,79 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const createAdminUser = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { role: 'admin' },
+      });
+
+      if (error) {
+        if (error.message.includes('already exists')) {
+          const { data: updatedUser, error: updateError } = await supabase.auth.admin.updateUserById(
+            data?.user?.id || '',
+            {
+              password,
+              email_confirm: true,
+              user_metadata: { role: 'admin' },
+            }
+          );
+
+          if (updateError) throw updateError;
+          
+          toast.success('Admin user updated successfully');
+          return;
+        }
+        throw error;
+      }
+
+      if (data?.user?.id) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({ id: data.user.id })
+          .select();
+
+        if (profileError) throw profileError;
+      }
+
+      toast.success('Admin user created successfully');
+    } catch (error: any) {
+      console.error('Admin user creation error:', error);
+      
+      if (error.message.includes('unauthorized') || error.message.includes('permission')) {
+        try {
+          const { data, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { role: 'admin' },
+            },
+          });
+          
+          if (signUpError) throw signUpError;
+          
+          if (data?.user) {
+            const { error: updateError } = await supabase.auth.updateUser({
+              data: { role: 'admin' },
+            });
+            
+            if (updateError) throw updateError;
+            
+            toast.success('User created. Please check email for confirmation.');
+          }
+        } catch (fallbackError: any) {
+          toast.error(fallbackError.message || 'Failed to create admin user');
+          throw fallbackError;
+        }
+      } else {
+        toast.error(error.message || 'Failed to create admin user');
+        throw error;
+      }
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -165,6 +227,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signUp,
         logout,
         checkIsAdmin,
+        createAdminUser,
       }}
     >
       {children}
