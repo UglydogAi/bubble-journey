@@ -13,6 +13,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   checkIsAdmin: () => Promise<boolean>;
 }
@@ -112,6 +113,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signUp = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      
+      if (data.user && !data.session) {
+        toast.info('Please check your email to confirm your account');
+      } else if (data.session) {
+        // If email confirmation is disabled in Supabase, the user will be logged in immediately
+        toast.success('Account created and logged in successfully');
+        navigate('/dashboard');
+      }
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      toast.error(error.message || 'Failed to create account');
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -138,6 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAdmin,
         isLoading,
         login,
+        signUp,
         logout,
         checkIsAdmin,
       }}
