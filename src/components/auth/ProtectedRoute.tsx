@@ -27,6 +27,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       const verifyAdminStatus = async () => {
         console.log('Verifying admin status for protected route');
         try {
+          // Force a re-check of admin status
           const isUserAdmin = await checkIsAdmin();
           console.log('Admin verification result:', isUserAdmin);
           

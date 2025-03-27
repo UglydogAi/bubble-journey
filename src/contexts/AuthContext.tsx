@@ -29,8 +29,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  // Enhanced admin email list
-  const adminEmails = ['admin@example.com', 'admin@wiz.app'];
+  // Enhanced admin email list - ensure lowercase for consistent comparison
+  const adminEmails = ['admin@example.com', 'admin@wiz.app'].map(email => email.toLowerCase());
 
   useEffect(() => {
     console.log('Auth Provider initialized');
@@ -93,10 +93,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       console.log('Checking admin status for:', user.email);
       
-      // Check if user email is in the admin emails list
-      const isUserAdmin = adminEmails.includes(user.email);
+      // Check if user email is in the admin emails list - ensure lowercase comparison
+      const userEmail = user.email.toLowerCase();
+      const isUserAdmin = adminEmails.includes(userEmail);
       
-      console.log('Is admin check result:', isUserAdmin, 'for email:', user.email);
+      console.log('Is admin check result:', isUserAdmin, 'for email:', userEmail, 'Admin emails:', adminEmails);
       setIsAdmin(isUserAdmin);
       return isUserAdmin;
     } catch (error) {
