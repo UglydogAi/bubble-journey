@@ -8,6 +8,7 @@ import GitBookIcon from "@/components/GitBookIcon";
 import DiscordIcon from "@/components/DiscordIcon";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
   isMobile?: boolean;
@@ -18,6 +19,7 @@ interface SidebarProps {
 export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const navigationItems = [
     { icon: <UserRound />, label: "Profile", view: "profile" },
@@ -47,6 +49,7 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
 
   const handleLogout = async () => {
     await logout();
+    navigate('/');
   };
 
   // Mobile sidebar menu
