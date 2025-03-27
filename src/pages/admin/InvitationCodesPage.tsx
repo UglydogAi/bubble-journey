@@ -1,158 +1,155 @@
 
 import React, { useState } from "react";
-import InvitationCodeGenerator from "@/components/admin/InvitationCodeGenerator";
-import InvitationCodeList from "@/components/admin/InvitationCodeList";
-import AdminUserCreator from "@/components/admin/AdminUserCreator";
-import { Shield, Key, Lock, UserPlus } from "lucide-react";
-import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import AdminDashboardHeader from "./AdminDashboardHeader";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { TextField } from "@/components/ui/text-field";
+import { InvitationCodeGenerator } from "@/components/admin/InvitationCodeGenerator";
+import { InvitationCodeList } from "@/components/admin/InvitationCodeList";
+import { AdminUserCreator } from "@/components/admin/AdminUserCreator";
+import StatsOverview from "./dashboard/StatsOverview";
+import InvitationChart from "./dashboard/InvitationChart";
+import { Search, Plus, Download, Filter } from "lucide-react";
+import { motion } from "framer-motion";
 
 const InvitationCodesPage: React.FC = () => {
-  const [showAdminCreator, setShowAdminCreator] = useState(true);
+  const { isAuthenticated, isAdmin } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
   
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-amber-950 via-orange-900 to-amber-900 text-amber-50">
-      {/* Animated particles background - different from auth page */}
-      <div className="absolute inset-0">
+    <div className="min-h-screen bg-[#0D0F1A] text-white">
+      {/* Animated background gradient */}
+      <div 
+        className="absolute inset-0 bg-[#0D0F1A] z-0 overflow-hidden"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 15% 50%, rgba(139,92,246,0.1) 0%, transparent 25%),
+            radial-gradient(circle at 85% 30%, rgba(217,70,239,0.1) 0%, transparent 25%)
+          `
+        }}
+      >
+        {/* Stars */}
         {Array.from({ length: 50 }).map((_, i) => (
           <motion.div
             key={i}
-            className="absolute bg-amber-500 rounded-full opacity-20"
+            className="absolute bg-white rounded-full"
             style={{
-              width: Math.random() * 3 + 1,
-              height: Math.random() * 3 + 1,
+              width: Math.random() * 2 + 1,
+              height: Math.random() * 2 + 1,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
+              opacity: Math.random() * 0.5 + 0.2,
             }}
             animate={{
-              opacity: [0.1, 0.3, 0.1],
-              scale: [1, 1.2, 1],
+              opacity: [0.2, 0.8, 0.2],
             }}
             transition={{
-              duration: Math.random() * 5 + 3,
+              duration: Math.random() * 3 + 2,
               repeat: Infinity,
               repeatType: "reverse",
-              delay: Math.random() * 3,
+              delay: Math.random() * 5,
             }}
           />
         ))}
       </div>
       
-      {/* Centered radial gradient */}
-      <div 
-        className="absolute inset-0 opacity-30"
-        style={{
-          background: "radial-gradient(circle at center, rgba(251,146,60,0.4) 0%, rgba(0,0,0,0) 70%)",
-        }}
-      />
-      
-      <div className="container mx-auto p-6 space-y-8 relative z-10">
-        <motion.div
-          className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 p-6 rounded-xl border border-amber-500/30 shadow-lg backdrop-blur-sm mb-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center">
-              <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mr-3 shadow-inner">
-                <Lock className="h-6 w-6 text-amber-400" />
+      <div className="relative z-10 container mx-auto px-4 py-6 max-w-7xl">
+        <AdminDashboardHeader 
+          title="Admin Dashboard" 
+          subtitle="Manage invitation codes and user access"
+        />
+        
+        <div className="mt-8">
+          <StatsOverview />
+          
+          <InvitationChart />
+          
+          <div className="mb-8">
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="bg-[#1E293B]/80 backdrop-blur-sm border border-[#8B5CF6]/20 rounded-xl p-5"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <h3 className="text-lg font-semibold text-white">Generate Invitation Codes</h3>
+                
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <Button
+                    className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white w-full sm:w-auto"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Admin User
+                  </Button>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-amber-50">Admin Control Panel</h1>
-                <p className="text-amber-200/70">System administration dashboard for invitation codes and admin access</p>
+              
+              <AdminUserCreator />
+              <InvitationCodeGenerator />
+            </motion.div>
+          </div>
+          
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="bg-[#1E293B]/80 backdrop-blur-sm border border-[#8B5CF6]/20 rounded-xl p-5"
+          >
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <h3 className="text-lg font-semibold text-white">Invitation Codes</h3>
+              
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <div className="relative w-full sm:w-64">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    type="text"
+                    placeholder="Search codes..."
+                    className="pl-9 bg-[#121A29]/80 border-[#8B5CF6]/20 text-white w-full"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button variant="outline" size="icon" className="border-[#8B5CF6]/20 text-gray-400 hover:text-white">
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                  
+                  <Button variant="outline" size="icon" className="border-[#8B5CF6]/20 text-gray-400 hover:text-white">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button 
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
-                asChild
-              >
-                <a href="/dashboard">
-                  <UserPlus className="h-4 w-4" />
-                  <span>Dashboard</span>
-                </a>
-              </Button>
-              
-              <div className="flex items-center gap-2 bg-amber-500/20 text-amber-400 px-4 py-2 rounded-full text-sm shadow-inner">
-                <Shield className="h-4 w-4" />
-                <span className="font-medium">Admin Area</span>
-              </div>
+            <div className="animate-fade-in">
+              <InvitationCodeList searchTerm={searchTerm} />
             </div>
-          </div>
-        </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <InvitationCodeGenerator className="bg-amber-900/40 backdrop-blur-sm border-amber-500/20 shadow-lg shadow-amber-900/20 h-full" />
           </motion.div>
-          
-          {showAdminCreator && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <AdminUserCreator className="h-full" onSuccess={() => setShowAdminCreator(false)} />
-            </motion.div>
-          )}
         </div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <InvitationCodeList className="bg-amber-900/40 backdrop-blur-sm border border-amber-500/20 shadow-lg shadow-amber-900/20" />
-        </motion.div>
-
-        {/* Information panel */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="bg-amber-900/40 backdrop-blur-sm border border-amber-500/20 shadow-lg shadow-amber-900/20 p-4 rounded-lg mt-8"
-        >
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-amber-500/20 flex-shrink-0 flex items-center justify-center">
-              <Key className="h-5 w-5 text-amber-400" />
-            </div>
-            <div>
-              <h3 className="text-lg font-medium text-amber-100">Admin Dashboard</h3>
-              <p className="text-amber-200/70 text-sm mt-1">
-                This dashboard is for admin users. Here you can manage invitation codes and create new admin accounts.
-              </p>
-              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="bg-amber-900/40 p-3 rounded-lg border border-amber-500/30">
-                  <h4 className="text-amber-300 font-medium flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    Admin Management
-                  </h4>
-                  <p className="text-amber-200/70 text-xs mt-1">
-                    Create new administrator accounts with full system access
-                  </p>
-                </div>
-                <div className="bg-amber-900/40 p-3 rounded-lg border border-amber-500/30">
-                  <h4 className="text-amber-300 font-medium flex items-center gap-2">
-                    <Key className="h-4 w-4" />
-                    Invitation Codes
-                  </h4>
-                  <p className="text-amber-200/70 text-xs mt-1">
-                    Generate and manage invitation codes for new user registrations
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
+      
+      {/* Custom CSS for animations */}
+      <style jsx>{`
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+          50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.6); }
+        }
+        
+        .glow-effect {
+          animation: glow 3s infinite;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+          animation: float 6s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 };
