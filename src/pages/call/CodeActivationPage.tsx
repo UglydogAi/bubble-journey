@@ -2,16 +2,61 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Key } from "lucide-react";
+import { Key, Mail, Lock } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import InvitationCodeForm from "@/components/auth/InvitationCodeForm";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 const CodeActivationPage: React.FC = () => {
   const [codeActivated, setCodeActivated] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
+  const { signUp, login } = useAuth();
   
   const handleCodeSuccess = () => {
     setCodeActivated(true);
-    setTimeout(() => navigate('/call/chat'), 2000);
+  };
+  
+  const handleAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      toast.error("Please enter your email");
+      return;
+    }
+    
+    setIsRegistering(true);
+    
+    try {
+      if (password) {
+        if (password !== confirmPassword) {
+          toast.error("Passwords do not match");
+          setIsRegistering(false);
+          return;
+        }
+        
+        // Sign up with new account
+        await signUp(email, password);
+        toast.success("Account created successfully!");
+      } else {
+        // Log in with existing account
+        await login(email, password);
+        toast.success("Logged in successfully!");
+      }
+      
+      // Redirect to call page
+      setTimeout(() => navigate('/call/chat'), 1000);
+    } catch (error) {
+      console.error("Authentication error:", error);
+      toast.error("Authentication failed. Please try again.");
+    } finally {
+      setIsRegistering(false);
+    }
   };
   
   return (
@@ -76,24 +121,81 @@ const CodeActivationPage: React.FC = () => {
           
           <div className="flex flex-col items-center mb-6">
             <div className="w-16 h-16 rounded-full bg-[#1E293B] flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(139,92,246,0.3)]">
-              <Key className="h-8 w-8 text-[#8B5CF6]" />
+              {codeActivated ? <Mail className="h-8 w-8 text-[#8B5CF6]" /> : <Key className="h-8 w-8 text-[#8B5CF6]" />}
             </div>
           </div>
           
           {codeActivated ? (
             <motion.div 
-              className="text-center space-y-4"
+              className="bg-[#1E293B]/80 border border-[#8B5CF6]/20 backdrop-blur-sm rounded-xl p-6 space-y-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-2xl font-semibold">Access Granted!</h2>
-              <p className="text-gray-300">
-                Welcome to WIZ. Redirecting you to connect with Wiz...
+              <h2 className="text-2xl font-semibold text-center">Create Your Account</h2>
+              <p className="text-gray-300 text-center">
+                Your code is valid! Complete your registration to continue.
               </p>
-              <div className="flex justify-center pt-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#8B5CF6]"></div>
-              </div>
+              
+              <form onSubmit={handleAuthSubmit} className="space-y-4 mt-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium text-gray-200">Email</label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your.email@example.com"
+                    className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="password" className="text-sm font-medium text-gray-200">Password (optional for existing users)</label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Create a password"
+                    className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
+                  />
+                </div>
+                
+                {password && (
+                  <div className="space-y-2">
+                    <label htmlFor="confirm-password" className="text-sm font-medium text-gray-200">Confirm Password</label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm your password"
+                      className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
+                    />
+                  </div>
+                )}
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:opacity-90 text-white mt-6"
+                  disabled={isRegistering}
+                >
+                  {isRegistering ? "Processing..." : (password ? "Create Account" : "Login")}
+                </Button>
+                
+                <p className="text-xs text-center text-gray-400 mt-4">
+                  {password ? "Already have an account? " : "New to WIZ? "}
+                  <button 
+                    type="button" 
+                    className="text-[#8B5CF6] hover:underline"
+                    onClick={() => setPassword(password ? "" : "password")}
+                  >
+                    {password ? "Login instead" : "Create an account"}
+                  </button>
+                </p>
+              </form>
             </motion.div>
           ) : (
             <InvitationCodeForm onSuccess={handleCodeSuccess} />

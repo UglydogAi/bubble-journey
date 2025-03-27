@@ -41,6 +41,7 @@ const AdminDashboardHeader: React.FC<AdminDashboardHeaderProps> = ({
     try {
       await logout();
       navigate('/admin/auth');
+      toast.success("Logged out successfully");
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Failed to logout");

@@ -33,17 +33,17 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
     { 
       icon: <GitBookIcon className="h-5 w-5 transition-all duration-200 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />, 
       label: "Docs", 
-      url: "https://uglydog-1.gitbook.io/uglydog/" 
+      url: "https://wizthepanda.gitbook.io/wiz/" 
     },
     { 
       icon: <DiscordIcon className="h-5 w-5 transition-all duration-200 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />, 
       label: "Discord", 
-      url: "https://discord.gg/uglydogai" 
+      url: "https://discord.gg/wizthepanda" 
     },
     { 
       icon: <XLogo className="h-5 w-5 transition-all duration-200 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />, 
       label: "Twitter", 
-      url: "https://x.com/uglydogai" 
+      url: "https://x.com/wizthepanda_" 
     }
   ];
 

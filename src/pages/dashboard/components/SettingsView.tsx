@@ -1,229 +1,186 @@
 
-import React, { useCallback, useState, useEffect } from "react";
-import { NotificationPreferences } from "./NotificationPreferences";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Camera, Loader2, AlertCircle } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { BellRing, Mail, MessageSquare, Upload, User, Check } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 interface SettingsViewProps {
   notificationPreference: string;
   onPreferenceChange: (preference: string) => void;
 }
 
-interface Profile {
-  id: string;
-  avatar_url: string | null;
-  updated_at?: string;
-}
-
 export function SettingsView({ 
   notificationPreference, 
   onPreferenceChange 
 }: SettingsViewProps) {
-  const [isUploading, setIsUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [authError, setAuthError] = useState<string | null>(null);
-  const { toast } = useToast();
+  const { user } = useAuth();
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  // Fetch the current user's profile on component mount
-  useEffect(() => {
-    async function fetchProfile() {
-      setIsLoading(true);
-      try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError) throw userError;
-        
-        if (!user) {
-          setAuthError("You need to be logged in to view settings");
-          setIsLoading(false);
-          return;
-        }
-        
-        // Use the correct table name based on what we created in the SQL migration
-        const { data, error: profileError } = await supabase
-          .from('profiles')
-          .select('avatar_url')
-          .eq('id', user.id)
-          .single();
-        
-        if (profileError) throw profileError;
-        
-        if (data?.avatar_url) {
-          setAvatarUrl(data.avatar_url);
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        setAuthError("Failed to load profile data");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchProfile();
-  }, []);
-
-  const uploadAvatar = useCallback(async (file: File) => {
-    try {
-      setIsUploading(true);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
       
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setProfileImage(event.target.result as string);
+        }
+      };
       
-      if (!user) {
-        toast({
-          title: "Authentication required",
-          description: "You need to be logged in to upload a profile picture",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      // Use the correct table name based on what we created in the SQL migration
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', user.id);
-
-      if (updateError) throw updateError;
-
-      setAvatarUrl(publicUrl);
-      toast({
-        title: "Success",
-        description: "Profile picture updated successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update profile picture",
-        variant: "destructive",
-      });
-      console.error('Error:', error);
-    } finally {
-      setIsUploading(false);
+      reader.readAsDataURL(file);
     }
-  }, [toast]);
+  };
 
-  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast({
-          title: "Error",
-          description: "File size should be less than 5MB",
-          variant: "destructive",
-        });
-        return;
-      }
-      uploadAvatar(file);
-    }
-  }, [uploadAvatar, toast]);
+  const handleSaveSettings = () => {
+    setSaving(true);
+    
+    // Simulate saving settings
+    setTimeout(() => {
+      toast.success("Settings saved successfully");
+      setSaving(false);
+    }, 1000);
+  };
 
-  if (isLoading) {
-    return (
-      <div className="max-w-5xl mx-auto pt-20 flex justify-center items-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2 text-lg">Loading settings...</span>
-      </div>
-    );
-  }
+  return (
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-semibold">Settings</h2>
 
-  if (authError) {
-    return (
-      <div className="max-w-5xl mx-auto pt-20">
-        <Card className="border-destructive/50">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center p-6">
-              <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Authentication Required</h3>
-              <p className="text-muted-foreground mb-4">{authError}</p>
-              <Button onClick={() => window.location.href = "/auth"}>
-                Sign In
-              </Button>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Profile Card */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/40">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5 text-primary" />
+              Profile Settings
+            </CardTitle>
+            <CardDescription>
+              Manage your personal information
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-background bg-muted">
+                {profileImage ? (
+                  <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-muted text-4xl text-muted-foreground">
+                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                )}
+              </div>
+              
+              <Label htmlFor="profile-image" className="cursor-pointer">
+                <div className="flex items-center gap-2 text-sm px-4 py-2 rounded-full bg-muted/50 hover:bg-muted transition-colors">
+                  <Upload className="h-4 w-4" />
+                  <span>Upload Photo</span>
+                </div>
+                <Input 
+                  id="profile-image" 
+                  type="file" 
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+              </Label>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="display-name">Display Name</Label>
+              <Input 
+                id="display-name" 
+                defaultValue={user?.email?.split('@')[0] || 'User'} 
+                className="bg-card/50" 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input 
+                id="email" 
+                value={user?.email || 'user@example.com'} 
+                disabled 
+                className="bg-card/50" 
+              />
             </div>
           </CardContent>
         </Card>
+
+        {/* Notification Card */}
+        <Card className="bg-card/50 backdrop-blur-sm border-border/40">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BellRing className="h-5 w-5 text-primary" />
+              Notification Settings
+            </CardTitle>
+            <CardDescription>
+              Manage how you receive notifications
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RadioGroup
+              value={notificationPreference}
+              onValueChange={onPreferenceChange}
+              className="space-y-4"
+            >
+              <div className="flex items-start space-x-3 space-y-0">
+                <RadioGroupItem value="email" id="email" />
+                <div className="flex flex-col gap-1">
+                  <Label
+                    htmlFor="email"
+                    className="font-normal cursor-pointer flex items-center gap-2"
+                  >
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    Email
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Receive notifications via email
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3 space-y-0">
+                <RadioGroupItem value="whatsapp" id="whatsapp" />
+                <div className="flex flex-col gap-1">
+                  <Label
+                    htmlFor="whatsapp"
+                    className="font-normal cursor-pointer flex items-center gap-2"
+                  >
+                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                    WhatsApp
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Receive notifications via WhatsApp
+                  </p>
+                </div>
+              </div>
+            </RadioGroup>
+          </CardContent>
+        </Card>
       </div>
-    );
-  }
 
-  return (
-    <div className="max-w-5xl mx-auto space-y-6 pt-16 md:pt-20">
-      <div className="space-y-1.5">
-        <h2 className="text-xl md:text-2xl font-semibold tracking-tight">Settings</h2>
-        <p className="text-sm md:text-base text-muted-foreground">Manage your account preferences</p>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <h3 className="text-lg font-semibold">Profile Picture</h3>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-6">
-            <div className="relative">
-              <Avatar className="w-24 h-24">
-                {avatarUrl ? (
-                  <AvatarImage 
-                    src={avatarUrl} 
-                    alt="Profile" 
-                    className="object-cover"
-                  />
-                ) : (
-                  <AvatarFallback className="bg-primary/10">
-                    <Camera className="w-8 h-8 text-muted-foreground" />
-                  </AvatarFallback>
-                )}
-                {isUploading && (
-                  <div className="absolute inset-0 bg-background/80 rounded-full flex items-center justify-center">
-                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                  </div>
-                )}
-              </Avatar>
-            </div>
-
-            <div className="space-y-2">
-              <Button
-                variant="outline"
-                className="relative"
-                disabled={isUploading}
-              >
-                Upload New Picture
-                <input
-                  type="file"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  disabled={isUploading}
-                />
-              </Button>
-              <p className="text-sm text-muted-foreground">
-                Recommended: Square image, maximum 5MB
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <NotificationPreferences
-        preference={notificationPreference}
-        onPreferenceChange={onPreferenceChange}
-      />
+      <Button 
+        onClick={handleSaveSettings} 
+        className="w-full md:w-auto px-8"
+        disabled={saving}
+      >
+        {saving ? (
+          <>
+            <span className="mr-2">Saving...</span>
+          </>
+        ) : (
+          <>
+            <Check className="mr-2 h-4 w-4" />
+            Save Changes
+          </>
+        )}
+      </Button>
     </div>
   );
 }

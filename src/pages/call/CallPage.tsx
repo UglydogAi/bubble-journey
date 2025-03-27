@@ -26,7 +26,8 @@ export default function CallPage() {
   }, []);
   
   const handleEndCall = () => {
-    navigate('/');
+    // Redirect to dashboard instead of home page
+    navigate('/dashboard');
   };
   
   return (
