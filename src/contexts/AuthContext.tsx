@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         setIsAuthenticated(!!session);
@@ -46,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Got session:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       setIsAuthenticated(!!session);
@@ -65,17 +68,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkIsAdmin = async (): Promise<boolean> => {
     try {
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user?.id)
-        .single();
-
-      if (profileError) throw profileError;
-
+      if (!user) return false;
+      
+      console.log('Checking admin status for:', user.email);
       const adminEmails = ['admin@example.com', 'admin@wiz.app'];
       const isUserAdmin = adminEmails.includes(user?.email);
       
+      console.log('Is admin:', isUserAdmin);
       setIsAdmin(isUserAdmin);
       return isUserAdmin;
     } catch (error) {
@@ -87,13 +86,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
+      console.log('Attempting login for:', email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Login error:', error);
+        throw error;
+      }
       
+      console.log('Login successful for:', email);
       toast.success('Logged in successfully');
       navigate('/dashboard');
     } catch (error: any) {
@@ -105,9 +109,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string) => {
     try {
+      console.log('Attempting signup for:', email);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: { role: 'user' }
+        }
       });
 
       if (error) throw error;
@@ -144,74 +152,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const createAdminUser = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.admin.createUser({
+      console.log('Attempting to create admin user:', email);
+      
+      // First, try signing up the user normally
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        email_confirm: true,
-        user_metadata: { role: 'admin' },
-      });
-
-      if (error) {
-        if (error.message.includes('already exists')) {
-          const { data: updatedUser, error: updateError } = await supabase.auth.admin.updateUserById(
-            data?.user?.id || '',
-            {
-              password,
-              email_confirm: true,
-              user_metadata: { role: 'admin' },
-            }
-          );
-
-          if (updateError) throw updateError;
-          
-          toast.success('Admin user updated successfully');
-          return;
+        options: {
+          data: { role: 'admin' },
         }
-        throw error;
+      });
+      
+      if (signUpError) {
+        // If the error is due to the user already existing, this is fine
+        if (!signUpError.message.includes("already registered")) {
+          throw signUpError;
+        }
+        console.log('User already exists, attempting to log in');
       }
-
-      if (data?.user?.id) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({ id: data.user.id })
-          .select();
-
-        if (profileError) throw profileError;
+      
+      // If the user was created or already exists, try to sign in to verify credentials
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (signInError) {
+        throw new Error(`Admin user exists but credentials are invalid. ${signInError.message}`);
       }
-
-      toast.success('Admin user created successfully');
+      
+      console.log('Admin user created or verified successfully');
+      
+      return;
     } catch (error: any) {
       console.error('Admin user creation error:', error);
-      
-      if (error.message.includes('unauthorized') || error.message.includes('permission')) {
-        try {
-          const { data, error: signUpError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              data: { role: 'admin' },
-            },
-          });
-          
-          if (signUpError) throw signUpError;
-          
-          if (data?.user) {
-            const { error: updateError } = await supabase.auth.updateUser({
-              data: { role: 'admin' },
-            });
-            
-            if (updateError) throw updateError;
-            
-            toast.success('User created. Please check email for confirmation.');
-          }
-        } catch (fallbackError: any) {
-          toast.error(fallbackError.message || 'Failed to create admin user');
-          throw fallbackError;
-        }
-      } else {
-        toast.error(error.message || 'Failed to create admin user');
-        throw error;
-      }
+      throw error;
     }
   };
 

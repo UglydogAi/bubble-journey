@@ -4,8 +4,9 @@ import InvitationCodeGenerator from "@/components/admin/InvitationCodeGenerator"
 import InvitationCodeList from "@/components/admin/InvitationCodeList";
 import AdminUserCreator from "@/components/admin/AdminUserCreator";
 import { useAuth } from "@/contexts/AuthContext";
-import { Shield, Key, Lock } from "lucide-react";
+import { Shield, Key, Lock, UserPlus, LogIn } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const InvitationCodesPage: React.FC = () => {
   const { user } = useAuth();
@@ -64,9 +65,23 @@ const InvitationCodesPage: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2 bg-amber-500/20 text-amber-400 px-4 py-2 rounded-full text-sm shadow-inner">
-              <Shield className="h-4 w-4" />
-              <span className="font-medium">Restricted Area</span>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                asChild
+              >
+                <a href="/auth">
+                  <LogIn className="h-4 w-4" />
+                  <span>Admin Login</span>
+                </a>
+              </Button>
+              
+              <div className="flex items-center gap-2 bg-amber-500/20 text-amber-400 px-4 py-2 rounded-full text-sm shadow-inner">
+                <Shield className="h-4 w-4" />
+                <span className="font-medium">Restricted Area</span>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -97,9 +112,9 @@ const InvitationCodesPage: React.FC = () => {
           <InvitationCodeList className="bg-amber-900/40 backdrop-blur-sm border border-amber-500/20 shadow-lg shadow-amber-900/20" />
         </motion.div>
 
-        {/* Direct link to auth page at the bottom */}
+        {/* Direct links at the bottom */}
         <motion.div 
-          className="flex justify-center mt-12 pb-8"
+          className="flex justify-center mt-12 pb-8 gap-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.8 }}
           transition={{ duration: 0.5, delay: 0.4 }}
@@ -110,6 +125,14 @@ const InvitationCodesPage: React.FC = () => {
           >
             <Key className="h-4 w-4" />
             Go to User Authentication Page →
+          </a>
+          
+          <a 
+            href="/dashboard" 
+            className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-2"
+          >
+            <UserPlus className="h-4 w-4" />
+            Go to Dashboard →
           </a>
         </motion.div>
       </div>
