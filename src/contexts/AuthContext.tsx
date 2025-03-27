@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -70,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!user) return false;
       
       console.log('Checking admin status for:', user.email);
+      // Add "admin@wiz.app" as a hardcoded admin email
       const adminEmails = ['admin@example.com', 'admin@wiz.app'];
       const isUserAdmin = adminEmails.includes(user?.email);
       
@@ -162,7 +164,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (!signInError) {
         console.log('User already exists with correct password');
-        
+        toast.info('Admin user already exists with the provided credentials');
         await supabase.auth.signOut();
         return;
       }
@@ -179,6 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (signUpError) throw signUpError;
         console.log('Admin user created successfully');
+        toast.success('Admin user created successfully. You can now log in with these credentials.');
       } else {
         throw signInError;
       }
@@ -186,6 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     } catch (error: any) {
       console.error('Admin user creation error:', error);
+      toast.error(error.message || 'Failed to create admin user');
       throw error;
     }
   };

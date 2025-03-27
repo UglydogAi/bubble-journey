@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserPlus, LogIn, Key, Info, Shield } from "lucide-react";
@@ -16,19 +15,37 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login, signUp, isAuthenticated, isAdmin } = useAuth();
+  const { login, signUp, isAuthenticated, isAdmin, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from || '/dashboard';
+
+  // Debug logging
+  useEffect(() => {
+    console.log('AuthPage - Auth state:', { 
+      isAuthenticated, 
+      isAdmin, 
+      email: user?.email,
+      from
+    });
+  }, [isAuthenticated, isAdmin, user, from]);
 
   // Redirect authenticated users
   useEffect(() => {
     if (isAuthenticated) {
+      console.log('User is authenticated, redirecting...');
       if (isAdmin) {
-        navigate('/admin/invitation-codes');
+        // If they were trying to access an admin page, send them there
+        if (from.includes('/admin')) {
+          navigate(from);
+        } else {
+          navigate('/admin/invitation-codes');
+        }
       } else {
         navigate('/dashboard');
       }
     }
-  }, [isAuthenticated, isAdmin, navigate]);
+  }, [isAuthenticated, isAdmin, navigate, from]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +59,7 @@ const AuthPage: React.FC = () => {
     
     try {
       await login(email, password);
+      // Redirection will be handled by the useEffect
     } catch (error) {
       // Error is already handled in the login function
     } finally {
@@ -71,12 +89,18 @@ const AuthPage: React.FC = () => {
     
     try {
       await signUp(email, password);
+      // Redirection will be handled by the useEffect
     } catch (error) {
       // Error is already handled in the signUp function
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Don't render if already authenticated (prevent flash)
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#0C121D] text-white">

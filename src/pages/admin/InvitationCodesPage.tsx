@@ -10,17 +10,31 @@ import { Button } from "@/components/ui/button";
 import { Navigate, useNavigate } from "react-router-dom";
 
 const InvitationCodesPage: React.FC = () => {
-  const { isAdmin, isAuthenticated, isLoading } = useAuth();
+  const { isAdmin, isAuthenticated, isLoading, user } = useAuth();
   const navigate = useNavigate();
   const [showAdminCreator, setShowAdminCreator] = useState(true);
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('InvitationCodesPage - Auth state:', { 
+      isAdmin, 
+      isAuthenticated, 
+      isLoading,
+      user: user?.email 
+    });
+  }, [isAdmin, isAuthenticated, isLoading, user]);
   
   // Check if authenticated and admin, redirect if not
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthenticated) {
+        console.log('Not authenticated, redirecting to auth page');
         navigate('/auth');
       } else if (!isAdmin) {
+        console.log('Not admin, redirecting to dashboard');
         navigate('/dashboard');
+      } else {
+        console.log('Admin authenticated successfully');
       }
     }
   }, [isAuthenticated, isAdmin, isLoading, navigate]);
