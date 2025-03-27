@@ -34,29 +34,27 @@ const InvitationCodeList: React.FC<InvitationCodeListProps> = ({
     setIsLoading(true);
     
     try {
-      // Use a type assertion to bypass TypeScript's strict checking
-      const query = supabase
-        .from('invitation_codes' as any)
+      let query = supabase
+        .from('invitation_codes')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
       
       if (filter === "used") {
-        query.eq('is_used', true);
+        query = query.eq('is_used', true);
       } else if (filter === "unused") {
-        query.eq('is_used', false);
+        query = query.eq('is_used', false);
       }
       
       if (searchTerm) {
-        query.ilike('code', `%${searchTerm}%`);
+        query = query.ilike('code', `%${searchTerm}%`);
       }
       
       const { data, error } = await query;
       
       if (error) throw error;
       
-      // Type assertion to ensure data conforms to our InvitationCode type
-      setCodes(data as unknown as InvitationCode[]);
+      setCodes(data as InvitationCode[]);
     } catch (error: any) {
       console.error("Error fetching invitation codes:", error);
       toast.error("Failed to load invitation codes");

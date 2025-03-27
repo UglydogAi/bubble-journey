@@ -25,8 +25,7 @@ const InvitationCodeGenerator: React.FC<InvitationCodeGeneratorProps> = ({
     setIsLoading(true);
     
     try {
-      // Using type assertion to completely bypass TypeScript's type checking for the RPC function
-      const { data, error } = await (supabase.rpc as any)('generate_invitation_codes', { 
+      const { data, error } = await supabase.rpc('generate_invitation_codes', { 
         p_count: count,
         p_notes: notes || null
       });
