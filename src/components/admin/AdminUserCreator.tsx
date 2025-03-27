@@ -63,19 +63,19 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({
   };
   
   return (
-    <div className={`rounded-xl border p-4 space-y-4 bg-amber-900/40 backdrop-blur-sm border-amber-500/20 shadow-lg shadow-amber-900/20 ${className}`}>
+    <div className={`rounded-xl border p-4 space-y-4 bg-purple-900/40 backdrop-blur-sm border-purple-500/20 shadow-lg shadow-purple-900/20 ${className}`}>
       <div className="flex items-center gap-2">
-        <UserPlus className="h-5 w-5 text-amber-400" />
-        <h2 className="text-xl font-semibold text-amber-50">Create Admin User</h2>
+        <UserPlus className="h-5 w-5 text-purple-400" />
+        <h2 className="text-xl font-semibold text-purple-50">Create Admin User</h2>
       </div>
       
       {success ? (
-        <div className="flex flex-col items-center justify-center p-4 bg-amber-900/30 rounded-lg border border-amber-500/30">
-          <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mb-3">
-            <Check className="h-6 w-6 text-amber-400" />
+        <div className="flex flex-col items-center justify-center p-4 bg-purple-900/30 rounded-lg border border-purple-500/30">
+          <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mb-3">
+            <Check className="h-6 w-6 text-purple-400" />
           </div>
-          <p className="text-amber-200 text-center mb-2">Admin user created successfully!</p>
-          <p className="text-amber-400/70 text-sm text-center">
+          <p className="text-purple-200 text-center mb-2">Admin user created successfully!</p>
+          <p className="text-purple-400/70 text-sm text-center">
             You can now log in with the admin credentials
           </p>
         </div>
@@ -83,19 +83,19 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({
         <>
           <div className="space-y-3">
             <div>
-              <label className="text-sm font-medium mb-1 block text-amber-200">
+              <label className="text-sm font-medium mb-1 block text-purple-200">
                 Email Address
               </label>
               <Input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@example.com"
-                className="bg-amber-900/30 border-amber-500/30 text-amber-50"
+                className="bg-purple-900/30 border-purple-500/30 text-purple-50"
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-amber-200">
+              <label className="text-sm font-medium mb-1 block text-purple-200">
                 Password
               </label>
               <Input
@@ -103,12 +103,12 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="•••••••••••"
-                className="bg-amber-900/30 border-amber-500/30 text-amber-50"
+                className="bg-purple-900/30 border-purple-500/30 text-purple-50"
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block text-amber-200">
+              <label className="text-sm font-medium mb-1 block text-purple-200">
                 Confirm Password
               </label>
               <Input
@@ -116,7 +116,7 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="•••••••••••"
-                className="bg-amber-900/30 border-amber-500/30 text-amber-50"
+                className="bg-purple-900/30 border-purple-500/30 text-purple-50"
               />
             </div>
           </div>
@@ -130,12 +130,12 @@ const AdminUserCreator: React.FC<AdminUserCreatorProps> = ({
           <Button 
             onClick={handleCreateAdmin}
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 text-white"
+            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white"
           >
             {isLoading ? "Creating Admin..." : "Create Admin User"}
           </Button>
           
-          <p className="text-xs text-amber-200/60 text-center">
+          <p className="text-xs text-purple-200/60 text-center">
             This will create an administrator account with full system access.
           </p>
         </>

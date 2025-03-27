@@ -4,16 +4,28 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import InvitationCodeGenerator from "@/components/admin/InvitationCodeGenerator";
 import InvitationCodeList from "@/components/admin/InvitationCodeList";
 import AdminUserCreator from "@/components/admin/AdminUserCreator";
 import AdminDashboardHeader from "./AdminDashboardHeader";
+import AdminSettingsPanel from "@/components/admin/AdminSettingsPanel";
+import AdminNotificationsPanel from "@/components/admin/AdminNotificationsPanel";
 
 interface InvitationCodesPageProps {}
 
 const InvitationCodesPage: React.FC<InvitationCodesPageProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("list");
+  const [showSettings, setShowSettings] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [hasNewNotifications, setHasNewNotifications] = useState(true);
+
+  // Toggle notifications indicator after viewing notifications
+  const handleNotificationsClose = () => {
+    setShowNotifications(false);
+    setHasNewNotifications(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#0D0F1A] text-white p-6">
@@ -22,7 +34,23 @@ const InvitationCodesPage: React.FC<InvitationCodesPageProps> = () => {
         <AdminDashboardHeader 
           title="Admin Dashboard" 
           subtitle="Manage invitation codes and admin accounts"
+          hasNotifications={hasNewNotifications}
+          onSettingsClick={() => setShowSettings(true)}
         />
+        
+        {/* Settings Dialog */}
+        <Dialog open={showSettings} onOpenChange={setShowSettings}>
+          <DialogContent className="sm:max-w-[600px] bg-transparent border-0 p-0" showClose={false}>
+            <AdminSettingsPanel onClose={() => setShowSettings(false)} />
+          </DialogContent>
+        </Dialog>
+        
+        {/* Notifications Dialog */}
+        <Dialog open={showNotifications} onOpenChange={setShowNotifications}>
+          <DialogContent className="sm:max-w-[500px] bg-transparent border-0 p-0" showClose={false}>
+            <AdminNotificationsPanel onClose={handleNotificationsClose} />
+          </DialogContent>
+        </Dialog>
         
         <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Sidebar/Stats Panel */}
@@ -49,6 +77,19 @@ const InvitationCodesPage: React.FC<InvitationCodesPageProps> = () => {
                 <p className="text-sm text-gray-400">Admin Users</p>
                 <p className="text-2xl font-bold text-purple-400">3</p>
               </div>
+            </div>
+            
+            {/* Button to open notifications panel */}
+            <div className="mt-6">
+              <button 
+                onClick={() => setShowNotifications(true)}
+                className="w-full py-2.5 px-4 rounded-md bg-purple-500/20 text-purple-200 hover:bg-purple-500/30 transition-colors flex items-center justify-center gap-2"
+              >
+                <span>View Notifications</span>
+                {hasNewNotifications && (
+                  <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
+                )}
+              </button>
             </div>
           </Card>
           

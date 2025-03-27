@@ -1,19 +1,36 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, LogOut, Bell, User, Settings } from "lucide-react";
+import { 
+  LayoutDashboard, 
+  LogOut, 
+  Bell, 
+  Settings, 
+  User as UserIcon 
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 interface AdminDashboardHeaderProps {
   title: string;
   subtitle?: string;
+  hasNotifications?: boolean;
+  onSettingsClick?: () => void;
 }
 
 const AdminDashboardHeader: React.FC<AdminDashboardHeaderProps> = ({ 
   title,
-  subtitle = "Manage your application resources"
+  subtitle = "Manage your application resources",
+  hasNotifications = false,
+  onSettingsClick
 }) => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
@@ -24,6 +41,7 @@ const AdminDashboardHeader: React.FC<AdminDashboardHeaderProps> = ({
       navigate('/admin/auth');
     } catch (error) {
       console.error("Logout error:", error);
+      toast.error("Failed to logout");
     }
   };
 
@@ -49,37 +67,48 @@ const AdminDashboardHeader: React.FC<AdminDashboardHeaderProps> = ({
             className="relative"
           >
             <Bell className="h-5 w-5 text-gray-400" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full"></span>
+            {hasNotifications && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full"></span>
+            )}
           </Button>
           
           <Button 
             variant="ghost" 
             size="icon"
+            onClick={onSettingsClick}
           >
             <Settings className="h-5 w-5 text-gray-400" />
           </Button>
           
           <div className="h-6 w-px bg-gray-700 mx-1"></div>
           
-          <div className="flex items-center gap-2">
-            <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-medium">
-              {user?.email?.charAt(0).toUpperCase() || 'A'}
-            </div>
-            
-            <div className="hidden md:block">
-              <p className="text-sm font-medium text-white">{user?.email || 'Admin'}</p>
-              <p className="text-xs text-gray-400">Administrator</p>
-            </div>
-          </div>
-          
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={handleLogout}
-            className="text-gray-400 hover:text-white hover:bg-red-500/20"
-          >
-            <LogOut className="h-5 w-5" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-2 cursor-pointer hover:opacity-80">
+                <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-medium">
+                  {user?.email?.charAt(0).toUpperCase() || 'A'}
+                </div>
+                
+                <div className="hidden md:block">
+                  <p className="text-sm font-medium text-white">{user?.email || 'Admin'}</p>
+                  <p className="text-xs text-gray-400">Administrator</p>
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="p-2 bg-[#1E293B] border-purple-500/20">
+              <DropdownMenuItem className="flex items-center gap-2 text-gray-200 hover:text-white cursor-pointer">
+                <UserIcon className="h-4 w-4" />
+                <span>Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={handleLogout} 
+                className="flex items-center gap-2 text-red-400 hover:text-red-300 cursor-pointer"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       
