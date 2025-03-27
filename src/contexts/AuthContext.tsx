@@ -29,53 +29,74 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
+  // Enhanced admin email list
+  const adminEmails = ['admin@example.com', 'admin@wiz.app'];
+
   useEffect(() => {
+    console.log('Auth Provider initialized');
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         setIsAuthenticated(!!session);
         
         if (session?.user) {
-          setTimeout(() => {
-            checkIsAdmin();
-          }, 0);
+          // Check admin status immediately after auth state change
+          const isUserAdmin = await checkIsAdmin();
+          console.log('Admin status after auth state change:', isUserAdmin);
         } else {
           setIsAdmin(false);
         }
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Got session:', session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session);
+    // Initialize auth state
+    const initializeAuth = async () => {
+      console.log('Initializing auth state...');
+      setIsLoading(true);
       
-      if (session?.user) {
-        checkIsAdmin().finally(() => {
-          setIsLoading(false);
-        });
-      } else {
-        setIsAdmin(false);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Got session:', session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsAuthenticated(!!session);
+        
+        if (session?.user) {
+          const isUserAdmin = await checkIsAdmin();
+          console.log('Initial admin status:', isUserAdmin);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+      } finally {
         setIsLoading(false);
+        console.log('Auth initialization complete');
       }
-    });
+    };
+
+    initializeAuth();
 
     return () => subscription.unsubscribe();
   }, []);
 
   const checkIsAdmin = async (): Promise<boolean> => {
     try {
-      if (!user) return false;
+      if (!user) {
+        console.log('No user found when checking admin status');
+        setIsAdmin(false);
+        return false;
+      }
       
       console.log('Checking admin status for:', user.email);
-      // Add "admin@wiz.app" as a hardcoded admin email
-      const adminEmails = ['admin@example.com', 'admin@wiz.app'];
-      const isUserAdmin = adminEmails.includes(user?.email);
       
-      console.log('Is admin:', isUserAdmin);
+      // Check if user email is in the admin emails list
+      const isUserAdmin = adminEmails.includes(user.email);
+      
+      console.log('Is admin check result:', isUserAdmin, 'for email:', user.email);
       setIsAdmin(isUserAdmin);
       return isUserAdmin;
     } catch (error) {
@@ -157,6 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Attempting to create admin user:', email);
       
+      // First check if user already exists by trying to sign in
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password
