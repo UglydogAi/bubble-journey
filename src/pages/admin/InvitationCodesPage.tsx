@@ -1,59 +1,14 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import InvitationCodeGenerator from "@/components/admin/InvitationCodeGenerator";
 import InvitationCodeList from "@/components/admin/InvitationCodeList";
 import AdminUserCreator from "@/components/admin/AdminUserCreator";
-import { useAuth } from "@/contexts/AuthContext";
-import { Shield, Key, Lock, UserPlus, LogIn } from "lucide-react";
+import { Shield, Key, Lock, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Navigate, useNavigate } from "react-router-dom";
 
 const InvitationCodesPage: React.FC = () => {
-  const { isAdmin, isAuthenticated, isLoading, user } = useAuth();
-  const navigate = useNavigate();
   const [showAdminCreator, setShowAdminCreator] = useState(true);
-  
-  // Debug logging
-  useEffect(() => {
-    console.log('InvitationCodesPage - Auth state:', { 
-      isAdmin, 
-      isAuthenticated, 
-      isLoading,
-      user: user?.email 
-    });
-  }, [isAdmin, isAuthenticated, isLoading, user]);
-  
-  // Check if authenticated and admin, redirect if not
-  useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        console.log('Not authenticated, redirecting to auth page');
-        navigate('/auth');
-      } else if (!isAdmin) {
-        console.log('Not admin, redirecting to dashboard');
-        navigate('/dashboard');
-      } else {
-        console.log('Admin authenticated successfully');
-      }
-    }
-  }, [isAuthenticated, isAdmin, isLoading, navigate]);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-amber-950">
-        <div className="text-amber-400 flex flex-col items-center">
-          <div className="w-12 h-12 border-4 border-t-transparent border-amber-400 rounded-full animate-spin mb-4"></div>
-          <p>Loading admin panel...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If not admin or not authenticated, don't render anything (redirect will happen due to useEffect)
-  if (!isAuthenticated || !isAdmin) {
-    return null;
-  }
   
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-amber-950 via-orange-900 to-amber-900 text-amber-50">
@@ -172,7 +127,7 @@ const InvitationCodesPage: React.FC = () => {
             <div>
               <h3 className="text-lg font-medium text-amber-100">Admin Dashboard</h3>
               <p className="text-amber-200/70 text-sm mt-1">
-                This dashboard is only accessible to admin users. Here you can manage invitation codes and create new admin accounts.
+                This dashboard is for admin users. Here you can manage invitation codes and create new admin accounts.
               </p>
               <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="bg-amber-900/40 p-3 rounded-lg border border-amber-500/30">
