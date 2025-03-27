@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import InvitationCodeGenerator from "@/components/admin/InvitationCodeGenerator";
 import InvitationCodeList from "@/components/admin/InvitationCodeList";
 import AdminUserCreator from "@/components/admin/AdminUserCreator";
@@ -7,9 +7,39 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Shield, Key, Lock, UserPlus, LogIn } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const InvitationCodesPage: React.FC = () => {
-  const { user } = useAuth();
+  const { isAdmin, isAuthenticated, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const [showAdminCreator, setShowAdminCreator] = useState(true);
+  
+  // Check if authenticated and admin, redirect if not
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        navigate('/auth');
+      } else if (!isAdmin) {
+        navigate('/dashboard');
+      }
+    }
+  }, [isAuthenticated, isAdmin, isLoading, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-amber-950">
+        <div className="text-amber-400 flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-t-transparent border-amber-400 rounded-full animate-spin mb-4"></div>
+          <p>Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not admin or not authenticated, don't render anything (redirect will happen due to useEffect)
+  if (!isAuthenticated || !isAdmin) {
+    return null;
+  }
   
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-amber-950 via-orange-900 to-amber-900 text-amber-50">
@@ -61,7 +91,7 @@ const InvitationCodesPage: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-amber-50">Admin Control Panel</h1>
-                <p className="text-amber-200/70">System administration dashboard for user access management</p>
+                <p className="text-amber-200/70">System administration dashboard for invitation codes and admin access</p>
               </div>
             </div>
             
@@ -72,9 +102,9 @@ const InvitationCodesPage: React.FC = () => {
                 className="flex items-center gap-2 border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
                 asChild
               >
-                <a href="/auth">
-                  <LogIn className="h-4 w-4" />
-                  <span>User Login</span>
+                <a href="/dashboard">
+                  <UserPlus className="h-4 w-4" />
+                  <span>Dashboard</span>
                 </a>
               </Button>
               
@@ -95,13 +125,15 @@ const InvitationCodesPage: React.FC = () => {
             <InvitationCodeGenerator className="bg-amber-900/40 backdrop-blur-sm border-amber-500/20 shadow-lg shadow-amber-900/20 h-full" />
           </motion.div>
           
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <AdminUserCreator className="h-full" />
-          </motion.div>
+          {showAdminCreator && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <AdminUserCreator className="h-full" onSuccess={() => setShowAdminCreator(false)} />
+            </motion.div>
+          )}
         </div>
         
         <motion.div
@@ -124,19 +156,18 @@ const InvitationCodesPage: React.FC = () => {
               <Key className="h-5 w-5 text-amber-400" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-amber-100">About This Dashboard</h3>
+              <h3 className="text-lg font-medium text-amber-100">Admin Dashboard</h3>
               <p className="text-amber-200/70 text-sm mt-1">
-                This is the administrator control panel where you can create admin accounts and manage invitation codes. 
-                For standard user login, please visit the <a href="/auth" className="text-amber-400 hover:underline">User Authentication Page</a>.
+                This dashboard is only accessible to admin users. Here you can manage invitation codes and create new admin accounts.
               </p>
               <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="bg-amber-900/40 p-3 rounded-lg border border-amber-500/30">
                   <h4 className="text-amber-300 font-medium flex items-center gap-2">
                     <Shield className="h-4 w-4" />
-                    Admin Setup
+                    Admin Management
                   </h4>
                   <p className="text-amber-200/70 text-xs mt-1">
-                    Create and manage administrator accounts with system-wide privileges
+                    Create new administrator accounts with full system access
                   </p>
                 </div>
                 <div className="bg-amber-900/40 p-3 rounded-lg border border-amber-500/30">
@@ -145,36 +176,12 @@ const InvitationCodesPage: React.FC = () => {
                     Invitation Codes
                   </h4>
                   <p className="text-amber-200/70 text-xs mt-1">
-                    Generate and distribute invitation codes for controlled user registration
+                    Generate and manage invitation codes for new user registrations
                   </p>
                 </div>
               </div>
             </div>
           </div>
-        </motion.div>
-
-        {/* Direct links at the bottom */}
-        <motion.div 
-          className="flex justify-center mt-12 pb-8 gap-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.8 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-        >
-          <a 
-            href="/auth" 
-            className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-2"
-          >
-            <Key className="h-4 w-4" />
-            Go to User Authentication Page →
-          </a>
-          
-          <a 
-            href="/dashboard" 
-            className="text-sm text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-2"
-          >
-            <UserPlus className="h-4 w-4" />
-            Go to Dashboard →
-          </a>
         </motion.div>
       </div>
     </div>

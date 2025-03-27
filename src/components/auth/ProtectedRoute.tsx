@@ -24,14 +24,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
+  // If not authenticated, redirect to auth page
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
   }
 
+  // If admin required but user is not an admin, redirect to dashboard
   if (requireAdmin && !isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 
+  // User is authenticated and has required permission level
   return <>{children}</>;
 };
 

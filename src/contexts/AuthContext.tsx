@@ -30,6 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
 
   useEffect(() => {
+    // First, set up the auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
@@ -38,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAuthenticated(!!session);
         
         if (session?.user) {
+          // Use setTimeout to avoid calling Supabase inside the callback
           setTimeout(() => {
             checkIsAdmin();
           }, 0);
@@ -47,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
+    // Then, check for an existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('Got session:', session?.user?.email);
       setSession(session);
@@ -99,7 +102,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       console.log('Login successful for:', email);
       toast.success('Logged in successfully');
-      navigate('/dashboard');
+      
+      // The auth state change listener will handle the navigation
+      // Redirect happens in Auth page useEffect based on isAuthenticated and isAdmin
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error(error.message || 'Failed to log in');
@@ -124,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         toast.info('Please check your email to confirm your account');
       } else if (data.session) {
         toast.success('Account created and logged in successfully');
-        navigate('/dashboard');
+        // Navigation will be handled by the auth state change listener
       }
     } catch (error: any) {
       console.error('Signup error:', error);
@@ -154,40 +159,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Attempting to create admin user:', email);
       
-      // First, try signing up the user normally
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { role: 'admin' },
-        }
-      });
+      // First check if the user already exists
+      const { data: { user: existingUser }, error: checkError } = await supabase.auth.admin.getUserByEmail(email);
       
-      if (signUpError) {
-        // If the error is due to the user already existing, we'll try signing in
-        if (!signUpError.message.includes("already registered")) {
-          throw signUpError;
-        }
-        console.log('User already exists, attempting to update password');
+      if (checkError && !checkError.message.includes("User not found")) {
+        throw checkError;
+      }
+      
+      if (existingUser) {
+        // User exists, try logging in to confirm the password is correct
+        console.log('User already exists, attempting to sign in to verify credentials');
         
-        // Try to sign in to verify credentials
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-        
-        if (signInError) {
-          console.log('Sign in failed, user might exist but password is different');
+        try {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
           
-          // User exists but password doesn't match - we can't reset it programmatically 
-          // in this context, so we'll throw an error
-          throw new Error(`Admin user exists but credentials are invalid. Please use the password reset feature or try another email.`);
-        } else {
-          // Successfully signed in, now sign out
+          if (signInError) {
+            throw new Error(`Admin user exists but the provided password is incorrect. Please use a different email or the correct password.`);
+          }
+          
+          // Sign out immediately to return to previous state
           await supabase.auth.signOut();
-          console.log('Admin user verified with credentials');
+          return;
+        } catch (error) {
+          throw error;
         }
       } else {
+        // User doesn't exist, create a new one
+        console.log('Creating new admin user');
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { role: 'admin' }
+          }
+        });
+        
+        if (signUpError) throw signUpError;
         console.log('Admin user created successfully');
       }
       

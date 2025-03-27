@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,14 +16,19 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login, signUp, isAuthenticated } = useAuth();
+  const { login, signUp, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+  // Redirect authenticated users
+  useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      if (isAdmin) {
+        navigate('/admin/invitation-codes');
+      } else {
+        navigate('/dashboard');
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isAdmin, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +80,7 @@ const AuthPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#0C121D] text-white">
-      {/* Animated stars/particles background - same as CodeActivationPage */}
+      {/* Animated stars/particles background */}
       <div className="absolute inset-0">
         {Array.from({ length: 100 }).map((_, i) => (
           <motion.div
@@ -259,15 +264,15 @@ const AuthPage: React.FC = () => {
               <p className="text-sm text-[#A78BFA] font-medium">Admin Access</p>
             </div>
             <p className="text-xs text-gray-400">
-              This is the user authentication page. If you need to set up an admin account, please visit the{" "}
+              This is the user authentication page. If you need admin access, please contact an existing administrator or visit the{" "}
               <a 
                 href="/admin/invitation-codes" 
                 className="text-[#8B5CF6] hover:underline inline-flex items-center"
               >
-                Admin Management
+                Admin Dashboard
                 <Shield className="h-3 w-3 ml-1" />
               </a>
-              {" "}page.
+              {" "} if you already have admin credentials.
             </p>
           </div>
         </motion.div>
