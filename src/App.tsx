@@ -14,6 +14,7 @@ import InvitePage from "./pages/invite/InvitePage";
 import InvitationCodesPage from "./pages/admin/InvitationCodesPage";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AdminAuthPage from "./pages/auth/AdminAuthPage";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -26,15 +27,27 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<AdminAuthPage />} />
+              <Route path="/" element={<Index />} />
               <Route path="/home" element={<Index />} />
               <Route path="/invite" element={<InvitePage />} />
               <Route path="/call" element={<CodeActivationPage />} />
               <Route path="/call/chat" element={<CallPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              
+              {/* Admin Auth Routes */}
               <Route path="/admin" element={<AdminAuthPage />} />
               <Route path="/admin/auth" element={<AdminAuthPage />} />
-              <Route path="/admin/invitation-codes" element={<InvitationCodesPage />} />
+              
+              {/* Protected Admin Routes */}
+              <Route 
+                path="/admin/invitation-codes" 
+                element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <InvitationCodesPage />
+                  </ProtectedRoute>
+                } 
+              />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

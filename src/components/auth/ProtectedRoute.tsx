@@ -78,15 +78,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  // If not authenticated, redirect to auth page
+  // If not authenticated, redirect to admin auth page for admin routes
   if (!isAuthenticated) {
-    console.log('User not authenticated, redirecting to /auth');
-    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
+    console.log('User not authenticated, redirecting to auth');
+    const redirectPath = requireAdmin ? "/admin/auth" : "/auth";
+    return <Navigate to={redirectPath} state={{ from: location.pathname }} replace />;
   }
 
   // If admin required but user is not an admin, redirect to dashboard
   if (requireAdmin && !isAdmin) {
-    console.log('Admin required but user is not admin, redirecting to /dashboard');
+    console.log('Admin required but user is not admin, redirecting to dashboard');
     toast.error("You don't have admin permissions to access this page");
     return <Navigate to="/dashboard" replace />;
   }

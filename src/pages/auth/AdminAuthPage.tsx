@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,7 +11,8 @@ import { toast } from "sonner";
 
 const AdminAuthPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const location = useLocation();
+  const { login, isAuthenticated, isAdmin } = useAuth();
   
   const [email, setEmail] = useState("admin@example.com");
   const [password, setPassword] = useState("admin123");
@@ -21,12 +22,14 @@ const AdminAuthPage: React.FC = () => {
   const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState("");
   
-  // If already authenticated, redirect to dashboard
-  React.useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/admin/invitation-codes");
+  // If already authenticated as admin, redirect to admin dashboard
+  useEffect(() => {
+    if (isAuthenticated && isAdmin) {
+      // Check if we have a stored location to redirect to
+      const from = location.state?.from || "/admin/invitation-codes";
+      navigate(from, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isAdmin, navigate, location]);
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
