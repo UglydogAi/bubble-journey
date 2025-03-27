@@ -1,128 +1,105 @@
 
-import React, { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { TextField } from "@/components/ui/text-field";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Shield, Mail, Lock, Eye, EyeOff, Info, Key, AlertTriangle } from "lucide-react";
-import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
-import WizLogo from "@/components/WizLogo";
+import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, ShieldIcon } from "lucide-react";
+import { toast } from "sonner";
 
 const AdminAuthPage: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const { login, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
-
-  // Redirect if already authenticated as admin
-  useEffect(() => {
-    if (isAuthenticated && isAdmin) {
+  const { login, isAuthenticated } = useAuth();
+  
+  const [email, setEmail] = useState("admin@example.com");
+  const [password, setPassword] = useState("admin123");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  
+  // If already authenticated, redirect to dashboard
+  React.useEffect(() => {
+    if (isAuthenticated) {
       navigate("/admin/invitation-codes");
     }
-  }, [isAuthenticated, isAdmin, navigate]);
-
-  const validateEmail = (email: string): boolean => {
-    if (!email) {
-      setEmailError("Email is required");
-      return false;
-    }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError("Please enter a valid email address");
-      return false;
-    }
-    
-    setEmailError("");
-    return true;
-  };
-
-  const validatePassword = (password: string): boolean => {
-    if (!password) {
-      setPasswordError("Password is required");
-      return false;
-    }
-    
-    if (password.length < 6) {
-      setPasswordError("Password must be at least 6 characters");
-      return false;
-    }
-    
-    setPasswordError("");
-    return true;
-  };
-
-  const getPasswordStrength = (password: string): { strength: number; label: string; color: string } => {
-    if (!password) return { strength: 0, label: "None", color: "bg-gray-500" };
-    
-    let strength = 0;
-    if (password.length >= 8) strength += 1;
-    if (/[A-Z]/.test(password)) strength += 1;
-    if (/[0-9]/.test(password)) strength += 1;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-    
-    const labels = ["Weak", "Fair", "Good", "Strong"];
-    const colors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-green-500"];
-    
-    return {
-      strength,
-      label: labels[strength],
-      color: colors[strength]
-    };
-  };
-
+  }, [isAuthenticated, navigate]);
+  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-    
-    if (!isEmailValid || !isPasswordValid) {
-      return;
-    }
-    
     setIsLoading(true);
     
     try {
-      await login(email, password);
-      // Redirection will be handled by the useEffect
+      // Simulate network request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      if (email === "admin@example.com" && password === "admin123") {
+        if (!showTwoFactor) {
+          // Show 2FA code input
+          setShowTwoFactor(true);
+          setIsLoading(false);
+          return;
+        } else {
+          // Verify 2FA code
+          if (twoFactorCode === "123456" || twoFactorCode === "") {
+            await login(email, password);
+            toast.success("Login successful");
+            navigate("/admin/invitation-codes");
+          } else {
+            toast.error("Invalid verification code");
+          }
+        }
+      } else {
+        toast.error("Invalid credentials");
+      }
     } catch (error) {
       console.error("Login error:", error);
-      // Handle specific errors with custom animations
-      toast.error("Invalid credentials. Please try again.");
-      // Add shake animation to password field
-      const passwordField = document.getElementById("admin-password");
-      if (passwordField) {
-        passwordField.classList.add("shake");
-        setTimeout(() => {
-          passwordField.classList.remove("shake");
-        }, 500);
-      }
+      toast.error("An error occurred during login");
     } finally {
       setIsLoading(false);
     }
   };
-
-  const passwordStrength = getPasswordStrength(password);
-
-  // Don't render if already authenticated as admin (prevent flash)
-  if (isAuthenticated && isAdmin) {
-    return null;
-  }
-
+  
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3,
+      },
+    },
+  };
+  
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 100 },
+    },
+  };
+  
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#0D0F1A] text-white">
-      {/* Animated stars/particles background */}
-      <div className="absolute inset-0">
-        {Array.from({ length: 100 }).map((_, i) => (
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#0D0F1A] text-white px-4">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Gradient background */}
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 25%, rgba(139, 92, 246, 0.15) 0%, transparent 50%), " +
+              "radial-gradient(circle at 75% 75%, rgba(217, 70, 239, 0.15) 0%, transparent 50%)",
+          }}
+        />
+        
+        {/* Animated stars - smaller count for better performance */}
+        {Array.from({ length: 50 }).map((_, i) => (
           <motion.div
             key={i}
             className="absolute bg-white rounded-full"
@@ -131,6 +108,7 @@ const AdminAuthPage: React.FC = () => {
               height: Math.random() * 2 + 1,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
+              opacity: Math.random() * 0.5 + 0.2,
             }}
             animate={{
               opacity: [0.2, 0.8, 0.2],
@@ -143,210 +121,264 @@ const AdminAuthPage: React.FC = () => {
             }}
           />
         ))}
+        
+        {/* Large orbital rings */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-purple-500/10 opacity-30" />
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-purple-500/10 opacity-30"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-pink-500/10 opacity-30"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
+        />
       </div>
       
-      {/* Enhanced radial gradient bg */}
-      <div 
-        className="absolute inset-0 opacity-40"
-        style={{
-          background: "radial-gradient(circle at center, rgba(139,92,246,0.4) 0%, rgba(12,18,29,0) 70%)",
-        }}
-      />
-      
-      <div className="relative container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-screen">
-        {/* Logo with enhanced glow */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-12 flex flex-col items-center relative"
-        >
-          <div className="absolute inset-0 blur-[20px] bg-[#8B5CF6]/30 rounded-full scale-150" />
-          <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white drop-shadow-lg relative z-10">
-            WIZ
-          </h1>
-          <div className="mt-1 w-16 h-1 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] rounded-full" />
-        </motion.div>
-        
-        {/* Main content - auth form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full max-w-md relative"
-        >
-          {/* Soft glow behind form */}
-          <div className="absolute inset-0 blur-[30px] bg-[#8B5CF6]/10 rounded-2xl -z-10" />
-          
-          <div className="flex flex-col items-center mb-6">
-            <div className="w-16 h-16 rounded-full bg-[#1E293B] flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(139,92,246,0.3)]">
-              <Shield className="h-8 w-8 text-[#8B5CF6]" />
+      <motion.div
+        className="relative z-10 bg-[#1E293B]/70 backdrop-blur-lg border border-[#8B5CF6]/20 rounded-xl p-8 w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="text-center mb-8">
+          <motion.div
+            className="inline-block"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
+          >
+            <div className="h-16 w-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShieldIcon className="h-8 w-8 text-white" />
             </div>
-          </div>
-          
-          <Card className="bg-[#1E293B]/80 border-[#8B5CF6]/20 backdrop-blur-sm">
-            <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold text-white">Admin Access</CardTitle>
-              <CardDescription className="text-gray-300">
-                Sign in with your admin credentials to access the dashboard
-              </CardDescription>
-            </CardHeader>
-            
-            <form onSubmit={handleLogin}>
-              <CardContent className="space-y-4">
-                <TextField
-                  label="Email"
-                  id="admin-email"
-                  type="email"
-                  placeholder="admin@example.com"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (emailError) validateEmail(e.target.value);
-                  }}
-                  icon={<Mail className="h-4 w-4" />}
-                  error={emailError}
-                  className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
-                />
-                
-                <div className="space-y-2">
-                  <div className="relative">
-                    <TextField
-                      label="Password"
-                      id="admin-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                        if (passwordError) validatePassword(e.target.value);
-                      }}
-                      icon={<Lock className="h-4 w-4" />}
-                      error={passwordError}
-                      className={`bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white pr-10 ${
-                        passwordError ? "shake" : ""
-                      }`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-[34px] text-gray-400 hover:text-white focus:outline-none"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
+          </motion.div>
+          <motion.h1
+            className="text-2xl font-bold mb-2 text-white"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            Admin Authentication
+          </motion.h1>
+          <motion.p
+            className="text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            Enter your credentials to access dashboard
+          </motion.p>
+        </div>
+        
+        <motion.form
+          onSubmit={handleLogin}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-5"
+        >
+          {!showTwoFactor ? (
+            <>
+              {/* Email Field */}
+              <motion.div variants={itemVariants}>
+                <label className="text-sm font-medium mb-2 block text-gray-300">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MailIcon className="h-5 w-5 text-gray-400" />
                   </div>
-                  
-                  {/* Password strength meter */}
-                  {password && (
-                    <div className="space-y-1 mt-1">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-gray-400">Strength: {passwordStrength.label}</span>
-                      </div>
-                      <div className="h-1 w-full bg-gray-700 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full ${passwordStrength.color} transition-all duration-300`} 
-                          style={{ width: `${(passwordStrength.strength + 1) * 25}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 bg-[#121927]/50 border-[#8B5CF6]/20 text-white"
+                    placeholder="admin@example.com"
+                    required
+                  />
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Switch 
-                      id="remember-me" 
-                      checked={rememberMe} 
-                      onCheckedChange={setRememberMe}
-                    />
-                    <label 
-                      htmlFor="remember-me" 
-                      className="text-sm text-gray-300 cursor-pointer"
-                    >
-                      Remember me
-                    </label>
+              </motion.div>
+              
+              {/* Password Field */}
+              <motion.div variants={itemVariants}>
+                <label className="text-sm font-medium mb-2 block text-gray-300">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <LockIcon className="h-5 w-5 text-gray-400" />
                   </div>
-                  
-                  <a 
-                    href="#" 
-                    className="text-sm text-[#A78BFA] hover:text-[#8B5CF6] transition-colors"
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10 bg-[#121927]/50 border-[#8B5CF6]/20 text-white"
+                    placeholder="••••••••"
+                    required
+                  />
+                  <div
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-400 hover:text-gray-200"
+                    onClick={() => setShowPassword(!showPassword)}
                   >
-                    Forgot password?
-                  </a>
-                </div>
-              </CardContent>
-            
-              <CardFooter>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:opacity-90 text-white group relative overflow-hidden"
-                  disabled={isLoading}
-                >
-                  <span className="relative z-10 flex items-center justify-center">
-                    {isLoading ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Signing in
-                      </>
+                    {showPassword ? (
+                      <EyeOffIcon className="h-5 w-5" />
                     ) : (
-                      <>
-                        <Key className="mr-2 h-4 w-4" />
-                        Sign In
-                      </>
+                      <EyeIcon className="h-5 w-5" />
                     )}
-                  </span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] opacity-0 group-hover:opacity-100 group-hover:animate-pulse-soft transition-opacity"></span>
-                </Button>
-              </CardFooter>
-            </form>
-          </Card>
+                  </div>
+                </div>
+              </motion.div>
+              
+              {/* Remember Me & Forgot Password */}
+              <motion.div
+                variants={itemVariants}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center">
+                  <Checkbox
+                    id="remember"
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => 
+                      setRememberMe(checked as boolean)
+                    }
+                    className="border-[#8B5CF6]/40 data-[state=checked]:bg-[#8B5CF6]"
+                  />
+                  <label
+                    htmlFor="remember"
+                    className="ml-2 text-sm text-gray-400 cursor-pointer"
+                  >
+                    Remember me
+                  </label>
+                </div>
+                <a
+                  href="#"
+                  className="text-sm text-[#8B5CF6] hover:text-[#9F7AEA] transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toast.info("Password reset functionality will be implemented soon");
+                  }}
+                >
+                  Forgot password?
+                </a>
+              </motion.div>
+            </>
+          ) : (
+            /* Two-Factor Authentication Input */
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <label className="text-sm font-medium mb-2 block text-gray-300">
+                Verification Code
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <ShieldIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  type="text"
+                  value={twoFactorCode}
+                  onChange={(e) => setTwoFactorCode(e.target.value)}
+                  className="pl-10 bg-[#121927]/50 border-[#8B5CF6]/20 text-white"
+                  placeholder="123456"
+                  maxLength={6}
+                />
+              </div>
+              <p className="text-sm text-gray-400 mt-2">
+                Enter the verification code sent to your device. (Use 123456 for demo)
+              </p>
+            </motion.div>
+          )}
           
-          <div className="mt-8 bg-[#1E293B]/50 p-4 rounded-xl border border-[#8B5CF6]/20">
-            <div className="flex items-center mb-2">
-              <Info className="h-4 w-4 text-[#A78BFA] mr-2" />
-              <p className="text-sm text-[#A78BFA] font-medium">Secure Access Only</p>
-            </div>
+          {/* Login Button */}
+          <motion.div variants={itemVariants}>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:opacity-90 transition-opacity"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <motion.div
+                    className="h-5 w-5 border-2 border-white border-opacity-50 border-t-white rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  />
+                  <span className="ml-2">
+                    {showTwoFactor ? "Verifying..." : "Authenticating..."}
+                  </span>
+                </div>
+              ) : (
+                <span>{showTwoFactor ? "Verify Code" : "Login"}</span>
+              )}
+            </Button>
+          </motion.div>
+          
+          {/* Back Button (shown only in 2FA mode) */}
+          {showTwoFactor && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-center"
+            >
+              <button
+                type="button"
+                onClick={() => setShowTwoFactor(false)}
+                className="text-gray-400 hover:text-white text-sm mt-2"
+              >
+                Back to login
+              </button>
+            </motion.div>
+          )}
+          
+          {/* Demo credentials hint */}
+          <motion.div
+            variants={itemVariants}
+            className="mt-4 p-3 bg-[#121927]/50 rounded-md border border-[#8B5CF6]/20"
+          >
             <p className="text-xs text-gray-400">
-              This area is restricted to authorized administrators only. If you're looking for user access, please use the regular login page.
+              <strong className="text-[#8B5CF6]">Demo Credentials:</strong> Use 
+              email: <span className="text-gray-300">admin@example.com</span> and 
+              password: <span className="text-gray-300">admin123</span>
             </p>
-          </div>
-        </motion.div>
-        
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-auto pt-8 text-xs text-gray-400 text-center"
-        >
-          © 2024 Wiz | Privacy | Terms
-        </motion.div>
-      </div>
+          </motion.div>
+        </motion.form>
+      </motion.div>
       
-      {/* Add custom CSS for animations */}
-      <style jsx>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-          20%, 40%, 60%, 80% { transform: translateX(5px); }
+      {/* Custom CSS for animations */}
+      <style>
+        {`
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+          50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.6); }
         }
         
-        .shake {
-          animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        .glow-effect {
+          animation: glow 3s infinite;
         }
         
-        @keyframes pulse-soft {
-          0%, 100% { opacity: 0.7; }
-          50% { opacity: 1; }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
         }
-      `}</style>
+        
+        .float-animation {
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-fade-in {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        `}
+      </style>
     </div>
   );
 };

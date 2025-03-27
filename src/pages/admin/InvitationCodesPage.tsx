@@ -5,9 +5,9 @@ import AdminDashboardHeader from "./AdminDashboardHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TextField } from "@/components/ui/text-field";
-import { InvitationCodeGenerator } from "@/components/admin/InvitationCodeGenerator";
-import { InvitationCodeList } from "@/components/admin/InvitationCodeList";
-import { AdminUserCreator } from "@/components/admin/AdminUserCreator";
+import InvitationCodeGenerator from "@/components/admin/InvitationCodeGenerator";
+import InvitationCodeList from "@/components/admin/InvitationCodeList";
+import AdminUserCreator from "@/components/admin/AdminUserCreator";
 import StatsOverview from "./dashboard/StatsOverview";
 import InvitationChart from "./dashboard/InvitationChart";
 import { Search, Plus, Download, Filter } from "lucide-react";
@@ -131,7 +131,8 @@ const InvitationCodesPage: React.FC = () => {
       </div>
       
       {/* Custom CSS for animations */}
-      <style jsx>{`
+      <style>
+        {`
         @keyframes glow {
           0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
           50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.6); }
@@ -149,7 +150,8 @@ const InvitationCodesPage: React.FC = () => {
         .float-animation {
           animation: float 6s ease-in-out infinite;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
