@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -20,15 +19,22 @@ interface InvitationCode {
 
 interface InvitationCodeListProps {
   className?: string;
+  searchTerm?: string; // Add searchTerm prop as optional
 }
 
 const InvitationCodeList: React.FC<InvitationCodeListProps> = ({ 
-  className = "" 
+  className = "",
+  searchTerm = "" // Add default value
 }) => {
   const [codes, setCodes] = useState<InvitationCode[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [localSearchTerm, setLocalSearchTerm] = useState<string>(searchTerm); // Initialize with prop
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<"all" | "used" | "unused">("unused");
+  
+  // Update local search when prop changes
+  useEffect(() => {
+    setLocalSearchTerm(searchTerm);
+  }, [searchTerm]);
   
   const fetchCodes = async () => {
     setIsLoading(true);
@@ -46,8 +52,9 @@ const InvitationCodeList: React.FC<InvitationCodeListProps> = ({
         query = query.eq('is_used', false);
       }
       
-      if (searchTerm) {
-        query = query.ilike('code', `%${searchTerm}%`);
+      // Use the local search term that can be controlled internally or by the parent
+      if (localSearchTerm) {
+        query = query.ilike('code', `%${localSearchTerm}%`);
       }
       
       const { data, error } = await query;
@@ -65,7 +72,7 @@ const InvitationCodeList: React.FC<InvitationCodeListProps> = ({
   
   useEffect(() => {
     fetchCodes();
-  }, [filter]);
+  }, [filter, localSearchTerm]); // Add localSearchTerm to dependency array
   
   const copyToClipboard = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -122,8 +129,8 @@ const InvitationCodeList: React.FC<InvitationCodeListProps> = ({
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search codes..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={localSearchTerm}
+            onChange={(e) => setLocalSearchTerm(e.target.value)}
             className="pl-9"
           />
         </div>
