@@ -9,6 +9,7 @@ import { TaskCalendar } from "./components/TaskCalendar";
 import { SettingsView } from "./components/SettingsView";
 import { ChatView } from "./components/ChatView";
 import { RewardsView } from "./components/RewardsView";
+import ActionPlan from "./components/ActionPlan";
 
 interface Task {
   id: string;
@@ -21,12 +22,17 @@ export default function DashboardPage() {
   const [ogPoints] = useState(1250);
   const [notificationPreference, setNotificationPreference] = useState("whatsapp");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeView, setActiveView] = useState("settings"); // Default to settings view
+  const [activeView, setActiveView] = useState("profile"); // Default to profile view
+  const [hasActionPlan, setHasActionPlan] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       setIsSidebarOpen(window.innerWidth >= 768);
     };
+
+    // Check if user has an action plan
+    const storedPlan = localStorage.getItem('wizActionPlan');
+    setHasActionPlan(!!storedPlan);
 
     handleResize(); // Initial check
     window.addEventListener('resize', handleResize);
@@ -87,6 +93,7 @@ export default function DashboardPage() {
       default:
         return (
           <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 pt-1 md:pt-6">
+            {hasActionPlan && <ActionPlan />}
             <WeeklyFocus />
             <TaskCalendar tasks={tasks} />
           </div>

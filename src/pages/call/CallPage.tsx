@@ -6,6 +6,8 @@ import WizLogo from "@/components/WizLogo";
 import { XCircle } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import JotformEmbedHandler from "@/components/JotformEmbedHandler";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function CallPage() {
   const navigate = useNavigate();
@@ -20,9 +22,35 @@ export default function CallPage() {
     return () => clearInterval(timer);
   }, []);
   
-  const handleEndCall = () => {
-    // Redirect to dashboard
-    navigate('/dashboard');
+  const handleEndCall = async () => {
+    try {
+      // Generate a simple placeholder action plan based on call duration
+      const actionPlan = {
+        title: "Your Personalized Action Plan",
+        createdAt: new Date().toISOString(),
+        duration: duration,
+        tasks: [
+          { id: "1", title: "30-minute workout", description: "Focus on cardio and stretching", completed: false },
+          { id: "2", title: "10-minute meditation", description: "Practice mindfulness", completed: false },
+          { id: "3", title: "Read 5 pages", description: "From your current book", completed: false },
+          { id: "4", title: "Plan your week", description: "Set goals and track progress", completed: false }
+        ],
+        summary: "Based on your conversation with WIZ, we've created an initial action plan to help you get started. This plan focuses on building healthy habits and consistent progress."
+      };
+      
+      // Store action plan in local storage
+      localStorage.setItem('wizActionPlan', JSON.stringify(actionPlan));
+      
+      // Notify user about their plan
+      toast.success("Your personalized action plan is ready on the dashboard!");
+      
+      // Redirect to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      console.error("Error ending call:", error);
+      toast.error("There was an issue saving your action plan");
+      navigate('/dashboard');
+    }
   };
   
   return (
