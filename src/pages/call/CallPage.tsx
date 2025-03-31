@@ -6,7 +6,6 @@ import WizLogo from "@/components/WizLogo";
 import { XCircle } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import JotformEmbedHandler from "@/components/JotformEmbedHandler";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function CallPage() {
@@ -24,25 +23,153 @@ export default function CallPage() {
   
   const handleEndCall = async () => {
     try {
-      // Generate a simple placeholder action plan based on call duration
+      // Get the current date to set as the week start date (assuming Monday start)
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
+      const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Adjust for Monday as start of week
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - diff);
+      monday.setHours(0, 0, 0, 0);
+      
+      // Generate a more detailed 7-day action plan based on call duration
       const actionPlan = {
-        title: "Your Personalized Action Plan",
+        title: "Your 7-Day Action Plan",
         createdAt: new Date().toISOString(),
         duration: duration,
-        tasks: [
-          { id: "1", title: "30-minute workout", description: "Focus on cardio and stretching", completed: false },
-          { id: "2", title: "10-minute meditation", description: "Practice mindfulness", completed: false },
-          { id: "3", title: "Read 5 pages", description: "From your current book", completed: false },
-          { id: "4", title: "Plan your week", description: "Set goals and track progress", completed: false }
-        ],
-        summary: "Based on your conversation with WIZ, we've created an initial action plan to help you get started. This plan focuses on building healthy habits and consistent progress."
+        weekStartDate: monday.toISOString(),
+        goal: "Establish a balanced routine with focus on wellness and productivity",
+        weeklyPlan: {
+          Monday: [
+            { 
+              id: "mon-1", 
+              title: "Morning meditation", 
+              description: "Start your day with a 10-minute guided meditation focused on intention setting", 
+              completed: false 
+            },
+            { 
+              id: "mon-2", 
+              title: "Plan your week", 
+              description: "Outline your key priorities and schedule important tasks", 
+              completed: false 
+            },
+            { 
+              id: "mon-3", 
+              title: "Evening reflection", 
+              description: "Write down 3 things that went well and 3 areas to improve", 
+              completed: false 
+            }
+          ],
+          Tuesday: [
+            { 
+              id: "tue-1", 
+              title: "30-minute workout", 
+              description: "Focus on cardio and body weight exercises", 
+              completed: false 
+            },
+            { 
+              id: "tue-2", 
+              title: "Read a book chapter", 
+              description: "Dedicate 20 minutes to reading something that develops your skills", 
+              completed: false 
+            }
+          ],
+          Wednesday: [
+            { 
+              id: "wed-1", 
+              title: "Midweek check-in", 
+              description: "Review your weekly goals and adjust priorities if needed", 
+              completed: false 
+            },
+            { 
+              id: "wed-2", 
+              title: "Mindful meal preparation", 
+              description: "Cook a nutritious meal with focus on fresh ingredients", 
+              completed: false 
+            },
+            { 
+              id: "wed-3", 
+              title: "Digital detox hour", 
+              description: "Spend one hour away from all screens", 
+              completed: false 
+            }
+          ],
+          Thursday: [
+            { 
+              id: "thu-1", 
+              title: "Strength training session", 
+              description: "Focus on resistance exercises for major muscle groups", 
+              completed: false 
+            },
+            { 
+              id: "thu-2", 
+              title: "Learning activity", 
+              description: "Spend 30 minutes developing a new skill or deepening existing knowledge", 
+              completed: false 
+            }
+          ],
+          Friday: [
+            { 
+              id: "fri-1", 
+              title: "Weekly review", 
+              description: "Evaluate progress on weekly goals and celebrate achievements", 
+              completed: false 
+            },
+            { 
+              id: "fri-2", 
+              title: "Social connection", 
+              description: "Reach out to a friend or family member you haven't spoken to recently", 
+              completed: false 
+            },
+            { 
+              id: "fri-3", 
+              title: "Plan relaxing weekend activity", 
+              description: "Schedule something enjoyable that recharges your energy", 
+              completed: false 
+            }
+          ],
+          Saturday: [
+            { 
+              id: "sat-1", 
+              title: "Nature exposure", 
+              description: "Spend at least 30 minutes outdoors in a natural setting", 
+              completed: false 
+            },
+            { 
+              id: "sat-2", 
+              title: "Hobby time", 
+              description: "Dedicate 1 hour to a creative or recreational activity you enjoy", 
+              completed: false 
+            }
+          ],
+          Sunday: [
+            { 
+              id: "sun-1", 
+              title: "Weekly preparation", 
+              description: "Prepare meals and organize your space for the week ahead", 
+              completed: false 
+            },
+            { 
+              id: "sun-2", 
+              title: "Reflection and gratitude", 
+              description: "Write down 3 things you're grateful for from the past week", 
+              completed: false 
+            },
+            { 
+              id: "sun-3", 
+              title: "Set intentions for next week", 
+              description: "Identify your top 3 priorities for the upcoming week", 
+              completed: false 
+            }
+          ]
+        },
+        summary: "This personalized weekly plan is designed to help you establish balance between productivity, wellness, and personal growth. Each day builds on the previous day's progress, helping you develop consistent habits that contribute to your overall wellbeing and success. Completing these tasks will help you create momentum toward your long-term goals while maintaining balance in your daily life."
       };
       
       // Store action plan in local storage
       localStorage.setItem('wizActionPlan', JSON.stringify(actionPlan));
       
       // Notify user about their plan
-      toast.success("Your personalized action plan is ready on the dashboard!");
+      toast.success("Your 7-day action plan is ready on the dashboard!");
       
       // Redirect to dashboard
       navigate('/dashboard');
