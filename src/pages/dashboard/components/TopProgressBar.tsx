@@ -17,20 +17,59 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   const { theme, setTheme } = useTheme();
   const [showMessage, setShowMessage] = useState(false);
   const [prevProgress, setPrevProgress] = useState(dailyProgress);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [calculatedProgress, setCalculatedProgress] = useState(dailyProgress);
 
   useEffect(() => {
-    if (dailyProgress !== prevProgress) {
+    // Load profile image from localStorage
+    const savedImage = localStorage.getItem('wizProfileImage');
+    if (savedImage) {
+      setProfileImage(savedImage);
+    }
+
+    // Calculate progress based on action plan completion
+    try {
+      const actionPlan = localStorage.getItem('wizActionPlan');
+      if (actionPlan) {
+        const plan = JSON.parse(actionPlan);
+        
+        // Count total and completed tasks
+        let totalTasks = 0;
+        let completedTasks = 0;
+        
+        if (plan.weeklyPlan) {
+          Object.values(plan.weeklyPlan).forEach((dayTasks: any[]) => {
+            dayTasks.forEach(task => {
+              totalTasks++;
+              if (task.completed) completedTasks++;
+            });
+          });
+        }
+        
+        // Update progress
+        if (totalTasks > 0) {
+          const progress = Math.round((completedTasks / totalTasks) * 100);
+          setCalculatedProgress(progress);
+        }
+      }
+    } catch (error) {
+      console.error("Error calculating progress:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (calculatedProgress !== prevProgress) {
       const milestones = [25, 50, 75, 100];
       const hitMilestone = milestones.some(
         milestone => 
-          dailyProgress >= milestone && 
+          calculatedProgress >= milestone && 
           prevProgress < milestone
       );
 
       if (hitMilestone) {
         setShowMessage(true);
         confetti({
-          particleCount: dailyProgress === 100 ? 150 : 50,
+          particleCount: calculatedProgress === 100 ? 150 : 50,
           spread: 70,
           colors: ['#8A2BE2', '#FF7043'],
           origin: { y: 0.3 }
@@ -39,9 +78,9 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
         setTimeout(() => setShowMessage(false), 3000);
       }
 
-      setPrevProgress(dailyProgress);
+      setPrevProgress(calculatedProgress);
     }
-  }, [dailyProgress, prevProgress]);
+  }, [calculatedProgress, prevProgress]);
 
   return (
     <div className="sticky top-0 w-full z-50">
@@ -52,11 +91,19 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           {/* Left Section: Container that holds profile picture */}
           <div className="px-4 md:px-6 flex-shrink-0 border-r border-border/10 h-full flex items-center justify-center">
             <Avatar className="w-9 h-9 md:w-10 md:h-10 ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300">
-              <AvatarImage 
-                src="/lovable-uploads/db35f051-e13b-4656-92f1-843b07d7584b.png"
-                alt="Wiz Panda"
-                className="w-full h-full object-cover"
-              />
+              {profileImage ? (
+                <AvatarImage 
+                  src={profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <AvatarImage 
+                  src="/lovable-uploads/db35f051-e13b-4656-92f1-843b07d7584b.png"
+                  alt="Wiz Panda"
+                  className="w-full h-full object-cover"
+                />
+              )}
               <AvatarFallback>WP</AvatarFallback>
             </Avatar>
           </div>
@@ -65,7 +112,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           <div className="flex-1 px-4 md:px-6 flex items-center">
             <div className="w-full relative h-2.5 md:h-3">
               <Progress 
-                value={dailyProgress} 
+                value={calculatedProgress} 
                 className="h-full relative"
               />
               
@@ -73,7 +120,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
               <div 
                 className="absolute top-1/2"
                 style={{ 
-                  left: `${Math.min(Math.max(dailyProgress, 0), 100)}%`,
+                  left: `${Math.min(Math.max(calculatedProgress, 0), 100)}%`,
                   transform: `translateX(-50%) translateY(-50%)` 
                 }}
               >
@@ -98,11 +145,19 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                     <Avatar 
                       className="w-full h-full"
                     >
-                      <AvatarImage 
-                        src="/lovable-uploads/db35f051-e13b-4656-92f1-843b07d7584b.png"
-                        alt="Wiz Panda"
-                        className="w-full h-full object-cover"
-                      />
+                      {profileImage ? (
+                        <AvatarImage 
+                          src={profileImage}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <AvatarImage 
+                          src="/lovable-uploads/db35f051-e13b-4656-92f1-843b07d7584b.png"
+                          alt="Wiz Panda"
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                       <AvatarFallback className="w-full h-full text-[8px] text-white">WP</AvatarFallback>
                     </Avatar>
                   </div>

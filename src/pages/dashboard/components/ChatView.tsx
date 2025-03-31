@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Phone, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,33 +14,52 @@ interface ChatMessage {
 
 export function ChatView() {
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
-    {
-      id: "1",
-      sender: "user",
-      content: "How can I improve my productivity?",
-      timestamp: "Today, 10:30 AM"
-    },
-    {
-      id: "2",
-      sender: "ai",
-      content: "Great question! I recommend starting with time-blocking your day and setting clear priorities each morning. Have you tried the Pomodoro technique?",
-      timestamp: "Today, 10:31 AM"
-    },
-    {
-      id: "3",
-      sender: "user",
-      content: "No, what's the Pomodoro technique?",
-      timestamp: "Today, 10:32 AM"
-    },
-    {
-      id: "4",
-      sender: "ai",
-      content: "The Pomodoro technique involves working in focused 25-minute intervals, then taking a 5-minute break. After 4 cycles, take a longer 15-30 minute break. It helps maintain focus and prevents burnout.",
-      timestamp: "Today, 10:33 AM"
-    }
-  ]);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Load chat history from localStorage
+    const storedHistory = localStorage.getItem('wizChatHistory');
+    if (storedHistory) {
+      try {
+        const parsedHistory = JSON.parse(storedHistory);
+        setChatHistory(parsedHistory);
+      } catch (error) {
+        console.error("Error parsing chat history:", error);
+        // Fallback to demo messages if there's an error
+        setChatHistory([
+          {
+            id: "1",
+            sender: "user",
+            content: "How can I improve my productivity?",
+            timestamp: "Today, 10:30 AM"
+          },
+          {
+            id: "2",
+            sender: "ai",
+            content: "Great question! I recommend starting with time-blocking your day and setting clear priorities each morning. Have you tried the Pomodoro technique?",
+            timestamp: "Today, 10:31 AM"
+          }
+        ]);
+      }
+    } else {
+      // Set default messages if no history exists
+      setChatHistory([
+        {
+          id: "1",
+          sender: "user",
+          content: "How can I improve my productivity?",
+          timestamp: "Today, 10:30 AM"
+        },
+        {
+          id: "2",
+          sender: "ai",
+          content: "Great question! I recommend starting with time-blocking your day and setting clear priorities each morning. Have you tried the Pomodoro technique?",
+          timestamp: "Today, 10:31 AM"
+        }
+      ]);
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +72,12 @@ export function ChatView() {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       
-      setChatHistory([...chatHistory, newUserMessage]);
+      const updatedHistory = [...chatHistory, newUserMessage];
+      setChatHistory(updatedHistory);
       setMessage("");
+      
+      // Update localStorage
+      localStorage.setItem('wizChatHistory', JSON.stringify(updatedHistory));
       
       // Simulate AI response after a short delay
       setTimeout(() => {
@@ -64,7 +87,9 @@ export function ChatView() {
           content: "I'm processing your message about \"" + message + "\". How can I assist you further?",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
-        setChatHistory(prev => [...prev, aiResponse]);
+        const finalHistory = [...updatedHistory, aiResponse];
+        setChatHistory(finalHistory);
+        localStorage.setItem('wizChatHistory', JSON.stringify(finalHistory));
       }, 1000);
     }
   };
@@ -78,7 +103,7 @@ export function ChatView() {
       <Card className="flex-1 flex flex-col">
         <CardHeader>
           <CardTitle>Chat History</CardTitle>
-          <CardDescription>Your conversations with UGLYDOG AI</CardDescription>
+          <CardDescription>Your conversations with WIZ AI</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 overflow-y-auto pb-4">
           <div className="space-y-6">
@@ -111,7 +136,7 @@ export function ChatView() {
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Message UGLYDOG..."
+              placeholder="Message WIZ..."
               className="w-full px-6 py-4 rounded-full border border-border/40 bg-background/60 backdrop-blur-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-sm"
             />
           </div>

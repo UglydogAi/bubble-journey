@@ -18,7 +18,7 @@ interface Task {
 }
 
 export default function DashboardPage() {
-  const [dailyProgress] = useState(65);
+  const [dailyProgress, setDailyProgress] = useState(0);
   const [ogPoints] = useState(1250);
   const [notificationPreference, setNotificationPreference] = useState("whatsapp");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -34,47 +34,76 @@ export default function DashboardPage() {
     const storedPlan = localStorage.getItem('wizActionPlan');
     setHasActionPlan(!!storedPlan);
 
+    // Calculate progress based on action plan completion
+    if (storedPlan) {
+      try {
+        const plan = JSON.parse(storedPlan);
+        
+        // Count total and completed tasks
+        let totalTasks = 0;
+        let completedTasks = 0;
+        
+        if (plan.weeklyPlan) {
+          Object.values(plan.weeklyPlan).forEach((dayTasks: any[]) => {
+            dayTasks.forEach(task => {
+              totalTasks++;
+              if (task.completed) completedTasks++;
+            });
+          });
+        }
+        
+        // Update progress
+        if (totalTasks > 0) {
+          const progress = Math.round((completedTasks / totalTasks) * 100);
+          setDailyProgress(progress);
+        }
+      } catch (error) {
+        console.error("Error calculating progress:", error);
+      }
+    }
+
     handleResize(); // Initial check
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const tasks = [
-    { id: "1", title: "30-minute workout", completed: false },
-    { id: "2", title: "10-minute meditation", completed: true },
-    { id: "3", title: "Read 5 pages", completed: false },
-    { id: "4", title: "Plan weekly meals", completed: true },
+  // Listen for changes in action plan to update progress
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedPlan = localStorage.getItem('wizActionPlan');
+      setHasActionPlan(!!storedPlan);
+      
+      if (storedPlan) {
+        try {
+          const plan = JSON.parse(storedPlan);
+          
+          // Count total and completed tasks
+          let totalTasks = 0;
+          let completedTasks = 0;
+          
+          if (plan.weeklyPlan) {
+            Object.values(plan.weeklyPlan).forEach((dayTasks: any[]) => {
+              dayTasks.forEach(task => {
+                totalTasks++;
+                if (task.completed) completedTasks++;
+              });
+            });
+          }
+          
+          // Update progress
+          if (totalTasks > 0) {
+            const progress = Math.round((completedTasks / totalTasks) * 100);
+            setDailyProgress(progress);
+          }
+        } catch (error) {
+          console.error("Error calculating progress:", error);
+        }
+      }
+    };
     
-    { id: "5", title: "Team standup meeting", completed: false },
-    { id: "6", title: "Update project documentation", completed: true },
-    { id: "7", title: "1-hour focus block", completed: false },
-    { id: "8", title: "Reply to important emails", completed: false },
-    
-    { id: "9", title: "Morning yoga", completed: true },
-    { id: "10", title: "Review quarterly goals", completed: false },
-    { id: "11", title: "Lunch with mentor", completed: false },
-    { id: "12", title: "Update LinkedIn profile", completed: true },
-    
-    { id: "13", title: "Code review session", completed: false },
-    { id: "14", title: "Research new tools", completed: true },
-    { id: "15", title: "Write blog article", completed: false },
-    { id: "16", title: "Evening workout", completed: false },
-    
-    { id: "17", title: "Weekly retrospective", completed: true },
-    { id: "18", title: "Plan weekend activities", completed: false },
-    { id: "19", title: "Call parents", completed: false },
-    { id: "20", title: "Update personal website", completed: true },
-    
-    { id: "21", title: "Farmers market", completed: false },
-    { id: "22", title: "House cleaning", completed: true },
-    { id: "23", title: "Watch documentary", completed: false },
-    { id: "24", title: "Prep meals for week", completed: false },
-    
-    { id: "25", title: "Morning walk", completed: true },
-    { id: "26", title: "Review week ahead", completed: false },
-    { id: "27", title: "Hobby time", completed: true },
-    { id: "28", title: "Read book chapter", completed: false }
-  ];
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const renderActiveView = () => {
     switch (activeView) {
@@ -95,14 +124,14 @@ export default function DashboardPage() {
           <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 pt-1 md:pt-6">
             {hasActionPlan && <ActionPlan />}
             <WeeklyFocus />
-            <TaskCalendar tasks={tasks} />
+            <TaskCalendar tasks={[]} />
           </div>
         );
     }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="min-h-screen bg-white text-foreground transition-colors duration-300">
       <div className="flex min-h-screen relative">
         <div className="hidden md:block w-[18%] min-h-screen border-r border-border/30">
           <Sidebar 

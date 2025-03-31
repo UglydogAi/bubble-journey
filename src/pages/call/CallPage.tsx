@@ -31,6 +31,38 @@ export default function CallPage() {
       monday.setDate(today.getDate() - diff);
       monday.setHours(0, 0, 0, 0);
       
+      // Also save the conversation history for the chat view
+      const conversationHistory = [
+        {
+          id: `call-${Date.now()}`,
+          sender: "user",
+          content: "How can I improve my productivity habits?",
+          timestamp: new Date().toLocaleString()
+        },
+        {
+          id: `call-${Date.now() + 1}`,
+          sender: "ai",
+          content: "Based on our conversation, I recommend starting with small daily habits. Try time-blocking your day and the Pomodoro technique for focused work sessions.",
+          timestamp: new Date().toLocaleString()
+        },
+        {
+          id: `call-${Date.now() + 2}`,
+          sender: "user",
+          content: "What's the best way to maintain consistency?",
+          timestamp: new Date().toLocaleString()
+        },
+        {
+          id: `call-${Date.now() + 3}`,
+          sender: "ai",
+          content: "Consistency comes from accountability and tracking. Try using the action plan I've created for you, and check off tasks daily. Small wins build momentum for bigger results.",
+          timestamp: new Date().toLocaleString()
+        }
+      ];
+      
+      // Store conversation history in local storage
+      const existingHistory = JSON.parse(localStorage.getItem('wizChatHistory') || '[]');
+      localStorage.setItem('wizChatHistory', JSON.stringify([...existingHistory, ...conversationHistory]));
+      
       // Generate a more detailed 7-day action plan based on call duration
       const actionPlan = {
         title: "Your 7-Day Action Plan",
@@ -183,14 +215,14 @@ export default function CallPage() {
   return (
     <div className="relative flex flex-col h-screen w-full bg-[#0C121D] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 z-10">
+      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#0C121D]/90 to-[#0C121D]/70 backdrop-blur-md z-10 border-b border-white/10">
         {/* WIZ logo and timer */}
         <div className="flex items-center space-x-2">
-          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center shadow-lg">
             <WizLogo className="w-5 h-5 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-purple-500 font-bold">WIZ</span>
+            <span className="text-purple-400 font-bold">WIZ</span>
             <span className="text-gray-400 text-xs">{formatDuration(duration)}</span>
           </div>
         </div>
@@ -198,7 +230,7 @@ export default function CallPage() {
         {/* End call button */}
         <button 
           onClick={handleEndCall}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full flex items-center transition-all"
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full flex items-center transition-all shadow-lg"
         >
           <XCircle className="w-4 h-4 mr-1" />
           End Call

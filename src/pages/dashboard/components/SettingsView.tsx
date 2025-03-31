@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,14 @@ export function SettingsView({
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    // Load profile image from localStorage if exists
+    const savedImage = localStorage.getItem('wizProfileImage');
+    if (savedImage) {
+      setProfileImage(savedImage);
+    }
+  }, []);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -30,7 +38,10 @@ export function SettingsView({
       
       reader.onload = (event) => {
         if (event.target?.result) {
-          setProfileImage(event.target.result as string);
+          const imageData = event.target.result as string;
+          setProfileImage(imageData);
+          // Save to localStorage for persistence
+          localStorage.setItem('wizProfileImage', imageData);
         }
       };
       

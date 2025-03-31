@@ -48,6 +48,7 @@ export const ActionPlan = () => {
   const [currentDay, setCurrentDay] = useState<keyof WeeklyPlan>(getDayName(new Date()));
   const [progress, setProgress] = useState(0);
   const [weekStartDate, setWeekStartDate] = useState<Date | null>(null);
+  const [expandedDay, setExpandedDay] = useState<keyof WeeklyPlan | null>(null);
   
   useEffect(() => {
     // Load action plan from localStorage
@@ -59,7 +60,7 @@ export const ActionPlan = () => {
         
         // If the plan doesn't have weeklyPlan structure, create a mock one
         if (!parsedPlan.weeklyPlan) {
-          // Convert old format to new format
+          // Create a default structure
           const mockWeeklyPlan: WeeklyPlan = {
             Monday: [],
             Tuesday: [],
@@ -101,6 +102,9 @@ export const ActionPlan = () => {
         setActionPlan(parsedPlan);
         setWeekStartDate(new Date(parsedPlan.weekStartDate || parsedPlan.createdAt));
         
+        // Automatically expand current day
+        setExpandedDay(currentDay);
+        
         // Count total and completed tasks
         let completed = 0;
         let total = 0;
@@ -122,7 +126,7 @@ export const ActionPlan = () => {
         console.error("Error parsing action plan:", error);
       }
     }
-  }, []);
+  }, [currentDay]);
 
   const isCurrentDayOrBefore = (day: keyof WeeklyPlan): boolean => {
     if (!weekStartDate) return false;
@@ -170,6 +174,9 @@ export const ActionPlan = () => {
     // Save updated plan to localStorage
     localStorage.setItem('wizActionPlan', JSON.stringify(updatedPlan));
     
+    // Trigger a storage event to notify other components about the change
+    window.dispatchEvent(new Event('storage'));
+    
     // Show toast message
     const isCompleted = updatedDayTasks.find(t => t.id === taskId)?.completed;
     if (isCompleted) {
@@ -194,13 +201,21 @@ export const ActionPlan = () => {
     }
   };
   
+  const toggleDayExpansion = (day: keyof WeeklyPlan) => {
+    if (expandedDay === day) {
+      setExpandedDay(null);
+    } else {
+      setExpandedDay(day);
+    }
+  };
+  
   if (!actionPlan) return null;
   
   const timeAgo = formatDistance(new Date(actionPlan.createdAt), new Date(), { addSuffix: true });
   const daysList = Object.keys(actionPlan.weeklyPlan) as Array<keyof WeeklyPlan>;
   
   return (
-    <Card className="mb-6 border-border/40 bg-card/40 backdrop-blur-sm">
+    <Card className="mb-6 border-border/40 bg-white shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg md:text-xl text-primary">{actionPlan.title}</CardTitle>
@@ -232,94 +247,120 @@ export const ActionPlan = () => {
           </div>
         </div>
         
-        {/* Weekly Plan */}
-        <div className="space-y-4">
+        {/* Weekly Plan - Minimalistic version */}
+        <div className="space-y-2">
           {daysList.map(day => {
             const dayTasks = actionPlan.weeklyPlan[day];
             const isAvailable = isCurrentDayOrBefore(day);
             const isToday = day === currentDay;
+            const isExpanded = expandedDay === day;
+            const completedDayTasks = dayTasks.filter(task => task.completed).length;
+            const totalDayTasks = dayTasks.length;
+            const dayProgress = totalDayTasks > 0 ? (completedDayTasks / totalDayTasks) * 100 : 0;
             
             return (
               <div 
                 key={day}
                 className={cn(
-                  "rounded-lg border p-4",
+                  "rounded-lg border p-3",
                   isToday ? "border-primary/30 bg-primary/5" : "border-border/30",
                   !isAvailable && "opacity-60"
                 )}
               >
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className={cn(
-                    "font-medium flex items-center gap-2",
-                    isToday && "text-primary"
-                  )}>
-                    {day}
-                    {isToday && (
-                      <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
-                        Today
-                      </span>
-                    )}
-                  </h3>
+                <div 
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleDayExpansion(day)}
+                >
+                  <div className="flex items-center gap-2">
+                    <h3 className={cn(
+                      "font-medium",
+                      isToday && "text-primary"
+                    )}>
+                      {day}
+                      {isToday && (
+                        <span className="ml-2 text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                          Today
+                        </span>
+                      )}
+                    </h3>
+                  </div>
                   
-                  {!isAvailable ? (
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <LockIcon size={12} className="mr-1" />
-                      <span>Locked</span>
+                  <div className="flex items-center gap-2">
+                    <div className="text-xs text-muted-foreground">
+                      {completedDayTasks}/{totalDayTasks} tasks
                     </div>
-                  ) : (
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <Unlock size={12} className="mr-1" />
-                      <span>Available</span>
-                    </div>
-                  )}
+                    
+                    {!isAvailable ? (
+                      <LockIcon size={14} className="text-muted-foreground" />
+                    ) : (
+                      isExpanded ? (
+                        <ChevronUpIcon size={16} className="text-muted-foreground" />
+                      ) : (
+                        <ChevronDownIcon size={16} className="text-muted-foreground" />
+                      )
+                    )}
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  {dayTasks.length === 0 ? (
-                    <div className="text-sm text-muted-foreground p-2 text-center">
-                      No tasks for this day
-                    </div>
-                  ) : (
-                    dayTasks.map((task, index) => (
-                      <div 
-                        key={task.id} 
-                        className={cn(
-                          "flex items-start space-x-2 p-3 rounded-lg bg-background/50",
-                          isAvailable ? "border border-border/30" : "border border-border/10"
-                        )}
-                      >
-                        <Checkbox 
-                          id={`task-${day}-${task.id}`} 
-                          checked={task.completed}
-                          onCheckedChange={() => handleTaskToggle(day, task.id)}
-                          disabled={!isAvailable || day !== currentDay}
-                          className="mt-1"
-                        />
-                        <div className="space-y-1">
-                          <label 
-                            htmlFor={`task-${day}-${task.id}`}
-                            className={cn(
-                              "font-medium cursor-pointer text-sm",
-                              task.completed && "line-through text-muted-foreground"
-                            )}
-                          >
-                            {task.title}
-                          </label>
-                          <p className="text-xs text-muted-foreground">{task.description}</p>
-                        </div>
-                      </div>
-                    ))
-                  )}
+                {/* Day progress mini-bar */}
+                <div className="mt-2 mb-1">
+                  <div className="h-1 w-full bg-muted/50 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary/60 rounded-full transition-all duration-300"
+                      style={{ width: `${dayProgress}%` }}
+                    />
+                  </div>
                 </div>
+                
+                {/* Expanded day tasks */}
+                {isExpanded && (
+                  <div className="mt-3 space-y-2 pt-2 border-t border-border/20">
+                    {dayTasks.length === 0 ? (
+                      <div className="text-sm text-muted-foreground p-2 text-center">
+                        No tasks for this day
+                      </div>
+                    ) : (
+                      dayTasks.map((task) => (
+                        <div 
+                          key={task.id} 
+                          className={cn(
+                            "flex items-start space-x-2 p-3 rounded-lg bg-background/50",
+                            isAvailable ? "border border-border/30" : "border border-border/10"
+                          )}
+                        >
+                          <Checkbox 
+                            id={`task-${day}-${task.id}`} 
+                            checked={task.completed}
+                            onCheckedChange={() => handleTaskToggle(day, task.id)}
+                            disabled={!isAvailable || day !== currentDay}
+                            className="mt-1"
+                          />
+                          <div className="space-y-1">
+                            <label 
+                              htmlFor={`task-${day}-${task.id}`}
+                              className={cn(
+                                "font-medium cursor-pointer text-sm",
+                                task.completed && "line-through text-muted-foreground"
+                              )}
+                            >
+                              {task.title}
+                            </label>
+                            <p className="text-xs text-muted-foreground">{task.description}</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
         
-        {/* Summary */}
-        <div className="mt-6 p-4 bg-muted/40 rounded-lg text-sm border border-border/20">
-          <h3 className="font-medium mb-2">Weekly Summary</h3>
-          <p className="text-muted-foreground">{actionPlan.summary}</p>
+        {/* Summary - condensed for minimalism */}
+        <div className="mt-6 p-4 bg-muted/20 rounded-lg text-sm border border-border/20">
+          <h3 className="font-medium mb-2">Plan Summary</h3>
+          <p className="text-muted-foreground text-xs md:text-sm">{actionPlan.summary}</p>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between pt-2">
@@ -335,5 +376,40 @@ export const ActionPlan = () => {
     </Card>
   );
 };
+
+// Helper components for the icons
+const ChevronDownIcon = ({ size = 24, className = "" }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="m6 9 6 6 6-6"/>
+  </svg>
+);
+
+const ChevronUpIcon = ({ size = 24, className = "" }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="m18 15-6-6-6 6"/>
+  </svg>
+);
 
 export default ActionPlan;
