@@ -7,6 +7,7 @@ import { useTheme } from "next-themes";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useToast } from "@/hooks/use-toast";
 
 interface TopProgressBarProps {
   dailyProgress: number;
@@ -19,7 +20,9 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   const [prevProgress, setPrevProgress] = useState(dailyProgress);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [calculatedProgress, setCalculatedProgress] = useState(dailyProgress);
+  const [userPoints, setUserPoints] = useState(ogPoints);
   const [mounted, setMounted] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // This prevents hydration errors with next-themes
@@ -27,10 +30,19 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   }, []);
 
   useEffect(() => {
-    // Load profile image from localStorage
+    // Load profile image and points from localStorage
     const savedImage = localStorage.getItem('wizProfileImage');
+    const savedPoints = localStorage.getItem('wizPoints');
+    
     if (savedImage) {
       setProfileImage(savedImage);
+    }
+    
+    if (savedPoints) {
+      setUserPoints(parseInt(savedPoints, 10));
+    } else {
+      // Initialize user points in localStorage if not set
+      localStorage.setItem('wizPoints', String(ogPoints));
     }
 
     // Calculate progress based on action plan completion
@@ -61,18 +73,29 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
     } catch (error) {
       console.error("Error calculating progress:", error);
     }
-  }, []);
+  }, [ogPoints]);
 
+  // Award WIZ points when progress increases
   useEffect(() => {
-    if (calculatedProgress !== prevProgress) {
+    if (calculatedProgress > prevProgress) {
       const milestones = [25, 50, 75, 100];
-      const hitMilestone = milestones.some(
+      
+      // Check if any milestone has been reached
+      const reachedMilestone = milestones.find(
         milestone => 
           calculatedProgress >= milestone && 
           prevProgress < milestone
       );
-
-      if (hitMilestone) {
+      
+      if (reachedMilestone) {
+        // Award points based on milestone
+        const pointsToAdd = reachedMilestone === 100 ? 500 : 100;
+        const newPoints = userPoints + pointsToAdd;
+        
+        setUserPoints(newPoints);
+        localStorage.setItem('wizPoints', String(newPoints));
+        
+        // Show celebration
         setShowMessage(true);
         confetti({
           particleCount: calculatedProgress === 100 ? 150 : 50,
@@ -80,13 +103,39 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           colors: ['#8A2BE2', '#FF7043'],
           origin: { y: 0.3 }
         });
+        
+        // Show toast notification
+        toast({
+          title: `Congratulations! 🎉`,
+          description: `You've earned ${pointsToAdd} WIZ Points for reaching ${reachedMilestone}% progress.`,
+          duration: 4000,
+        });
 
         setTimeout(() => setShowMessage(false), 3000);
+      } else if (calculatedProgress > prevProgress) {
+        // Award smaller amounts for any progress increase
+        const progressDiff = calculatedProgress - prevProgress;
+        const pointsToAdd = Math.floor(progressDiff * 2); // 2 points per 1% progress
+        
+        if (pointsToAdd > 0) {
+          const newPoints = userPoints + pointsToAdd;
+          setUserPoints(newPoints);
+          localStorage.setItem('wizPoints', String(newPoints));
+          
+          // Show toast for smaller point gains
+          if (progressDiff >= 5) {
+            toast({
+              title: `Progress Reward!`,
+              description: `You've earned ${pointsToAdd} WIZ Points for your continued progress.`,
+              duration: 3000,
+            });
+          }
+        }
       }
 
       setPrevProgress(calculatedProgress);
     }
-  }, [calculatedProgress, prevProgress]);
+  }, [calculatedProgress, prevProgress, userPoints, toast]);
 
   // Listen for profile image changes from settings
   useEffect(() => {
@@ -94,25 +143,34 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
       if (e.key === 'wizProfileImage') {
         setProfileImage(e.newValue);
       }
+      if (e.key === 'wizPoints') {
+        setUserPoints(parseInt(e.newValue || '0', 10));
+      }
     };
     
     window.addEventListener('storage', handleStorageChange);
     
     // Also check for changes within the same window
-    const checkProfileImage = () => {
+    const checkStorageChanges = () => {
       const currentImage = localStorage.getItem('wizProfileImage');
+      const currentPoints = localStorage.getItem('wizPoints');
+      
       if (currentImage !== profileImage) {
         setProfileImage(currentImage);
       }
+      
+      if (currentPoints && parseInt(currentPoints, 10) !== userPoints) {
+        setUserPoints(parseInt(currentPoints, 10));
+      }
     };
     
-    const interval = setInterval(checkProfileImage, 1000);
+    const interval = setInterval(checkStorageChanges, 1000);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };
-  }, [profileImage]);
+  }, [profileImage, userPoints]);
 
   const handleThemeChange = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -213,21 +271,25 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
             <div className="flex items-center gap-1 bg-primary/10 px-2 py-1.5 
               rounded-full border border-primary/20 shadow-sm shadow-primary/10">
               <Coins className="w-3 h-3 text-primary animate-pulse" />
-              <span className="font-medium text-xs">{ogPoints}</span>
+              <span className="font-medium text-xs">{userPoints}</span>
             </div>
 
-            {/* Theme Toggle */}
+            {/* Theme Toggle - Improved with better visual indication */}
             <Toggle
               pressed={theme === "dark"}
               onPressedChange={handleThemeChange}
-              className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-muted/50 hover:bg-muted/80 
-                transition-colors duration-300"
+              className={cn(
+                "w-7 h-7 md:w-8 md:h-8 rounded-full transition-all duration-300", 
+                theme === "dark" 
+                  ? "bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700" 
+                  : "bg-amber-100 text-amber-600 hover:bg-amber-200 border border-amber-200"
+              )}
               aria-label="Toggle theme"
             >
               {theme === "dark" ? (
-                <Moon className="w-3.5 h-3.5 text-primary" />
+                <Moon className="w-3.5 h-3.5" />
               ) : (
-                <Sun className="w-3.5 h-3.5 text-primary" />
+                <Sun className="w-3.5 h-3.5" />
               )}
             </Toggle>
           </div>

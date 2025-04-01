@@ -4,8 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { TopProgressBar } from "./components/TopProgressBar";
 import { Sidebar } from "./components/Sidebar";
-import { WeeklyFocus } from "./components/WeeklyFocus";
-import { TaskCalendar } from "./components/TaskCalendar";
 import { SettingsView } from "./components/SettingsView";
 import { ChatView } from "./components/ChatView";
 import { RewardsView } from "./components/RewardsView";
@@ -24,7 +22,7 @@ export default function DashboardPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const [dailyProgress, setDailyProgress] = useState(0);
-  const [ogPoints] = useState(1250);
+  const [ogPoints, setOgPoints] = useState(1250);
   const [notificationPreference, setNotificationPreference] = useState("whatsapp");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeView, setActiveView] = useState("profile"); // Default to profile view
@@ -75,6 +73,14 @@ export default function DashboardPage() {
       }
     }
 
+    // Load saved points
+    const savedPoints = localStorage.getItem('wizPoints');
+    if (savedPoints) {
+      setOgPoints(parseInt(savedPoints, 10));
+    } else {
+      localStorage.setItem('wizPoints', String(ogPoints));
+    }
+
     handleResize(); // Initial check
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -112,10 +118,23 @@ export default function DashboardPage() {
           console.error("Error calculating progress:", error);
         }
       }
+
+      // Also check for points updates
+      const savedPoints = localStorage.getItem('wizPoints');
+      if (savedPoints) {
+        setOgPoints(parseInt(savedPoints, 10));
+      }
     };
     
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    
+    // Also check for changes within the same window
+    const interval = setInterval(handleStorageChange, 2000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, []);
 
   const renderActiveView = () => {
@@ -136,8 +155,7 @@ export default function DashboardPage() {
         return (
           <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 pt-1 md:pt-6">
             {hasActionPlan && <ActionPlan />}
-            <WeeklyFocus />
-            <TaskCalendar tasks={[]} />
+            {/* WeeklyFocus and TaskCalendar components removed as requested */}
           </div>
         );
     }

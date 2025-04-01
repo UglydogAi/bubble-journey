@@ -23,7 +23,7 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
 
   const navigationItems = [
     { icon: <UserRound />, label: "Profile", view: "profile" },
-    { icon: <MessageSquare />, label: "Chat", view: "chat" },
+    { icon: <MessageSquare />, label: "Chat with Wiz", view: "chat" },
     { icon: <Award />, label: "Rewards", view: "rewards" },
     { icon: <Settings />, label: "Settings", view: "settings" },
     { icon: <CreditCard />, label: "Purchase", view: "purchase" }
@@ -93,22 +93,13 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
                     onClick={() => {
                       onNavigate(item.view);
                       setIsMenuOpen(false);
+                      if (item.view === "chat") handleCallWiz();
                     }}
                   >
                     {item.icon}
                     {item.label}
                   </Button>
                 ))}
-                
-                {/* Call Wiz Button */}
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-green-500/90 transition-colors duration-300 px-2.5 py-2.5"
-                  onClick={handleCallWiz}
-                >
-                  <MessageSquare className="text-green-500" />
-                  Call Wiz
-                </Button>
               </nav>
               
               {/* Social Links (Bottom) */}
@@ -161,22 +152,25 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
               "transition-colors duration-300",
               activeView === item.view && "bg-[#8A2BE2] text-white"
             )}
-            onClick={() => onNavigate(item.view)}
+            onClick={() => {
+              onNavigate(item.view);
+              if (item.view === "chat") handleCallWiz();
+            }}
           >
             {item.icon}
             <span className="text-[10px] font-medium">{item.label}</span>
           </Button>
         ))}
         
-        {/* Call Wiz Button for Mobile */}
+        {/* Menu Button for Mobile */}
         <Button
           variant="ghost"
           size="icon"
-          className="flex flex-col items-center justify-center gap-1 h-16 w-full px-1 hover:text-green-500"
-          onClick={handleCallWiz}
+          className="flex flex-col items-center justify-center gap-1 h-16 w-full px-1"
+          onClick={() => setIsMenuOpen(true)}
         >
-          <MessageSquare className="text-green-500" />
-          <span className="text-[10px] font-medium">Call Wiz</span>
+          <CreditCard />
+          <span className="text-[10px] font-medium">More</span>
         </Button>
       </div>
     );
@@ -200,26 +194,19 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
                 "transition-colors duration-300 px-2.5 py-2.5",
                 activeView === item.view && "bg-[#8A2BE2] text-white"
               )}
-              onClick={() => onNavigate(item.view)}
+              onClick={() => {
+                onNavigate(item.view);
+                if (item.view === "chat") handleCallWiz();
+              }}
             >
               {item.icon}
               {item.label}
             </Button>
           ))}
-          
-          {/* Call Wiz Button */}
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-3 text-green-500 hover:text-white hover:bg-green-500/90 transition-colors duration-300 px-2.5 py-2.5"
-            onClick={handleCallWiz}
-          >
-            <MessageSquare />
-            Call Wiz
-          </Button>
         </nav>
         
-        {/* Social Links (Bottom) */}
-        <nav className="mt-auto p-2.5 border-t border-sidebar-border/30">
+        {/* Social Links at Bottom */}
+        <nav className="mt-auto p-2.5">
           {socialItems.map((item) => (
             <Button
               key={item.label}
@@ -238,10 +225,10 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
             </Button>
           ))}
           
-          {/* Logout Button (at bottom after Twitter) */}
+          {/* Logout Button (moved to the very bottom) */}
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5 mt-4"
+            className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5 mt-4 border-t border-sidebar-border/30 pt-4"
             onClick={handleLogout}
           >
             <LogOut />
