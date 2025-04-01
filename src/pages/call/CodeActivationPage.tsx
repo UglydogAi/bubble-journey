@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Key, Mail, Lock } from "lucide-react";
@@ -8,6 +8,7 @@ import InvitationCodeForm from "@/components/auth/InvitationCodeForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const CodeActivationPage: React.FC = () => {
   const [codeActivated, setCodeActivated] = useState(false);
@@ -15,10 +16,29 @@ const CodeActivationPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
+  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const navigate = useNavigate();
-  const { signUp, login } = useAuth();
+  const { signUp, login, isAuthenticated } = useAuth();
+  
+  // Check if user is already authenticated or has already validated an invite code
+  useEffect(() => {
+    const inviteVerified = localStorage.getItem('wizInviteVerified');
+    
+    if (isAuthenticated) {
+      // If user is already authenticated, redirect to dashboard
+      navigate('/dashboard');
+      return;
+    }
+    
+    if (inviteVerified === 'true') {
+      // If user has already verified an invite code, skip to auth form
+      setCodeActivated(true);
+    }
+  }, [isAuthenticated, navigate]);
   
   const handleCodeSuccess = () => {
+    // Save that code was verified to prevent asking again
+    localStorage.setItem('wizInviteVerified', 'true');
     setCodeActivated(true);
   };
   
@@ -33,7 +53,13 @@ const CodeActivationPage: React.FC = () => {
     setIsRegistering(true);
     
     try {
-      if (password) {
+      if (activeTab === "signup") {
+        if (!password) {
+          toast.error("Please enter a password");
+          setIsRegistering(false);
+          return;
+        }
+        
         if (password !== confirmPassword) {
           toast.error("Passwords do not match");
           setIsRegistering(false);
@@ -42,15 +68,13 @@ const CodeActivationPage: React.FC = () => {
         
         // Sign up with new account
         await signUp(email, password);
-        toast.success("Account created successfully!");
       } else {
         // Log in with existing account
         await login(email, password);
-        toast.success("Logged in successfully!");
       }
       
-      // Redirect to call page
-      setTimeout(() => navigate('/call/chat'), 1000);
+      // Redirect to dashboard page after successful auth
+      setTimeout(() => navigate('/dashboard'), 1000);
     } catch (error) {
       console.error("Authentication error:", error);
       toast.error("Authentication failed. Please try again.");
@@ -132,70 +156,115 @@ const CodeActivationPage: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-2xl font-semibold text-center">Create Your Account</h2>
-              <p className="text-gray-300 text-center">
-                Your code is valid! Complete your registration to continue.
-              </p>
-              
-              <form onSubmit={handleAuthSubmit} className="space-y-4 mt-4">
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-gray-200">Email</label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your.email@example.com"
-                    className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
-                    required
-                  />
-                </div>
+              <Tabs defaultValue="login" value={activeTab} onValueChange={(val) => setActiveTab(val as "login" | "signup")}>
+                <TabsList className="grid grid-cols-2 mb-4 bg-[#121A29]">
+                  <TabsTrigger value="login" className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white">
+                    Login
+                  </TabsTrigger>
+                  <TabsTrigger value="signup" className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white">
+                    Create Account
+                  </TabsTrigger>
+                </TabsList>
                 
-                <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-medium text-gray-200">Password (optional for existing users)</label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Create a password"
-                    className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
-                  />
-                </div>
+                <TabsContent value="login">
+                  <h2 className="text-2xl font-semibold text-center">Welcome Back</h2>
+                  <p className="text-gray-300 text-center">
+                    Login to continue using Wiz
+                  </p>
+                  
+                  <form onSubmit={handleAuthSubmit} className="space-y-4 mt-4">
+                    <div className="space-y-2">
+                      <label htmlFor="email-login" className="text-sm font-medium text-gray-200">Email</label>
+                      <Input
+                        id="email-login"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your.email@example.com"
+                        className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="password-login" className="text-sm font-medium text-gray-200">Password</label>
+                      <Input
+                        id="password-login"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password"
+                        className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
+                        required
+                      />
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:opacity-90 text-white mt-6"
+                      disabled={isRegistering}
+                    >
+                      {isRegistering ? "Processing..." : "Login"}
+                    </Button>
+                  </form>
+                </TabsContent>
                 
-                {password && (
-                  <div className="space-y-2">
-                    <label htmlFor="confirm-password" className="text-sm font-medium text-gray-200">Confirm Password</label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm your password"
-                      className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
-                    />
-                  </div>
-                )}
-                
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:opacity-90 text-white mt-6"
-                  disabled={isRegistering}
-                >
-                  {isRegistering ? "Processing..." : (password ? "Create Account" : "Login")}
-                </Button>
-                
-                <p className="text-xs text-center text-gray-400 mt-4">
-                  {password ? "Already have an account? " : "New to WIZ? "}
-                  <button 
-                    type="button" 
-                    className="text-[#8B5CF6] hover:underline"
-                    onClick={() => setPassword(password ? "" : "password")}
-                  >
-                    {password ? "Login instead" : "Create an account"}
-                  </button>
-                </p>
-              </form>
+                <TabsContent value="signup">
+                  <h2 className="text-2xl font-semibold text-center">Create Your Account</h2>
+                  <p className="text-gray-300 text-center">
+                    Sign up to start using Wiz
+                  </p>
+                  
+                  <form onSubmit={handleAuthSubmit} className="space-y-4 mt-4">
+                    <div className="space-y-2">
+                      <label htmlFor="email-signup" className="text-sm font-medium text-gray-200">Email</label>
+                      <Input
+                        id="email-signup"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your.email@example.com"
+                        className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="password-signup" className="text-sm font-medium text-gray-200">Password</label>
+                      <Input
+                        id="password-signup"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Create a password"
+                        className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="confirm-password" className="text-sm font-medium text-gray-200">Confirm Password</label>
+                      <Input
+                        id="confirm-password"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm your password"
+                        className="bg-[#121A29]/80 border-[#8B5CF6]/20 focus:border-[#8B5CF6]/50 text-white"
+                        required
+                      />
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:opacity-90 text-white mt-6"
+                      disabled={isRegistering}
+                    >
+                      {isRegistering ? "Creating Account..." : "Create Account"}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
             </motion.div>
           ) : (
             <InvitationCodeForm onSuccess={handleCodeSuccess} />

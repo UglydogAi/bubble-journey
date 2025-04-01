@@ -15,12 +15,13 @@ import InvitationCodesPage from "./pages/admin/InvitationCodesPage";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AdminAuthPage from "./pages/auth/AdminAuthPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AuthPage from "./pages/auth/AuthPage";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/invite" element={<InvitePage />} />
               <Route path="/call" element={<CodeActivationPage />} />
               <Route path="/call/chat" element={<CallPage />} />
+              <Route path="/auth" element={<AuthPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               
               {/* Admin Login Routes */}

@@ -8,6 +8,7 @@ import { BellRing, Mail, MessageSquare, Upload, User, Check } from "lucide-react
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { useTheme } from "next-themes";
 
 interface SettingsViewProps {
   notificationPreference: string;
@@ -22,6 +23,8 @@ export function SettingsView({
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [displayName, setDisplayName] = useState("");
 
   useEffect(() => {
     // Load profile image from localStorage if exists
@@ -29,12 +32,18 @@ export function SettingsView({
     if (savedImage) {
       setProfileImage(savedImage);
     }
-  }, []);
+    
+    // Load display name from localStorage if exists
+    const savedName = localStorage.getItem('wizDisplayName') || user?.email?.split('@')[0] || 'User';
+    setDisplayName(savedName);
+  }, [user?.email]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const reader = new FileReader();
+      
+      setUploading(true);
       
       reader.onload = (event) => {
         if (event.target?.result) {
@@ -42,6 +51,10 @@ export function SettingsView({
           setProfileImage(imageData);
           // Save to localStorage for persistence
           localStorage.setItem('wizProfileImage', imageData);
+          setUploading(false);
+          
+          // Dispatch a storage event to update other components
+          window.dispatchEvent(new Event('storage'));
         }
       };
       
@@ -51,6 +64,9 @@ export function SettingsView({
 
   const handleSaveSettings = () => {
     setSaving(true);
+    
+    // Save display name
+    localStorage.setItem('wizDisplayName', displayName);
     
     // Simulate saving settings
     setTimeout(() => {
@@ -85,6 +101,12 @@ export function SettingsView({
                     {user?.email?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
+                
+                {uploading && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
               </div>
               
               <Label htmlFor="profile-image" className="cursor-pointer">
@@ -106,7 +128,8 @@ export function SettingsView({
               <Label htmlFor="display-name">Display Name</Label>
               <Input 
                 id="display-name" 
-                defaultValue={user?.email?.split('@')[0] || 'User'} 
+                value={displayName} 
+                onChange={(e) => setDisplayName(e.target.value)}
                 className="bg-card/50" 
               />
             </div>
@@ -123,55 +146,86 @@ export function SettingsView({
           </CardContent>
         </Card>
 
-        {/* Notification Card */}
+        {/* Notification and Theme Card */}
         <Card className="bg-card/50 backdrop-blur-sm border-border/40">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BellRing className="h-5 w-5 text-primary" />
-              Notification Settings
+              Notification & Display Settings
             </CardTitle>
             <CardDescription>
-              Manage how you receive notifications
+              Manage how you receive notifications and display preferences
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <RadioGroup
-              value={notificationPreference}
-              onValueChange={onPreferenceChange}
-              className="space-y-4"
-            >
-              <div className="flex items-start space-x-3 space-y-0">
-                <RadioGroupItem value="email" id="email" />
-                <div className="flex flex-col gap-1">
-                  <Label
-                    htmlFor="email"
-                    className="font-normal cursor-pointer flex items-center gap-2"
-                  >
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    Email
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Receive notifications via email
-                  </p>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-base font-medium">Notifications</h3>
+              <RadioGroup
+                value={notificationPreference}
+                onValueChange={onPreferenceChange}
+                className="space-y-4"
+              >
+                <div className="flex items-start space-x-3 space-y-0">
+                  <RadioGroupItem value="email" id="email" />
+                  <div className="flex flex-col gap-1">
+                    <Label
+                      htmlFor="email"
+                      className="font-normal cursor-pointer flex items-center gap-2"
+                    >
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      Email
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Receive notifications via email
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-start space-x-3 space-y-0">
-                <RadioGroupItem value="whatsapp" id="whatsapp" />
-                <div className="flex flex-col gap-1">
-                  <Label
-                    htmlFor="whatsapp"
-                    className="font-normal cursor-pointer flex items-center gap-2"
-                  >
-                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                    WhatsApp
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Receive notifications via WhatsApp
-                  </p>
+                <div className="flex items-start space-x-3 space-y-0">
+                  <RadioGroupItem value="whatsapp" id="whatsapp" />
+                  <div className="flex flex-col gap-1">
+                    <Label
+                      htmlFor="whatsapp"
+                      className="font-normal cursor-pointer flex items-center gap-2"
+                    >
+                      <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                      WhatsApp
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Receive notifications via WhatsApp
+                    </p>
+                  </div>
                 </div>
+              </RadioGroup>
+            </div>
+            
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="text-base font-medium">Theme Settings</h3>
+              <div className="flex flex-col space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="theme-mode" className="cursor-pointer">Display Theme</Label>
+                  <div className="flex items-center gap-2 p-1 border rounded-md">
+                    <Button 
+                      size="sm" 
+                      variant={theme === "light" ? "default" : "ghost"} 
+                      onClick={() => setTheme("light")}
+                      className="px-3"
+                    >
+                      Light
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={theme === "dark" ? "default" : "ghost"} 
+                      onClick={() => setTheme("dark")}
+                      className="px-3"
+                    >
+                      Dark
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">Choose between light and dark mode for your dashboard</p>
               </div>
-            </RadioGroup>
+            </div>
           </CardContent>
         </Card>
       </div>

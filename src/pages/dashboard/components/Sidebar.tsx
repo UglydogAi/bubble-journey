@@ -47,6 +47,11 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
     }
   ];
 
+  // Navigate to call page without requiring code verification again
+  const handleCallWiz = () => {
+    navigate('/call/chat');
+  };
+
   const handleLogout = async () => {
     await logout();
     navigate('/');
@@ -95,14 +100,14 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
                   </Button>
                 ))}
                 
-                {/* Logout Button */}
+                {/* Call Wiz Button */}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5"
-                  onClick={handleLogout}
+                  className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-green-500/90 transition-colors duration-300 px-2.5 py-2.5"
+                  onClick={handleCallWiz}
                 >
-                  <LogOut />
-                  Logout
+                  <MessageSquare className="text-green-500" />
+                  Call Wiz
                 </Button>
               </nav>
               
@@ -125,6 +130,16 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
                     </a>
                   </Button>
                 ))}
+                
+                {/* Logout Button (at bottom after Twitter) */}
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5 mt-4"
+                  onClick={handleLogout}
+                >
+                  <LogOut />
+                  Logout
+                </Button>
               </nav>
             </div>
           </motion.div>
@@ -153,15 +168,15 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
           </Button>
         ))}
         
-        {/* Logout Button for Mobile */}
+        {/* Call Wiz Button for Mobile */}
         <Button
           variant="ghost"
           size="icon"
-          className="flex flex-col items-center justify-center gap-1 h-16 w-full px-1 hover:text-red-500"
-          onClick={handleLogout}
+          className="flex flex-col items-center justify-center gap-1 h-16 w-full px-1 hover:text-green-500"
+          onClick={handleCallWiz}
         >
-          <LogOut />
-          <span className="text-[10px] font-medium">Logout</span>
+          <MessageSquare className="text-green-500" />
+          <span className="text-[10px] font-medium">Call Wiz</span>
         </Button>
       </div>
     );
@@ -192,14 +207,14 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
             </Button>
           ))}
           
-          {/* Logout Button */}
+          {/* Call Wiz Button */}
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5"
-            onClick={handleLogout}
+            className="w-full justify-start gap-3 text-green-500 hover:text-white hover:bg-green-500/90 transition-colors duration-300 px-2.5 py-2.5"
+            onClick={handleCallWiz}
           >
-            <LogOut />
-            Logout
+            <MessageSquare />
+            Call Wiz
           </Button>
         </nav>
         
@@ -222,6 +237,16 @@ export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarPro
               </a>
             </Button>
           ))}
+          
+          {/* Logout Button (at bottom after Twitter) */}
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5 mt-4"
+            onClick={handleLogout}
+          >
+            <LogOut />
+            Logout
+          </Button>
         </nav>
       </div>
     </>

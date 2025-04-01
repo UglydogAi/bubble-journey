@@ -19,6 +19,12 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   const [prevProgress, setPrevProgress] = useState(dailyProgress);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [calculatedProgress, setCalculatedProgress] = useState(dailyProgress);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // This prevents hydration errors with next-themes
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // Load profile image from localStorage
@@ -81,6 +87,41 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
       setPrevProgress(calculatedProgress);
     }
   }, [calculatedProgress, prevProgress]);
+
+  // Listen for profile image changes from settings
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'wizProfileImage') {
+        setProfileImage(e.newValue);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check for changes within the same window
+    const checkProfileImage = () => {
+      const currentImage = localStorage.getItem('wizProfileImage');
+      if (currentImage !== profileImage) {
+        setProfileImage(currentImage);
+      }
+    };
+    
+    const interval = setInterval(checkProfileImage, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [profileImage]);
+
+  const handleThemeChange = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
+  if (!mounted) {
+    // Render a placeholder until the theme is available to prevent hydration mismatch
+    return <div className="h-[4rem] md:h-[4.5rem]"></div>;
+  }
 
   return (
     <div className="sticky top-0 w-full z-50">
@@ -178,9 +219,10 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
             {/* Theme Toggle */}
             <Toggle
               pressed={theme === "dark"}
-              onPressedChange={(pressed) => setTheme(pressed ? "dark" : "light")}
+              onPressedChange={handleThemeChange}
               className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-muted/50 hover:bg-muted/80 
                 transition-colors duration-300"
+              aria-label="Toggle theme"
             >
               {theme === "dark" ? (
                 <Moon className="w-3.5 h-3.5 text-primary" />
