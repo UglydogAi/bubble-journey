@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +16,7 @@ const CodeActivationPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+  const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
   const navigate = useNavigate();
   const { signUp, login, isAuthenticated } = useAuth();
   
@@ -40,6 +40,8 @@ const CodeActivationPage: React.FC = () => {
     // Save that code was verified to prevent asking again
     localStorage.setItem('wizInviteVerified', 'true');
     setCodeActivated(true);
+    // Mark as first time user when they just activated their code
+    setIsFirstTimeUser(true);
   };
   
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -68,13 +70,30 @@ const CodeActivationPage: React.FC = () => {
         
         // Sign up with new account
         await signUp(email, password);
+        
+        // First time users go directly to call
+        if (isFirstTimeUser) {
+          localStorage.setItem('wizIsFirstTimeUser', 'true');
+          // Redirect to call page after successful auth for first time users
+          setTimeout(() => navigate('/call/chat'), 1000);
+        } else {
+          // Returning users go to dashboard
+          setTimeout(() => navigate('/dashboard'), 1000);
+        }
       } else {
         // Log in with existing account
         await login(email, password);
+        
+        // Check if user is a first time user who hasn't completed onboarding call
+        const completedOnboarding = localStorage.getItem('wizActionPlan');
+        if (!completedOnboarding) {
+          // If they haven't completed onboarding, send to call
+          setTimeout(() => navigate('/call/chat'), 1000);
+        } else {
+          // Otherwise, to dashboard
+          setTimeout(() => navigate('/dashboard'), 1000);
+        }
       }
-      
-      // Redirect to dashboard page after successful auth
-      setTimeout(() => navigate('/dashboard'), 1000);
     } catch (error) {
       console.error("Authentication error:", error);
       toast.error("Authentication failed. Please try again.");

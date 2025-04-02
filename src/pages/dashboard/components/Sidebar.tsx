@@ -1,14 +1,19 @@
 
-import React, { useState } from "react";
-import { UserRound, Settings, CreditCard, MessageSquare, Award, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import XLogo from "@/components/XLogo";
-import GitBookIcon from "@/components/GitBookIcon";
-import DiscordIcon from "@/components/DiscordIcon";
-import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  Gift,
+  LogOut,
+  XLogo,
+  User
+} from 'lucide-react';
+import { WizLogo } from '@/components/WizLogo';
+import { toast } from 'sonner';
 
 interface SidebarProps {
   isMobile?: boolean;
@@ -17,225 +22,145 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isMobile = false, activeView, onNavigate }: SidebarProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { logout } = useAuth();
   const navigate = useNavigate();
-
-  const navigationItems = [
-    { icon: <UserRound />, label: "Profile", view: "profile" },
-    { icon: <MessageSquare />, label: "Chat with Wiz", view: "chat" },
-    { icon: <Award />, label: "Rewards", view: "rewards" },
-    { icon: <Settings />, label: "Settings", view: "settings" },
-    { icon: <CreditCard />, label: "Purchase", view: "purchase" }
-  ];
-
-  const socialItems = [
-    { 
-      icon: <GitBookIcon className="h-5 w-5 transition-all duration-200 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />, 
-      label: "Docs", 
-      url: "https://wizthepanda.gitbook.io/wiz/" 
-    },
-    { 
-      icon: <DiscordIcon className="h-5 w-5 transition-all duration-200 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />, 
-      label: "Discord", 
-      url: "https://discord.gg/wizthepanda" 
-    },
-    { 
-      icon: <XLogo className="h-5 w-5 transition-all duration-200 group-hover:text-[#8B5CF6] filter drop-shadow-[0_0_2px_rgba(139,92,246,0.5)]" />, 
-      label: "Twitter", 
-      url: "https://x.com/wizthepanda_" 
+  const { logout } = useAuth();
+  
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Logged out successfully");
+      navigate('/');
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to log out");
     }
-  ];
-
-  // Navigate to call page without requiring code verification again
+  };
+  
   const handleCallWiz = () => {
     navigate('/call/chat');
   };
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
+  
+  const handleXClick = () => {
+    window.open('https://twitter.com/wizcoachapp', '_blank');
   };
-
-  // Mobile sidebar menu
-  const MobileSidebar = () => (
-    <AnimatePresence>
-      {isMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => setIsMenuOpen(false)}
-        >
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ type: "spring", damping: 20 }}
-            className="w-[250px] h-full bg-background/95 border-r border-border/30"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex flex-col h-full">
-              {/* Main Navigation */}
-              <nav className="space-y-1.5 p-4 mt-14">
-                {navigationItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    variant="ghost"
-                    className={cn(
-                      "w-full justify-start gap-3 text-sidebar-foreground/70",
-                      "hover:text-white hover:bg-[#8A2BE2]/90",
-                      "transition-colors duration-300 px-2.5 py-2.5",
-                      activeView === item.view && "bg-[#8A2BE2] text-white"
-                    )}
-                    onClick={() => {
-                      onNavigate(item.view);
-                      setIsMenuOpen(false);
-                      if (item.view === "chat") handleCallWiz();
-                    }}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </Button>
-                ))}
-              </nav>
-              
-              {/* Social Links (Bottom) */}
-              <nav className="mt-auto p-4 border-t border-sidebar-border/30">
-                {socialItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    variant="ghost"
-                    className={cn(
-                      "w-full justify-start gap-3 text-sidebar-foreground/70",
-                      "hover:text-white hover:bg-[#8A2BE2]/90",
-                      "transition-colors duration-300 px-2.5 py-2.5 mt-1.5 group"
-                    )}
-                    asChild
-                  >
-                    <a href={item.url} target="_blank" rel="noopener noreferrer">
-                      {item.icon}
-                      {item.label}
-                    </a>
-                  </Button>
-                ))}
-                
-                {/* Logout Button (at bottom after Twitter) */}
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5 mt-4"
-                  onClick={handleLogout}
-                >
-                  <LogOut />
-                  Logout
-                </Button>
-              </nav>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-
+  
+  const navigationItems = [
+    {
+      id: 'profile',
+      label: 'Dashboard',
+      icon: <LayoutDashboard className="w-5 h-5" />,
+      action: () => onNavigate('profile')
+    },
+    {
+      id: 'chat',
+      label: 'Wiz Chat',
+      icon: <MessageSquare className="w-5 h-5" />,
+      action: () => onNavigate('chat')
+    },
+    {
+      id: 'rewards',
+      label: 'Rewards',
+      icon: <Gift className="w-5 h-5" />,
+      action: () => onNavigate('rewards')
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: <Settings className="w-5 h-5" />,
+      action: () => onNavigate('settings')
+    },
+  ];
+  
+  const bottomItems = [
+    {
+      id: 'twitter',
+      label: 'X',
+      icon: <XLogo className="w-5 h-5" />,
+      action: handleXClick
+    },
+    {
+      id: 'logout',
+      label: 'Logout',
+      icon: <LogOut className="w-5 h-5" />,
+      action: handleLogout
+    },
+  ];
+  
   if (isMobile) {
     return (
-      <div className="grid grid-cols-5 items-center p-2 backdrop-blur-xl w-full">
-        {navigationItems.slice(0, 4).map((item) => (
-          <Button
-            key={item.label}
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "flex flex-col items-center justify-center gap-1 h-16 w-full px-1",
-              "transition-colors duration-300",
-              activeView === item.view && "bg-[#8A2BE2] text-white"
-            )}
-            onClick={() => {
-              onNavigate(item.view);
-              if (item.view === "chat") handleCallWiz();
-            }}
+      <div className="flex justify-around items-center px-4 py-2">
+        {navigationItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={item.action}
+            className={`flex flex-col items-center justify-center px-2 py-1 rounded-lg ${
+              activeView === item.id
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
           >
             {item.icon}
-            <span className="text-[10px] font-medium">{item.label}</span>
-          </Button>
+            <span className="text-[10px] mt-1">{item.label}</span>
+          </button>
         ))}
-        
-        {/* Menu Button for Mobile */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="flex flex-col items-center justify-center gap-1 h-16 w-full px-1"
-          onClick={() => setIsMenuOpen(true)}
-        >
-          <CreditCard />
-          <span className="text-[10px] font-medium">More</span>
-        </Button>
       </div>
     );
   }
-
+  
   return (
-    <>
-      <MobileSidebar />
+    <div className="flex flex-col h-full px-4 py-6">
+      <div className="flex items-center gap-3 px-3 mb-8">
+        <div className="bg-gradient-to-tr from-purple-600 to-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center shadow-md">
+          <WizLogo className="text-white w-5 h-5" />
+        </div>
+        <span className="font-semibold tracking-tight text-lg">
+          WIZ
+        </span>
+      </div>
       
-      <div className="h-full flex flex-col justify-between bg-sidebar-background/50 backdrop-blur-xl 
-        border-r border-sidebar-border hidden md:flex">
-        {/* Main Navigation */}
-        <nav className="space-y-1.5 p-2.5">
+      <div className="flex-1">
+        <div className="space-y-1">
           {navigationItems.map((item) => (
-            <Button
-              key={item.label}
-              variant="ghost"
-              className={cn(
-                "w-full justify-start gap-3 text-sidebar-foreground/70",
-                "hover:text-white hover:bg-[#8A2BE2]/90",
-                "transition-colors duration-300 px-2.5 py-2.5",
-                activeView === item.view && "bg-[#8A2BE2] text-white"
-              )}
-              onClick={() => {
-                onNavigate(item.view);
-                if (item.view === "chat") handleCallWiz();
-              }}
+            <button
+              key={item.id}
+              onClick={item.action}
+              className={`flex w-full items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                activeView === item.id
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
             >
               {item.icon}
-              {item.label}
-            </Button>
+              <span>{item.label}</span>
+            </button>
           ))}
-        </nav>
+        </div>
         
-        {/* Social Links at Bottom */}
-        <nav className="mt-auto p-2.5">
-          {socialItems.map((item) => (
-            <Button
-              key={item.label}
-              variant="ghost"
-              className={cn(
-                "w-full justify-start gap-3 text-sidebar-foreground/70",
-                "hover:text-white hover:bg-[#8A2BE2]/90",
-                "transition-colors duration-300 px-2.5 py-2.5 mt-1.5 group"
-              )}
-              asChild
-            >
-              <a href={item.url} target="_blank" rel="noopener noreferrer">
-                {item.icon}
-                <span className="ml-0.5">{item.label}</span>
-              </a>
-            </Button>
-          ))}
-          
-          {/* Logout Button (moved to the very bottom) */}
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-white hover:bg-red-500/90 transition-colors duration-300 px-2.5 py-2.5 mt-4 border-t border-sidebar-border/30 pt-4"
-            onClick={handleLogout}
+        {/* Call Wiz button - prominent in sidebar */}
+        <div className="mt-6 px-3">
+          <button
+            onClick={handleCallWiz}
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm"
           >
-            <LogOut />
-            Logout
-          </Button>
-        </nav>
+            <MessageSquare className="w-4 h-4" />
+            <span>Call Wiz</span>
+          </button>
+        </div>
       </div>
-    </>
+      
+      {/* Bottom items including logout - now at the bottom */}
+      <div className="space-y-1 mt-auto">
+        {bottomItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={item.action}
+            className="flex w-full items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

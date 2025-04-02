@@ -19,7 +19,7 @@ interface Task {
 }
 
 export default function DashboardPage() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const navigate = useNavigate();
   const [dailyProgress, setDailyProgress] = useState(0);
   const [ogPoints, setOgPoints] = useState(1250);
@@ -27,7 +27,7 @@ export default function DashboardPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeView, setActiveView] = useState("profile"); // Default to profile view
   const [hasActionPlan, setHasActionPlan] = useState(false);
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   // Redirect to login page if user is not authenticated
   useEffect(() => {
@@ -36,7 +36,31 @@ export default function DashboardPage() {
     }
   }, [isAuthenticated, isLoading, navigate]);
 
+  // Apply user preferences when dashboard loads
   useEffect(() => {
+    if (user?.email && user?.profileData) {
+      // Apply saved theme if exists
+      if (user.profileData.theme) {
+        setTheme(user.profileData.theme);
+      }
+      
+      // Apply saved notification preferences
+      if (user.profileData.notificationPreference) {
+        setNotificationPreference(user.profileData.notificationPreference);
+      }
+    } else {
+      // Try to load preferences from localStorage as fallback
+      const savedTheme = localStorage.getItem('wizTheme');
+      if (savedTheme) {
+        setTheme(savedTheme);
+      }
+      
+      const savedPreference = localStorage.getItem('wizNotificationPreference');
+      if (savedPreference) {
+        setNotificationPreference(savedPreference);
+      }
+    }
+
     const handleResize = () => {
       setIsSidebarOpen(window.innerWidth >= 768);
     };
@@ -84,7 +108,7 @@ export default function DashboardPage() {
     handleResize(); // Initial check
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [user, setTheme]);
 
   // Listen for changes in action plan to update progress
   useEffect(() => {
@@ -155,7 +179,6 @@ export default function DashboardPage() {
         return (
           <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 pt-1 md:pt-6">
             {hasActionPlan && <ActionPlan />}
-            {/* WeeklyFocus and TaskCalendar components removed as requested */}
           </div>
         );
     }
@@ -170,7 +193,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className={`min-h-screen bg-white text-foreground transition-colors duration-300`}>
+    <div className={`min-h-screen bg-background text-foreground transition-all duration-500`}>
       <div className="flex min-h-screen relative">
         <div className="hidden md:block w-[18%] min-h-screen border-r border-border/30">
           <Sidebar 

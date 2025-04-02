@@ -6,6 +6,7 @@ import { Sparkles, ChevronRight, ArrowRight } from "lucide-react";
 import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { XLogo } from "@/components/XLogo";
 
 const InvitePage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -37,6 +38,10 @@ const InvitePage: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleTwitterClick = () => {
+    window.open('https://twitter.com/wizcoachapp', '_blank');
   };
   
   return (
@@ -151,6 +156,16 @@ const InvitePage: React.FC = () => {
             <p className="text-xs text-gray-400 text-center">
               <span className="text-[#A78BFA] font-medium">Limited Access:</span> We're currently onboarding the first 10,000 users with invitation codes. Request your code above or enter an existing code to join the revolution.
             </p>
+          </div>
+          
+          <div className="mt-6 flex justify-center">
+            <button 
+              onClick={handleTwitterClick}
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              <XLogo className="h-4 w-4" />
+              <span className="text-xs">Follow WIZ</span>
+            </button>
           </div>
         </motion.div>
         

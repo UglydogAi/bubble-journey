@@ -4,11 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { BellRing, Mail, MessageSquare, Upload, User, Check } from "lucide-react";
+import { BellRing, Mail, MessageSquare, Upload, User, Check, Moon, Sun } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "next-themes";
+import { motion } from "framer-motion";
 
 interface SettingsViewProps {
   notificationPreference: string;
@@ -19,24 +20,35 @@ export function SettingsView({
   notificationPreference, 
   onPreferenceChange 
 }: SettingsViewProps) {
-  const { user } = useAuth();
+  const { user, persistUserData } = useAuth();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const { theme, setTheme } = useTheme();
   const [displayName, setDisplayName] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Load profile image from localStorage if exists
-    const savedImage = localStorage.getItem('wizProfileImage');
-    if (savedImage) {
-      setProfileImage(savedImage);
+    setIsMounted(true);
+    
+    // Load profile image from user object first, then localStorage if not found
+    if (user?.profileData?.profileImage) {
+      setProfileImage(user.profileData.profileImage);
+    } else {
+      const savedImage = localStorage.getItem('wizProfileImage');
+      if (savedImage) {
+        setProfileImage(savedImage);
+      }
     }
     
-    // Load display name from localStorage if exists
-    const savedName = localStorage.getItem('wizDisplayName') || user?.email?.split('@')[0] || 'User';
-    setDisplayName(savedName);
-  }, [user?.email]);
+    // Load display name from user object first, then localStorage if not found
+    if (user?.profileData?.displayName) {
+      setDisplayName(user.profileData.displayName);
+    } else {
+      const savedName = localStorage.getItem('wizDisplayName') || user?.email?.split('@')[0] || 'User';
+      setDisplayName(savedName);
+    }
+  }, [user?.email, user?.profileData]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -49,8 +61,20 @@ export function SettingsView({
         if (event.target?.result) {
           const imageData = event.target.result as string;
           setProfileImage(imageData);
-          // Save to localStorage for persistence
+          
+          // Store in both localStorage and user object for persistence
           localStorage.setItem('wizProfileImage', imageData);
+          
+          // If we have a user email, also store it keyed by email
+          if (user?.email) {
+            const userDataKey = `wizUserData-${user.email}`;
+            const existingData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
+            localStorage.setItem(userDataKey, JSON.stringify({
+              ...existingData,
+              profileImage: imageData
+            }));
+          }
+          
           setUploading(false);
           
           // Dispatch a storage event to update other components
@@ -62,17 +86,80 @@ export function SettingsView({
     }
   };
 
-  const handleSaveSettings = () => {
+  const handleSaveSettings = async () => {
     setSaving(true);
     
-    // Save display name
-    localStorage.setItem('wizDisplayName', displayName);
-    
-    // Simulate saving settings
-    setTimeout(() => {
-      toast.success("Settings saved successfully");
+    try {
+      // Save display name
+      localStorage.setItem('wizDisplayName', displayName);
+      
+      // If we have a user email, also store settings keyed by email
+      if (user?.email) {
+        const userDataKey = `wizUserData-${user.email}`;
+        const existingData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
+        
+        const updatedData = {
+          ...existingData,
+          displayName: displayName,
+          profileImage: profileImage,
+          notificationPreference: notificationPreference,
+          theme: theme
+        };
+        
+        localStorage.setItem(userDataKey, JSON.stringify(updatedData));
+        
+        // Update user object in context for persistence
+        await persistUserData(updatedData);
+      }
+
+      // Simulate saving settings
+      setTimeout(() => {
+        toast.success("Settings saved successfully");
+        setSaving(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error("Failed to save settings");
       setSaving(false);
-    }, 1000);
+    }
+  };
+  
+  // Enhanced theme toggle with smooth transitions
+  const ThemeToggle = () => {
+    if (!isMounted) return null;
+    
+    return (
+      <div className="relative h-10 rounded-full bg-gradient-to-r from-slate-200 via-slate-100 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-950 p-1 shadow-inner flex items-center transition-all duration-700">
+        <motion.div 
+          className="absolute z-0 h-8 w-12 rounded-full bg-white dark:bg-slate-700 shadow-sm"
+          animate={{ 
+            x: theme === 'dark' ? 44 : 4,
+            backgroundColor: theme === 'dark' ? 'rgb(51, 65, 85)' : 'white'
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        />
+        <div className="flex items-center relative z-10">
+          <button 
+            onClick={() => setTheme('light')}
+            className={`h-8 w-12 rounded-full flex items-center justify-center ${
+              theme === 'light' ? 'text-amber-500' : 'text-slate-400'
+            } transition-colors duration-300`}
+            aria-label="Light mode"
+          >
+            <Sun className="h-5 w-5" />
+          </button>
+          <button 
+            onClick={() => setTheme('dark')}
+            className={`h-8 w-12 rounded-full flex items-center justify-center ${
+              theme === 'dark' ? 'text-indigo-400' : 'text-slate-400'
+            } transition-colors duration-300`}
+            aria-label="Dark mode"
+          >
+            <Moon className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -202,28 +289,9 @@ export function SettingsView({
             <div className="space-y-4 border-t pt-4">
               <h3 className="text-base font-medium">Theme Settings</h3>
               <div className="flex flex-col space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="theme-mode" className="cursor-pointer">Display Theme</Label>
-                  <div className="flex items-center gap-2 p-1 border rounded-md">
-                    <Button 
-                      size="sm" 
-                      variant={theme === "light" ? "default" : "ghost"} 
-                      onClick={() => setTheme("light")}
-                      className="px-3"
-                    >
-                      Light
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant={theme === "dark" ? "default" : "ghost"} 
-                      onClick={() => setTheme("dark")}
-                      className="px-3"
-                    >
-                      Dark
-                    </Button>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">Choose between light and dark mode for your dashboard</p>
+                <Label htmlFor="theme-mode" className="mb-2">Display Theme</Label>
+                <ThemeToggle />
+                <p className="text-xs text-muted-foreground mt-2">Choose between light and dark mode for your dashboard</p>
               </div>
             </div>
           </CardContent>

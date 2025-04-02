@@ -6,24 +6,30 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageSquare, Phone, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Message {
   id: string;
   content: string;
-  timestamp: Date;
-  isUser: boolean;
+  timestamp: string;
+  sender: string;
 }
 
 export function ChatView() {
   const navigate = useNavigate();
   const [conversations, setConversations] = useState<Message[]>([]);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Load profile image if exists
-    const savedImage = localStorage.getItem('wizProfileImage');
-    if (savedImage) {
-      setProfileImage(savedImage);
+    // Load profile image from user object first, then localStorage if not found
+    if (user?.profileData?.profileImage) {
+      setProfileImage(user.profileData.profileImage);
+    } else {
+      const savedImage = localStorage.getItem('wizProfileImage');
+      if (savedImage) {
+        setProfileImage(savedImage);
+      }
     }
     
     // Retrieve past conversations from localStorage
@@ -49,8 +55,15 @@ export function ChatView() {
     };
     
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+    
+    // Check for updates periodically
+    const interval = setInterval(loadConversations, 3000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [user]);
 
   const startNewCall = () => {
     navigate('/call/chat');
@@ -69,7 +82,7 @@ export function ChatView() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold">Chat History</h2>
+        <h2 className="text-2xl font-semibold">Wiz Chat</h2>
         <Button 
           className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white"
           onClick={startNewCall}
@@ -100,15 +113,17 @@ export function ChatView() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: messageIndex * 0.1 }}
-                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-3`}
+                  className={`flex ${message.sender === "user" ? 'justify-end' : 'justify-start'} mb-3`}
                 >
-                  <div className={`flex gap-3 max-w-[75%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <div className={`flex gap-3 max-w-[75%] ${message.sender === "user" ? 'flex-row-reverse' : 'flex-row'}`}>
                     <Avatar className="h-8 w-8">
-                      {message.isUser ? (
+                      {message.sender === "user" ? (
                         profileImage ? (
                           <AvatarImage src={profileImage} alt="You" />
                         ) : (
-                          <AvatarFallback>You</AvatarFallback>
+                          <AvatarFallback>
+                            {user?.email?.charAt(0).toUpperCase() || 'Y'}
+                          </AvatarFallback>
                         )
                       ) : (
                         <AvatarImage 
@@ -119,7 +134,7 @@ export function ChatView() {
                     </Avatar>
                     <div
                       className={`rounded-lg px-4 py-2 ${
-                        message.isUser
+                        message.sender === "user"
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-muted'
                       }`}

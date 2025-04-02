@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/text-field";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,7 +63,7 @@ const InvitationCodeForm: React.FC<InvitationCodeFormProps> = ({
       setIsValid(true);
       toast.success("Invitation code is valid! Setting up your account...");
       
-      // Store code verification in localStorage
+      // Store code verification in localStorage for persistence
       localStorage.setItem('wizInviteVerified', 'true');
       
       // Allow a small delay for the success message to be seen

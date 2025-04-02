@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -14,6 +15,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   checkIsAdmin: () => Promise<boolean>;
   createAdminUser: (email: string, password: string) => Promise<void>;
+  persistUserData: (profileData?: any) => Promise<void>;
 }
 
 // Create context with undefined as initial value
@@ -52,6 +54,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     checkSession();
   }, []);
+
+  // Helper function to persist user data across sessions
+  const persistUserData = async (profileData?: any) => {
+    if (!user) return;
+    
+    const userData = { ...user };
+    
+    // If profile data is provided, merge it with existing user data
+    if (profileData) {
+      userData.profileData = { ...userData.profileData, ...profileData };
+    }
+    
+    // Store updated user data
+    localStorage.setItem('wizUserProfile', JSON.stringify(userData));
+    
+    // Update state
+    setUser(userData);
+  };
   
   const mockCreateAdminUser = async (email: string, password: string) => {
     console.log('Mock creating admin user:', email);
@@ -68,6 +88,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // For this mock, we'll create a session with the email
       const mockUser = { id: 'mock-user-id', email };
       const mockSession = { user: mockUser };
+      
+      // Check if we have saved profile data for this user
+      const savedProfileData = localStorage.getItem(`wizUserData-${email}`);
+      if (savedProfileData) {
+        try {
+          const profileData = JSON.parse(savedProfileData);
+          mockUser.profileData = profileData;
+        } catch (error) {
+          console.error('Error parsing saved profile data:', error);
+        }
+      }
       
       // Store session and user in localStorage for persistence
       localStorage.setItem('wizUserSession', JSON.stringify(mockSession));
@@ -157,6 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout: mockLogout,
         checkIsAdmin: mockCheckIsAdmin,
         createAdminUser: mockCreateAdminUser,
+        persistUserData,
       }}
     >
       {children}

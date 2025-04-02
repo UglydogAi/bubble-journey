@@ -8,6 +8,8 @@ import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { motion } from "framer-motion";
 
 interface TopProgressBarProps {
   dailyProgress: number;
@@ -23,6 +25,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   const [userPoints, setUserPoints] = useState(ogPoints);
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     // This prevents hydration errors with next-themes
@@ -30,14 +33,19 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
   }, []);
 
   useEffect(() => {
-    // Load profile image and points from localStorage
-    const savedImage = localStorage.getItem('wizProfileImage');
-    const savedPoints = localStorage.getItem('wizPoints');
-    
-    if (savedImage) {
-      setProfileImage(savedImage);
+    // First try to load from user context for persistence
+    if (user?.profileData?.profileImage) {
+      setProfileImage(user.profileData.profileImage);
+    } else {
+      // Fall back to localStorage if not in context
+      const savedImage = localStorage.getItem('wizProfileImage');
+      if (savedImage) {
+        setProfileImage(savedImage);
+      }
     }
     
+    // Load points
+    const savedPoints = localStorage.getItem('wizPoints');
     if (savedPoints) {
       setUserPoints(parseInt(savedPoints, 10));
     } else {
@@ -73,7 +81,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
     } catch (error) {
       console.error("Error calculating progress:", error);
     }
-  }, [ogPoints]);
+  }, [ogPoints, user]);
 
   // Award WIZ points when progress increases
   useEffect(() => {
@@ -172,8 +180,20 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
     };
   }, [profileImage, userPoints]);
 
+  // Enhanced theme toggle with smooth transition
   const handleThemeChange = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    
+    // Also save theme preference to user data if available
+    if (user?.email) {
+      const userDataKey = `wizUserData-${user.email}`;
+      const existingData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
+      localStorage.setItem(userDataKey, JSON.stringify({
+        ...existingData,
+        theme: newTheme
+      }));
+    }
   };
 
   if (!mounted) {
@@ -185,7 +205,7 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
     <div className="sticky top-0 w-full z-50">
       <div className="container mx-auto px-0">
         <div className="h-[4rem] md:h-[4.5rem] flex items-center 
-          bg-background/95 backdrop-blur-xl border-b border-border/30">
+          bg-background/95 backdrop-blur-xl border-b border-border/30 transition-colors duration-500">
           
           {/* Left Section: Container that holds profile picture */}
           <div className="px-4 md:px-6 flex-shrink-0 border-r border-border/10 h-full flex items-center justify-center">
@@ -203,7 +223,9 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                   className="w-full h-full object-cover"
                 />
               )}
-              <AvatarFallback>WP</AvatarFallback>
+              <AvatarFallback>
+                {user?.email?.charAt(0).toUpperCase() || 'W'}
+              </AvatarFallback>
             </Avatar>
           </div>
 
@@ -216,30 +238,42 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
               />
               
               {/* Character Avatar */}
-              <div 
+              <motion.div 
                 className="absolute top-1/2"
                 style={{ 
                   left: `${Math.min(Math.max(calculatedProgress, 0), 100)}%`,
-                  transform: `translateX(-50%) translateY(-50%)` 
                 }}
+                initial={{ x: "-50%", y: "-50%" }}
+                animate={{ 
+                  x: "-50%", 
+                  y: "-50%",
+                  scale: showMessage ? 1.2 : 1 
+                }}
+                transition={{ duration: 0.5 }}
               >
                 <div className="relative">
                   {showMessage && (
-                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
-                      bg-primary/90 text-white text-xs px-3 py-1.5 rounded-full
-                      whitespace-nowrap animate-fade-in
-                      before:absolute before:top-full before:left-1/2 
-                      before:-translate-x-1/2 before:border-4 
-                      before:border-transparent before:border-t-primary/90">
+                    <motion.div 
+                      className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
+                        bg-primary/90 text-primary-foreground text-xs px-3 py-1.5 rounded-full
+                        whitespace-nowrap z-10
+                        before:absolute before:top-full before:left-1/2 
+                        before:-translate-x-1/2 before:border-4 
+                        before:border-transparent before:border-t-primary/90"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       Great job! 🐼
-                    </div>
+                    </motion.div>
                   )}
                   <div className={cn(
                     "w-4 h-4 md:w-5 md:h-5 bg-primary rounded-full",
                     "shadow-[0_0_15px_rgba(138,43,226,0.5)]",
                     "flex items-center justify-center",
                     "transition-all duration-300",
-                    "animate-bounce"
+                    showMessage ? "animate-bounce" : ""
                   )}>
                     <Avatar 
                       className="w-full h-full"
@@ -257,11 +291,13 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
                           className="w-full h-full object-cover"
                         />
                       )}
-                      <AvatarFallback className="w-full h-full text-[8px] text-white">WP</AvatarFallback>
+                      <AvatarFallback className="w-full h-full text-[8px] text-white">
+                        {user?.email?.charAt(0).toUpperCase() || 'W'}
+                      </AvatarFallback>
                     </Avatar>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
             
@@ -269,29 +305,35 @@ export function TopProgressBar({ dailyProgress, ogPoints }: TopProgressBarProps)
           <div className="flex items-center gap-2 pr-4 md:pr-6 pl-2 md:pl-4 flex-shrink-0 border-l border-border/10 h-full">
             {/* Points Display */}
             <div className="flex items-center gap-1 bg-primary/10 px-2 py-1.5 
-              rounded-full border border-primary/20 shadow-sm shadow-primary/10">
+              rounded-full border border-primary/20 shadow-sm shadow-primary/10 transition-colors duration-300">
               <Coins className="w-3 h-3 text-primary animate-pulse" />
               <span className="font-medium text-xs">{userPoints}</span>
             </div>
 
-            {/* Theme Toggle - Improved with better visual indication */}
-            <Toggle
-              pressed={theme === "dark"}
-              onPressedChange={handleThemeChange}
+            {/* Enhanced Theme Toggle with better animation */}
+            <button
+              onClick={handleThemeChange}
               className={cn(
-                "w-7 h-7 md:w-8 md:h-8 rounded-full transition-all duration-300", 
+                "w-7 h-7 md:w-8 md:h-8 rounded-full transition-all duration-500", 
                 theme === "dark" 
-                  ? "bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700" 
-                  : "bg-amber-100 text-amber-600 hover:bg-amber-200 border border-amber-200"
+                  ? "bg-slate-800 text-slate-200 hover:bg-slate-700 shadow-inner shadow-slate-900/50" 
+                  : "bg-amber-100 text-amber-600 hover:bg-amber-200 shadow-sm shadow-amber-500/20"
               )}
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? (
-                <Moon className="w-3.5 h-3.5" />
-              ) : (
-                <Sun className="w-3.5 h-3.5" />
-              )}
-            </Toggle>
+              <motion.div 
+                initial={false}
+                animate={{ rotateZ: theme === "dark" ? 180 : 0 }}
+                transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+                className="h-full w-full flex items-center justify-center"
+              >
+                {theme === "dark" ? (
+                  <Moon className="w-3.5 h-3.5" />
+                ) : (
+                  <Sun className="w-3.5 h-3.5" />
+                )}
+              </motion.div>
+            </button>
           </div>
         </div>
       </div>
