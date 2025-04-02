@@ -6,7 +6,7 @@ import { Sparkles, ChevronRight, ArrowRight } from "lucide-react";
 import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { XLogo } from "@/components/XLogo";
+import XLogo from "@/components/XLogo";
 
 const InvitePage: React.FC = () => {
   const [email, setEmail] = useState("");

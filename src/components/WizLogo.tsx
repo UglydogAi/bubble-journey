@@ -7,7 +7,7 @@ interface WizLogoProps {
   subtitle?: boolean;
 }
 
-const WizLogo: React.FC<WizLogoProps> = ({ className = "", showText = false, subtitle = false }) => {
+export const WizLogo: React.FC<WizLogoProps> = ({ className = "", showText = false, subtitle = false }) => {
   return (
     <div className="flex items-center">
       {!showText ? (

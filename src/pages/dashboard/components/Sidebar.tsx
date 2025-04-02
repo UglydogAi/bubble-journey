@@ -9,10 +9,10 @@ import {
   Settings,
   Gift,
   LogOut,
-  XLogo,
   User
 } from 'lucide-react';
-import { WizLogo } from '@/components/WizLogo';
+import WizLogo from '@/components/WizLogo';
+import XLogo from '@/components/XLogo';
 import { toast } from 'sonner';
 
 interface SidebarProps {

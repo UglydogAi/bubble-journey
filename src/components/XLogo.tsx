@@ -5,7 +5,7 @@ interface XLogoProps {
   className?: string;
 }
 
-const XLogo: React.FC<XLogoProps> = ({ className = "" }) => {
+export const XLogo: React.FC<XLogoProps> = ({ className = "" }) => {
   return (
     <svg 
       width="20" 
